@@ -1,0 +1,20 @@
+{
+  "id": "g4-arith-laws",
+  "grade": 4,
+  "unit": 8,
+  "title": "运算定律",
+  "objectives": [
+    "理解加法交换律和结合律",
+    "理解乘法交换律和结合律",
+    "理解乘法分配律并会运用"
+  ],
+  "prerequisites": ["g3-mult-1digit", "g4-mult-2digit"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 4, "chapter": "四下第3单元" },
+    { "version": "北师大版", "grade": 4, "chapter": "四上第4单元" },
+    { "version": "苏教版", "grade": 4, "chapter": "四下第6单元" }
+  ],
+  "vizType": "area-grid",
+  "hasFormula": true,
+  "formula": "a × (b + c) = a×b + a×c"
+}

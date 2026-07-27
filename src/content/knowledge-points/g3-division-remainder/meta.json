@@ -1,0 +1,19 @@
+{
+  "id": "g3-division-remainder",
+  "grade": 3,
+  "unit": 3,
+  "title": "有余数的除法",
+  "objectives": [
+    "理解有余数除法的含义",
+    "掌握余数与除数的关系",
+    "能正确进行有余数的除法计算"
+  ],
+  "prerequisites": ["g3-mult-1digit"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 3, "chapter": "三上第6单元" },
+    { "version": "北师大版", "grade": 3, "chapter": "三上第4单元" },
+    { "version": "苏教版", "grade": 3, "chapter": "三上第4单元" }
+  ],
+  "vizType": "area-grid",
+  "hasFormula": false
+}

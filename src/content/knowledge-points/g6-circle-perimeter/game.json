@@ -1,0 +1,51 @@
+{
+  "knowledgePointId": "g6-circle-perimeter",
+  "passThreshold": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "prompt": "圆的周长公式是什么？",
+      "options": ["C = πd = 2πr", "C = πr", "C = 2d", "C = πr²"],
+      "correctAnswer": "C = πd = 2πr",
+      "explanation": "圆的周长 = π × 直径 = 2 × π × 半径，即 C = πd = 2πr。π ≈ 3.14。",
+      "points": 10
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "prompt": "直径是10厘米的圆，周长约是多少？（π取3.14）",
+      "options": ["31.4厘米", "20厘米", "62.8厘米", "15.7厘米"],
+      "correctAnswer": "31.4厘米",
+      "explanation": "C = πd = 3.14 × 10 = 31.4（厘米）。",
+      "points": 10
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "prompt": "半径是5厘米的圆，周长约是多少？（π取3.14）",
+      "options": ["15.7厘米", "31.4厘米", "78.5厘米", "10厘米"],
+      "correctAnswer": "31.4厘米",
+      "explanation": "C = 2πr = 2 × 3.14 × 5 = 31.4（厘米）。",
+      "points": 10
+    },
+    {
+      "id": "q4",
+      "type": "choice",
+      "prompt": "圆周率 π 大约等于多少？",
+      "options": ["3", "3.14", "3.41", "31.4"],
+      "correctAnswer": "3.14",
+      "explanation": "π 是一个无限不循环小数，约等于 3.14159...，平时计算取 3.14。",
+      "points": 10
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "prompt": "周长是62.8厘米的圆，直径是多少？（π取3.14）",
+      "options": ["10厘米", "20厘米", "31.4厘米", "15厘米"],
+      "correctAnswer": "20厘米",
+      "explanation": "由 C = πd 得 d = C ÷ π = 62.8 ÷ 3.14 = 20（厘米）。",
+      "points": 10
+    }
+  ]
+}

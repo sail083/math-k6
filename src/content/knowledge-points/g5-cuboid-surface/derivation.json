@@ -1,0 +1,407 @@
+{
+  "title": "长方体表面积公式是怎么来的？",
+  "formula": "S = 2(ab + ah + bh)",
+  "steps": [
+    {
+      "title": "认识长方体",
+      "narration": "这是一个长方体，长是 a，宽是 b，高是 h。它有 6 个面，每个面都是长方形。6 个面的面积加起来就是表面积。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "front-face",
+            "type": "rect",
+            "x": 130,
+            "y": 110,
+            "width": 140,
+            "height": 90,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "top-face",
+            "type": "parallelogram",
+            "points": [{"x":130,"y":110},{"x":270,"y":110},{"x":300,"y":80},{"x":160,"y":80}],
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "right-face",
+            "type": "parallelogram",
+            "points": [{"x":270,"y":110},{"x":270,"y":200},{"x":300,"y":170},{"x":300,"y":80}],
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "label-a",
+            "type": "text",
+            "x": 200,
+            "y": 215,
+            "text": "长 a",
+            "fontSize": 13,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "label-h",
+            "type": "text",
+            "x": 120,
+            "y": 155,
+            "text": "高 h",
+            "fontSize": 12,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "end" }
+          },
+          {
+            "id": "label-b",
+            "type": "text",
+            "x": 295,
+            "y": 145,
+            "text": "宽 b",
+            "fontSize": 12,
+            "textFill": "#92400e",
+            "data": { "anchor": "start" }
+          }
+        ],
+        "labels": [
+          { "text": "长方体有6个面", "x": 200, "y": 250, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "highlight": ["front-face"]
+      },
+      "hint": "6个面的面积之和就是表面积"
+    },
+    {
+      "title": "展开成6个面",
+      "narration": "把长方体剪开铺平，就得到展开图。可以看到6个面：上面、下面、前面、后面、左面、右面。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "net-top",
+            "type": "rect",
+            "x": 150,
+            "y": 40,
+            "width": 100,
+            "height": 55,
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "net-front",
+            "type": "rect",
+            "x": 150,
+            "y": 95,
+            "width": 100,
+            "height": 55,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "net-bottom",
+            "type": "rect",
+            "x": 150,
+            "y": 150,
+            "width": 100,
+            "height": 55,
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "net-back",
+            "type": "rect",
+            "x": 150,
+            "y": 205,
+            "width": 100,
+            "height": 55,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "net-left",
+            "type": "rect",
+            "x": 90,
+            "y": 95,
+            "width": 60,
+            "height": 55,
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "net-right",
+            "type": "rect",
+            "x": 250,
+            "y": 95,
+            "width": 60,
+            "height": 55,
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "l-top",
+            "type": "text",
+            "x": 200,
+            "y": 67,
+            "text": "上面",
+            "fontSize": 12,
+            "textFill": "#1e3a8a",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "l-front",
+            "type": "text",
+            "x": 200,
+            "y": 122,
+            "text": "前面",
+            "fontSize": 12,
+            "textFill": "#4338ca",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "l-bottom",
+            "type": "text",
+            "x": 200,
+            "y": 177,
+            "text": "下面",
+            "fontSize": 12,
+            "textFill": "#1e3a8a",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "l-back",
+            "type": "text",
+            "x": 200,
+            "y": 232,
+            "text": "后面",
+            "fontSize": 12,
+            "textFill": "#4338ca",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "l-left",
+            "type": "text",
+            "x": 120,
+            "y": 122,
+            "text": "左面",
+            "fontSize": 11,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "l-right",
+            "type": "text",
+            "x": 280,
+            "y": 122,
+            "text": "右面",
+            "fontSize": 11,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "展开图：6个面铺平", "x": 200, "y": 280, "fontSize": 14, "fill": "#6b7280" }
+        ]
+      },
+      "hint": "相对的两个面面积相等"
+    },
+    {
+      "title": "三对面面积相等",
+      "narration": "观察展开图：上面和下面一样大（都是 a×b），前面和后面一样大（都是 a×h），左面和右面一样大（都是 b×h）。相对的面面积相等！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "pair1-a",
+            "type": "rect",
+            "x": 70,
+            "y": 60,
+            "width": 80,
+            "height": 50,
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "pair1-b",
+            "type": "rect",
+            "x": 70,
+            "y": 180,
+            "width": 80,
+            "height": 50,
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "pair2-a",
+            "type": "rect",
+            "x": 180,
+            "y": 60,
+            "width": 80,
+            "height": 50,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "pair2-b",
+            "type": "rect",
+            "x": 180,
+            "y": 180,
+            "width": 80,
+            "height": 50,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "pair3-a",
+            "type": "rect",
+            "x": 290,
+            "y": 60,
+            "width": 60,
+            "height": 50,
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "pair3-b",
+            "type": "rect",
+            "x": 290,
+            "y": 180,
+            "width": 60,
+            "height": 50,
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "eq1",
+            "type": "text",
+            "x": 110,
+            "y": 130,
+            "text": "上=下",
+            "fontSize": 13,
+            "textFill": "#3b82f6",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "eq2",
+            "type": "text",
+            "x": 220,
+            "y": 130,
+            "text": "前=后",
+            "fontSize": 13,
+            "textFill": "#6366f1",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "eq3",
+            "type": "text",
+            "x": 320,
+            "y": 130,
+            "text": "左=右",
+            "fontSize": 13,
+            "textFill": "#f59e0b",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "area1",
+            "type": "text",
+            "x": 110,
+            "y": 250,
+            "text": "a×b",
+            "fontSize": 12,
+            "textFill": "#3b82f6",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "area2",
+            "type": "text",
+            "x": 220,
+            "y": 250,
+            "text": "a×h",
+            "fontSize": 12,
+            "textFill": "#6366f1",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "area3",
+            "type": "text",
+            "x": 320,
+            "y": 250,
+            "text": "b×h",
+            "fontSize": 12,
+            "textFill": "#f59e0b",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "三对相对的面，面积分别相等", "x": 200, "y": 280, "fontSize": 13, "fill": "#374151" }
+        ]
+      },
+      "hint": "上下面=a×b，前后面=a×h，左右面=b×h"
+    },
+    {
+      "title": "得出公式",
+      "narration": "6个面的面积 = 2×(a×b) + 2×(a×h) + 2×(b×h) = 2×(ab + ah + bh)。所以长方体表面积 = 2 × (长×宽 + 长×高 + 宽×高)！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "formula-box",
+            "type": "rect",
+            "x": 60,
+            "y": 80,
+            "width": 280,
+            "height": 120,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2,
+            "radius": 8
+          },
+          {
+            "id": "f-line1",
+            "type": "text",
+            "x": 200,
+            "y": 110,
+            "text": "上面+下面 = 2×a×b",
+            "fontSize": 15,
+            "textFill": "#3b82f6",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "f-line2",
+            "type": "text",
+            "x": 200,
+            "y": 140,
+            "text": "前面+后面 = 2×a×h",
+            "fontSize": 15,
+            "textFill": "#6366f1",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "f-line3",
+            "type": "text",
+            "x": 200,
+            "y": 170,
+            "text": "左面+右面 = 2×b×h",
+            "fontSize": 15,
+            "textFill": "#f59e0b",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "三个部分加起来", "x": 200, "y": 225, "fontSize": 13, "fill": "#6b7280" }
+        ],
+        "formula": "S = 2(ab + ah + bh)"
+      },
+      "hint": "三对面面积之和 = 2×(ab + ah + bh)"
+    }
+  ]
+}

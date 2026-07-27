@@ -1,0 +1,19 @@
+{
+  "id": "g4-parallelogram-trapezoid",
+  "grade": 4,
+  "unit": 6,
+  "title": "平行四边形和梯形",
+  "objectives": [
+    "认识平行四边形的特征",
+    "认识梯形的特征",
+    "理解各种四边形之间的关系"
+  ],
+  "prerequisites": ["g4-parallel-perpendicular", "g4-angle-measure"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 4, "chapter": "四上第5单元" },
+    { "version": "北师大版", "grade": 4, "chapter": "四上第2单元" },
+    { "version": "苏教版", "grade": 4, "chapter": "四上第8单元" }
+  ],
+  "vizType": "shape-transform",
+  "hasFormula": false
+}

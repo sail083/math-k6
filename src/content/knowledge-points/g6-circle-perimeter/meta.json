@@ -1,0 +1,20 @@
+{
+  "id": "g6-circle-perimeter",
+  "grade": 6,
+  "unit": 4,
+  "title": "圆的周长",
+  "objectives": [
+    "理解圆周率的意义",
+    "掌握圆周长公式",
+    "能运用公式计算圆的周长"
+  ],
+  "prerequisites": [],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 6, "chapter": "六上第5单元" },
+    { "version": "北师大版", "grade": 6, "chapter": "六上第1单元" },
+    { "version": "苏教版", "grade": 6, "chapter": "六下第4单元" }
+  ],
+  "vizType": "circle-unroll",
+  "hasFormula": true,
+  "formula": "C = πd = 2πr"
+}

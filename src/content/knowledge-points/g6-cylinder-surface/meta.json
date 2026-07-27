@@ -1,0 +1,20 @@
+{
+  "id": "g6-cylinder-surface",
+  "grade": 6,
+  "unit": 8,
+  "title": "圆柱表面积",
+  "objectives": [
+    "理解圆柱表面积的含义和组成",
+    "掌握圆柱表面积公式的推导过程",
+    "能运用公式计算圆柱的表面积"
+  ],
+  "prerequisites": ["g6-circle-area", "g6-circle-perimeter", "g5-cuboid-surface"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 6, "chapter": "六下第3单元" },
+    { "version": "北师大版", "grade": 6, "chapter": "六下第1单元" },
+    { "version": "苏教版", "grade": 6, "chapter": "六下第2单元" }
+  ],
+  "vizType": "cylinder-model",
+  "hasFormula": true,
+  "formula": "S = 2πr² + 2πrh"
+}

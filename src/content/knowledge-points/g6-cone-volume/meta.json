@@ -1,0 +1,20 @@
+{
+  "id": "g6-cone-volume",
+  "grade": 6,
+  "unit": 10,
+  "title": "圆锥体积",
+  "objectives": [
+    "理解圆锥体积公式的推导过程",
+    "掌握圆锥体积公式 V = ⅓πr²h",
+    "能运用公式计算圆锥的体积"
+  ],
+  "prerequisites": ["g6-cylinder-volume", "g6-circle-area"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 6, "chapter": "六下第3单元" },
+    { "version": "北师大版", "grade": 6, "chapter": "六下第1单元" },
+    { "version": "苏教版", "grade": 6, "chapter": "六下第2单元" }
+  ],
+  "vizType": "cone-model",
+  "hasFormula": true,
+  "formula": "V = ⅓πr²h"
+}

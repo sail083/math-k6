@@ -1,0 +1,19 @@
+{
+  "id": "g5-tree-planting",
+  "grade": 5,
+  "unit": 9,
+  "title": "植树问题",
+  "objectives": [
+    "理解植树问题中棵数与间隔数的关系",
+    "掌握两端都种、两端不种、一端种一端不种三种情况",
+    "能解决实际植树问题"
+  ],
+  "prerequisites": [],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 5, "chapter": "五上第7单元" },
+    { "version": "北师大版", "grade": 5, "chapter": "五上第3单元" },
+    { "version": "苏教版", "grade": 5, "chapter": "五上第5单元" }
+  ],
+  "vizType": "number-line",
+  "hasFormula": false
+}

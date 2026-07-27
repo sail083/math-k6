@@ -1,0 +1,20 @@
+{
+  "id": "g3-mult-1digit",
+  "grade": 3,
+  "unit": 2,
+  "title": "多位数乘一位数",
+  "objectives": [
+    "理解乘法的意义和面积模型",
+    "掌握多位数乘一位数的笔算方法",
+    "能处理乘法中的进位问题"
+  ],
+  "prerequisites": ["g3-add-sub-10000"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 3, "chapter": "三上第6单元" },
+    { "version": "北师大版", "grade": 3, "chapter": "三上第4单元" },
+    { "version": "苏教版", "grade": 3, "chapter": "三上第4单元" }
+  ],
+  "vizType": "area-grid",
+  "hasFormula": true,
+  "formula": "a × b"
+}

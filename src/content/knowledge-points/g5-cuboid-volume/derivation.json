@@ -1,0 +1,219 @@
+{
+  "title": "长方体体积公式是怎么来的？",
+  "formula": "V = a × b × h",
+  "steps": [
+    {
+      "title": "用小正方体来量体积",
+      "narration": "体积就是物体占了多少空间。我们用边长1厘米的小正方体来堆，看看一个长方体能装多少个小正方体。先看一层：长4、宽3，一层铺满就是4×3=12个小正方体。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "layer1",
+            "type": "grid",
+            "x": 110,
+            "y": 80,
+            "cols": 4,
+            "rows": 3,
+            "cellSize": 40,
+            "highlightCells": [
+              {"row":0,"col":0},{"row":0,"col":1},{"row":0,"col":2},{"row":0,"col":3},
+              {"row":1,"col":0},{"row":1,"col":1},{"row":1,"col":2},{"row":1,"col":3},
+              {"row":2,"col":0},{"row":2,"col":1},{"row":2,"col":2},{"row":2,"col":3}
+            ],
+            "showCount": true,
+            "fill": "#818cf8",
+            "stroke": "#d1d5db",
+            "data": { "showLabels": true }
+          }
+        ],
+        "labels": [
+          { "text": "一层：4 × 3 = 12 个小正方体", "x": 200, "y": 245, "fontSize": 15, "fill": "#4f46e5" }
+        ]
+      },
+      "hint": "一层的小正方体个数 = 长 × 宽"
+    },
+    {
+      "title": "每层个数 = 长 × 宽",
+      "narration": "观察这一层：沿长方向有4个，沿宽方向有3个，一层就是4×3=12个。也就是说，每层的小正方体个数 = 长 × 宽 = a × b。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "layer2",
+            "type": "grid",
+            "x": 100,
+            "y": 70,
+            "cols": 4,
+            "rows": 3,
+            "cellSize": 40,
+            "highlightCells": [
+              {"row":0,"col":0},{"row":0,"col":1},{"row":0,"col":2},{"row":0,"col":3},
+              {"row":1,"col":0},{"row":1,"col":1},{"row":1,"col":2},{"row":1,"col":3},
+              {"row":2,"col":0},{"row":2,"col":1},{"row":2,"col":2},{"row":2,"col":3}
+            ],
+            "showCount": true,
+            "fill": "#818cf8",
+            "stroke": "#d1d5db",
+            "data": { "showLabels": true }
+          },
+          {
+            "id": "dim-a",
+            "type": "text",
+            "x": 180,
+            "y": 55,
+            "text": "长 a = 4",
+            "fontSize": 13,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "dim-b",
+            "type": "text",
+            "x": 75,
+            "y": 130,
+            "text": "宽 b = 3",
+            "fontSize": 13,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "每层 = a × b = 4 × 3 = 12", "x": 200, "y": 250, "fontSize": 15, "fill": "#4f46e5" }
+        ],
+        "highlight": ["layer2"]
+      },
+      "hint": "一层有 长×宽 个小正方体"
+    },
+    {
+      "title": "层数 = 高",
+      "narration": "如果有2层，总体积就是2个12。层数就是高——高是2，就有2层。所以总数 = 每层个数 × 层数 = 12 × 2 = 24。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "layer3a",
+            "type": "grid",
+            "x": 120,
+            "y": 50,
+            "cols": 4,
+            "rows": 3,
+            "cellSize": 32,
+            "highlightCells": [
+              {"row":0,"col":0},{"row":0,"col":1},{"row":0,"col":2},{"row":0,"col":3},
+              {"row":1,"col":0},{"row":1,"col":1},{"row":1,"col":2},{"row":1,"col":3},
+              {"row":2,"col":0},{"row":2,"col":1},{"row":2,"col":2},{"row":2,"col":3}
+            ],
+            "showCount": true,
+            "fill": "#818cf8",
+            "stroke": "#d1d5db"
+          },
+          {
+            "id": "layer3b",
+            "type": "grid",
+            "x": 120,
+            "y": 155,
+            "cols": 4,
+            "rows": 3,
+            "cellSize": 32,
+            "highlightCells": [
+              {"row":0,"col":0},{"row":0,"col":1},{"row":0,"col":2},{"row":0,"col":3},
+              {"row":1,"col":0},{"row":1,"col":1},{"row":1,"col":2},{"row":1,"col":3},
+              {"row":2,"col":0},{"row":2,"col":1},{"row":2,"col":2},{"row":2,"col":3}
+            ],
+            "showCount": true,
+            "fill": "#a5b4fc",
+            "stroke": "#d1d5db"
+          },
+          {
+            "id": "layer3-label-a",
+            "type": "text",
+            "x": 70,
+            "y": 90,
+            "text": "第1层",
+            "fontSize": 12,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "layer3-label-b",
+            "type": "text",
+            "x": 70,
+            "y": 195,
+            "text": "第2层",
+            "fontSize": 12,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "h-label",
+            "type": "text",
+            "x": 260,
+            "y": 122,
+            "text": "高 h = 2层",
+            "fontSize": 13,
+            "textFill": "#ef4444",
+            "data": { "anchor": "start" }
+          }
+        ],
+        "labels": [
+          { "text": "总数 = 12 × 2 = 24", "x": 200, "y": 265, "fontSize": 15, "fill": "#4f46e5" }
+        ],
+        "highlight": ["layer3a", "layer3b"]
+      },
+      "hint": "层数 = 高 h，总数 = 每层 × 层数"
+    },
+    {
+      "title": "得出公式",
+      "narration": "每层个数 = 长 × 宽 = a × b，层数 = 高 = h，所以总数 = a × b × h。这就是长方体的体积公式：V = a × b × h！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "formula-box",
+            "type": "rect",
+            "x": 70,
+            "y": 70,
+            "width": 260,
+            "height": 120,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2,
+            "radius": 8
+          },
+          {
+            "id": "f-step1",
+            "type": "text",
+            "x": 200,
+            "y": 100,
+            "text": "每层个数 = a × b",
+            "fontSize": 15,
+            "textFill": "#374151",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "f-step2",
+            "type": "text",
+            "x": 200,
+            "y": 130,
+            "text": "层数 = h",
+            "fontSize": 15,
+            "textFill": "#374151",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "f-step3",
+            "type": "text",
+            "x": 200,
+            "y": 165,
+            "text": "体积 = 每层 × 层数",
+            "fontSize": 15,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "长方体体积 = 长 × 宽 × 高", "x": 200, "y": 230, "fontSize": 14, "fill": "#374151" }
+        ],
+        "formula": "V = a × b × h"
+      },
+      "hint": "每层个数(a×b) × 层数(h) = 体积"
+    }
+  ]
+}

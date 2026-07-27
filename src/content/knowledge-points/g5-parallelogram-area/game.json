@@ -1,0 +1,56 @@
+{
+  "knowledgePointId": "g5-parallelogram-area",
+  "passThreshold": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "prompt": "平行四边形的面积公式是什么？",
+      "options": ["S = a × b", "S = a × h", "S = a + h", "S = 2(a + h)"],
+      "correctAnswer": "S = a × h",
+      "explanation": "平行四边形面积 = 底 × 高，即 S = a × h。其中 a 是底，h 是高（垂直于底的线段）。",
+      "points": 10
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "prompt": "底是 6 厘米，高是 4 厘米的平行四边形，面积是多少？",
+      "options": ["10平方厘米", "24平方厘米", "20平方厘米", "48平方厘米"],
+      "correctAnswer": "24平方厘米",
+      "explanation": "S = a × h = 6 × 4 = 24（平方厘米）。",
+      "points": 10
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "prompt": "平行四边形面积是 30 平方米，底是 6 米，高是多少？",
+      "options": ["5米", "24米", "36米", "180米"],
+      "correctAnswer": "5米",
+      "explanation": "由 S = a × h 得 h = S ÷ a = 30 ÷ 6 = 5（米）。",
+      "points": 10
+    },
+    {
+      "id": "q4",
+      "type": "choice",
+      "prompt": "推导平行四边形面积公式时，沿高剪开后把三角形平移到另一边，拼成了什么图形？",
+      "options": ["三角形", "梯形", "长方形", "正方形"],
+      "correctAnswer": "长方形",
+      "explanation": "沿高剪开，把三角形平移到另一边，拼成的长方形的长=底，宽=高，面积不变。所以 S = a × h。",
+      "points": 10
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "prompt": "下面关于平行四边形面积的说法，正确的是？",
+      "options": [
+        "面积 = 底 × 邻边",
+        "面积 = 底 × 高，高必须垂直于底",
+        "等底等高的平行四边形面积不同",
+        "面积和周长一样"
+      ],
+      "correctAnswer": "面积 = 底 × 高，高必须垂直于底",
+      "explanation": "平行四边形面积 = 底 × 高，高必须垂直于底，不能量斜边。等底等高的平行四边形面积相同。",
+      "points": 10
+    }
+  ]
+}

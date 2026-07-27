@@ -1,0 +1,19 @@
+{
+  "id": "g6-sector-chart",
+  "grade": 6,
+  "unit": 7,
+  "title": "扇形统计图",
+  "objectives": [
+    "认识扇形统计图，理解其特点和用途",
+    "能从扇形统计图中获取信息并分析数据",
+    "能根据数据选择合适的统计图"
+  ],
+  "prerequisites": ["g6-percentage", "g6-circle-area", "g4-bar-chart"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 6, "chapter": "六上第7单元" },
+    { "version": "北师大版", "grade": 6, "chapter": "六上第5单元" },
+    { "version": "苏教版", "grade": 6, "chapter": "六上第8单元" }
+  ],
+  "vizType": "pie-chart",
+  "hasFormula": false
+}

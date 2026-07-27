@@ -1,0 +1,270 @@
+{
+  "title": "圆的面积公式是怎么来的？",
+  "formula": "S = πr²",
+  "steps": [
+    {
+      "title": "认识圆",
+      "narration": "这是一个圆，半径是 r。我们想知道它的面积——能不能把圆变成我们学过的图形呢？",
+      "scene": {
+        "shapes": [
+          {
+            "id": "circle1",
+            "type": "circle",
+            "x": 200,
+            "y": 140,
+            "radius": 60,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "r-line",
+            "type": "line",
+            "x": 200,
+            "y": 140,
+            "width": 60,
+            "height": 0,
+            "stroke": "#ef4444",
+            "strokeWidth": 2
+          },
+          {
+            "id": "r-label",
+            "type": "text",
+            "x": 230,
+            "y": 128,
+            "text": "r",
+            "fontSize": 15,
+            "textFill": "#ef4444",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "圆的面积怎么算？", "x": 200, "y": 240, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "highlight": ["circle1"]
+      },
+      "hint": "能不能把圆变成学过的图形？"
+    },
+    {
+      "title": "把圆分成小扇形",
+      "narration": "把圆平均分成很多等份，每一份像一个小扇形。分得越细，扇形就越像小三角形。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "circle2",
+            "type": "circle",
+            "x": 200,
+            "y": 140,
+            "radius": 60,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "div1",
+            "type": "line",
+            "x": 200,
+            "y": 140,
+            "width": 60,
+            "height": 0,
+            "stroke": "#a5b4fc",
+            "strokeWidth": 1
+          },
+          {
+            "id": "div2",
+            "type": "line",
+            "x": 200,
+            "y": 140,
+            "width": -60,
+            "height": 0,
+            "stroke": "#a5b4fc",
+            "strokeWidth": 1
+          },
+          {
+            "id": "div3",
+            "type": "line",
+            "x": 200,
+            "y": 140,
+            "width": 0,
+            "height": 60,
+            "stroke": "#a5b4fc",
+            "strokeWidth": 1
+          },
+          {
+            "id": "div4",
+            "type": "line",
+            "x": 200,
+            "y": 140,
+            "width": 0,
+            "height": -60,
+            "stroke": "#a5b4fc",
+            "strokeWidth": 1
+          },
+          {
+            "id": "div5",
+            "type": "line",
+            "x": 200,
+            "y": 140,
+            "width": 42,
+            "height": 42,
+            "stroke": "#a5b4fc",
+            "strokeWidth": 1
+          },
+          {
+            "id": "div6",
+            "type": "line",
+            "x": 200,
+            "y": 140,
+            "width": -42,
+            "height": 42,
+            "stroke": "#a5b4fc",
+            "strokeWidth": 1
+          },
+          {
+            "id": "div7",
+            "type": "line",
+            "x": 200,
+            "y": 140,
+            "width": 42,
+            "height": -42,
+            "stroke": "#a5b4fc",
+            "strokeWidth": 1
+          },
+          {
+            "id": "div8",
+            "type": "line",
+            "x": 200,
+            "y": 140,
+            "width": -42,
+            "height": -42,
+            "stroke": "#a5b4fc",
+            "strokeWidth": 1
+          }
+        ],
+        "labels": [
+          { "text": "分成很多小扇形", "x": 200, "y": 240, "fontSize": 14, "fill": "#6b7280" }
+        ]
+      },
+      "hint": "分得越细，扇形越像小三角形"
+    },
+    {
+      "title": "拼成近似长方形",
+      "narration": "把小扇形一上一下交替排列，拼起来。等份越多，拼出的图形越接近一个长方形！长方形的长 = 圆周长的一半 = πr，宽 = 半径 r。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "rect-approx",
+            "type": "rect",
+            "x": 90,
+            "y": 100,
+            "width": 220,
+            "height": 70,
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "wavy1",
+            "type": "line",
+            "x": 90,
+            "y": 100,
+            "width": 220,
+            "height": 0,
+            "stroke": "#6366f1",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "wavy2",
+            "type": "line",
+            "x": 90,
+            "y": 170,
+            "width": 220,
+            "height": 0,
+            "stroke": "#6366f1",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "len-label",
+            "type": "text",
+            "x": 200,
+            "y": 88,
+            "text": "长 = πr（周长的一半）",
+            "fontSize": 13,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "wid-label",
+            "type": "text",
+            "x": 75,
+            "y": 135,
+            "text": "宽=r",
+            "fontSize": 13,
+            "textFill": "#ef4444",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "扇形拼成近似长方形", "x": 200, "y": 210, "fontSize": 14, "fill": "#374151" }
+        ],
+        "highlight": ["rect-approx"]
+      },
+      "hint": "长 = πr（周长的一半），宽 = r"
+    },
+    {
+      "title": "得出公式",
+      "narration": "拼成的长方形：长 = πr，宽 = r。面积 = 长 × 宽 = πr × r = πr²。所以圆的面积 = πr²！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "f-box",
+            "type": "rect",
+            "x": 60,
+            "y": 80,
+            "width": 280,
+            "height": 120,
+            "fill": "#d1fae5",
+            "stroke": "#10b981",
+            "strokeWidth": 2,
+            "radius": 8
+          },
+          {
+            "id": "f-1",
+            "type": "text",
+            "x": 200,
+            "y": 115,
+            "text": "长方形面积 = 长 × 宽",
+            "fontSize": 15,
+            "textFill": "#374151",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "f-2",
+            "type": "text",
+            "x": 200,
+            "y": 145,
+            "text": "= πr × r",
+            "fontSize": 16,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "f-3",
+            "type": "text",
+            "x": 200,
+            "y": 180,
+            "text": "= πr²",
+            "fontSize": 18,
+            "textFill": "#059669",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "圆的面积 = π × 半径²", "x": 200, "y": 230, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "formula": "S = πr²"
+      },
+      "hint": "πr × r = πr²"
+    }
+  ]
+}

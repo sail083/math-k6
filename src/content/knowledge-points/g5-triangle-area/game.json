@@ -1,0 +1,51 @@
+{
+  "knowledgePointId": "g5-triangle-area",
+  "passThreshold": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "prompt": "三角形的面积公式是什么？",
+      "options": ["S = a × h", "S = ½ × a × h", "S = a × h ÷ 4", "S = a + h"],
+      "correctAnswer": "S = ½ × a × h",
+      "explanation": "三角形面积 = 底 × 高 ÷ 2，即 S = ½ × a × h。因为两个完全相同的三角形拼成一个平行四边形，所以三角形面积是平行四边形的一半。",
+      "points": 10
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "prompt": "底是 8 厘米，高是 5 厘米的三角形，面积是多少？",
+      "options": ["40平方厘米", "20平方厘米", "13平方厘米", "26平方厘米"],
+      "correctAnswer": "20平方厘米",
+      "explanation": "S = ½ × 8 × 5 = ½ × 40 = 20（平方厘米）。先算 8 × 5 = 40，再 ÷ 2 = 20。",
+      "points": 10
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "prompt": "三角形面积是 24 平方厘米，底是 6 厘米，高是多少？",
+      "options": ["4厘米", "8厘米", "12厘米", "6厘米"],
+      "correctAnswer": "8厘米",
+      "explanation": "由 S = ½ × a × h 得 h = 2S ÷ a = 2 × 24 ÷ 6 = 48 ÷ 6 = 8（厘米）。",
+      "points": 10
+    },
+    {
+      "id": "q4",
+      "type": "choice",
+      "prompt": "推导三角形面积公式时，需要几个完全相同的三角形来拼成平行四边形？",
+      "options": ["1个", "2个", "3个", "4个"],
+      "correctAnswer": "2个",
+      "explanation": "两个完全相同的三角形，旋转其中一个 180° 后拼在一起，正好形成一个平行四边形。平行四边形面积 ÷ 2 = 三角形面积。",
+      "points": 10
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "prompt": "一个平行四边形和一个三角形等底等高，平行四边形面积是 36 平方厘米，三角形面积是？",
+      "options": ["36平方厘米", "72平方厘米", "18平方厘米", "9平方厘米"],
+      "correctAnswer": "18平方厘米",
+      "explanation": "等底等高的三角形面积是平行四边形面积的一半。36 ÷ 2 = 18（平方厘米）。",
+      "points": 10
+    }
+  ]
+}

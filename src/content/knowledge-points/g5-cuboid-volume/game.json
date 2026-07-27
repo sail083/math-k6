@@ -1,0 +1,56 @@
+{
+  "knowledgePointId": "g5-cuboid-volume",
+  "passThreshold": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "prompt": "长方体的体积公式是什么？",
+      "options": ["V = a + b + h", "V = a × b × h", "V = 2(ab + ah + bh)", "V = a × b"],
+      "correctAnswer": "V = a × b × h",
+      "explanation": "长方体体积 = 长 × 宽 × 高，即 V = a × b × h。每层有长×宽个小正方体，共高层。",
+      "points": 10
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "prompt": "长5厘米，宽4厘米，高3厘米的长方体，体积是多少？",
+      "options": ["12立方厘米", "20立方厘米", "60立方厘米", "94立方厘米"],
+      "correctAnswer": "60立方厘米",
+      "explanation": "V = 5 × 4 × 3 = 60（立方厘米）。注意体积单位是『立方』不是『平方』。",
+      "points": 10
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "prompt": "正方体边长3厘米，体积是多少？",
+      "options": ["9立方厘米", "27立方厘米", "54立方厘米", "12立方厘米"],
+      "correctAnswer": "27立方厘米",
+      "explanation": "正方体体积 = a³ = 3³ = 3 × 3 × 3 = 27（立方厘米）。",
+      "points": 10
+    },
+    {
+      "id": "q4",
+      "type": "choice",
+      "prompt": "长方体体积是120立方米，长6米，宽4米，高是多少？",
+      "options": ["5米", "4米", "6米", "20米"],
+      "correctAnswer": "5米",
+      "explanation": "由 V = a × b × h 得 h = V ÷ (a × b) = 120 ÷ (6 × 4) = 120 ÷ 24 = 5（米）。",
+      "points": 10
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "prompt": "体积和表面积的区别是？",
+      "options": [
+        "体积是外面有多大，表面积是里面有多大",
+        "体积是占了多少空间，表面积是外表面有多大",
+        "体积和表面积是同一个意思",
+        "体积单位用平方，表面积单位用立方"
+      ],
+      "correctAnswer": "体积是占了多少空间，表面积是外表面有多大",
+      "explanation": "体积是物体所占空间的大小（单位：立方），表面积是所有外面面积之和（单位：平方）。两者完全不同。",
+      "points": 10
+    }
+  ]
+}

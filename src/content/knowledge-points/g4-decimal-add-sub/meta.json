@@ -1,0 +1,19 @@
+{
+  "id": "g4-decimal-add-sub",
+  "grade": 4,
+  "unit": 11,
+  "title": "小数加减法",
+  "objectives": [
+    "掌握小数加减法的笔算方法",
+    "理解小数点对齐的重要性",
+    "能正确进行小数加减法计算"
+  ],
+  "prerequisites": ["g4-decimal-meaning", "g4-decimal-properties"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 4, "chapter": "四下第6单元" },
+    { "version": "北师大版", "grade": 4, "chapter": "四下第1单元" },
+    { "version": "苏教版", "grade": 4, "chapter": "四下第3单元" }
+  ],
+  "vizType": "number-line",
+  "hasFormula": false
+}

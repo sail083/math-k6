@@ -1,0 +1,20 @@
+{
+  "id": "g5-fraction-add-sub",
+  "grade": 5,
+  "unit": 13,
+  "title": "分数加减法",
+  "objectives": [
+    "理解同分母分数加减法的算理",
+    "掌握异分母分数加减法的方法",
+    "能正确进行分数加减法运算"
+  ],
+  "prerequisites": ["g5-fraction-meaning"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 5, "chapter": "五下第6单元" },
+    { "version": "北师大版", "grade": 5, "chapter": "五上第5单元" },
+    { "version": "苏教版", "grade": 5, "chapter": "五下第5单元" }
+  ],
+  "vizType": "fraction-pie",
+  "hasFormula": true,
+  "formula": "异分母分数加减：先通分，再加减"
+}

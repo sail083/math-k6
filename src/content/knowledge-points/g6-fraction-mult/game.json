@@ -1,0 +1,76 @@
+{
+  "knowledgePointId": "g6-fraction-mult",
+  "passThreshold": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "prompt": "1/2 × 1/3 的结果是多少？",
+      "options": [
+        "1/6",
+        "2/3",
+        "1/5",
+        "2/5"
+      ],
+      "correctAnswer": "1/6",
+      "explanation": "分子乘分子：1×1=1，分母乘分母：2×3=6，所以 1/2 × 1/3 = 1/6。",
+      "points": 10
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "prompt": "2/3 × 3/4 的结果是多少？",
+      "options": [
+        "6/12",
+        "1/2",
+        "6/7",
+        "5/12"
+      ],
+      "correctAnswer": "1/2",
+      "explanation": "2/3 × 3/4 = (2×3)/(3×4) = 6/12 = 1/2（约分）。也可以先约分：3和3约去，2和4约去2，得 1/2。",
+      "points": 10
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "prompt": "分数乘分数的计算法则是？",
+      "options": [
+        "分子加分子，分母加分母",
+        "分子乘分子做分子，分母乘分母做分母",
+        "分子乘分母，分母乘分子",
+        "分母相加，分子不变"
+      ],
+      "correctAnswer": "分子乘分子做分子，分母乘分母做分母",
+      "explanation": "分数乘分数：a/b × c/d = (a×c)/(b×d)，即分子乘分子做分子，分母乘分母做分母。",
+      "points": 10
+    },
+    {
+      "id": "q4",
+      "type": "choice",
+      "prompt": "2/5 × 3 = ？",
+      "options": [
+        "6/5",
+        "6/15",
+        "5/6",
+        "2/15"
+      ],
+      "correctAnswer": "6/5",
+      "explanation": "分数乘整数：分子乘整数，分母不变。2/5 × 3 = (2×3)/5 = 6/5。",
+      "points": 10
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "prompt": "一个数乘真分数（小于1的分数），结果比原来的数（ ）",
+      "options": [
+        "大",
+        "小",
+        "相等",
+        "无法确定"
+      ],
+      "correctAnswer": "小",
+      "explanation": "乘一个小于1的数，结果会变小。例如 10 × 1/2 = 5 < 10。",
+      "points": 10
+    }
+  ]
+}

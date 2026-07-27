@@ -1,0 +1,20 @@
+{
+  "id": "g5-equation",
+  "grade": 5,
+  "unit": 3,
+  "title": "简易方程",
+  "objectives": [
+    "理解等式的性质",
+    "掌握用等式性质解方程的方法",
+    "能列方程解决简单实际问题"
+  ],
+  "prerequisites": [],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 5, "chapter": "五上第5单元" },
+    { "version": "北师大版", "grade": 5, "chapter": "五下第7单元" },
+    { "version": "苏教版", "grade": 5, "chapter": "五上第1单元" }
+  ],
+  "vizType": "balance-scale",
+  "hasFormula": true,
+  "formula": "等式性质：a = b ⟹ a ± c = b ± c"
+}

@@ -1,0 +1,35 @@
+{
+  "id": "g6-fraction-mult",
+  "grade": 6,
+  "unit": 1,
+  "title": "分数乘法",
+  "objectives": [
+    "理解分数乘法的意义",
+    "掌握分数乘分数的计算方法",
+    "能解决分数乘法的实际问题"
+  ],
+  "prerequisites": [
+    "g5-fraction-add-sub",
+    "g5-fraction-meaning"
+  ],
+  "textbookRefs": [
+    {
+      "version": "人教版",
+      "grade": 6,
+      "chapter": "六上第1单元"
+    },
+    {
+      "version": "北师大版",
+      "grade": 6,
+      "chapter": "六上第2单元"
+    },
+    {
+      "version": "苏教版",
+      "grade": 6,
+      "chapter": "六上第3单元"
+    }
+  ],
+  "vizType": "fraction-pie",
+  "hasFormula": true,
+  "formula": "a/b × c/d = (a×c)/(b×d)"
+}

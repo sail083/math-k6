@@ -1,0 +1,20 @@
+{
+  "id": "g5-cuboid-volume",
+  "grade": 5,
+  "unit": 11,
+  "title": "长方体体积",
+  "objectives": [
+    "理解体积的含义",
+    "掌握长方体体积公式的推导过程",
+    "能运用公式计算长方体和正方体体积"
+  ],
+  "prerequisites": ["g3-rect-area"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 5, "chapter": "五下第3单元" },
+    { "version": "北师大版", "grade": 5, "chapter": "五下第2单元" },
+    { "version": "苏教版", "grade": 5, "chapter": "五下第3单元" }
+  ],
+  "vizType": "cuboid-model",
+  "hasFormula": true,
+  "formula": "V = a × b × h"
+}

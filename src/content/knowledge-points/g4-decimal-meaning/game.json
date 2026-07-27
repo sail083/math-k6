@@ -1,0 +1,76 @@
+{
+  "knowledgePointId": "g4-decimal-meaning",
+  "passThreshold": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "prompt": "3/10 写成小数是多少？",
+      "options": [
+        "0.3",
+        "0.03",
+        "3.0",
+        "0.13"
+      ],
+      "correctAnswer": "0.3",
+      "explanation": "分母是10的分数写成一位小数。3/10 = 0.3。十分位上的3表示十分之三。",
+      "points": 10
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "prompt": "0.01 是什么计数单位？",
+      "options": [
+        "十分之一",
+        "百分之一",
+        "千分之一",
+        "一"
+      ],
+      "correctAnswer": "百分之一",
+      "explanation": "0.01是百分位的计数单位，表示百分之一。0.1是十分之一，0.001是千分之一。",
+      "points": 10
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "prompt": "3.14 读作什么？",
+      "options": [
+        "三点十四",
+        "三点一四",
+        "三又十四",
+        "三百一十四"
+      ],
+      "correctAnswer": "三点一四",
+      "explanation": "读小数时，整数部分按整数读（三），小数点读点，小数部分逐位读（一四）。所以3.14读作三点一四。",
+      "points": 10
+    },
+    {
+      "id": "q4",
+      "type": "choice",
+      "prompt": "23/100 写成小数是多少？",
+      "options": [
+        "0.23",
+        "0.023",
+        "2.3",
+        "0.203"
+      ],
+      "correctAnswer": "0.23",
+      "explanation": "分母是100的分数写成两位小数。23/100 = 0.23。百分位上的2表示20/100，3表示3/100。",
+      "points": 10
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "prompt": "1 米 3 分米 = ？米",
+      "options": [
+        "1.3米",
+        "13米",
+        "0.3米",
+        "1.03米"
+      ],
+      "correctAnswer": "1.3米",
+      "explanation": "3分米 = 3/10米 = 0.3米。所以1米3分米 = 1.3米。分米对应十分位，所以是一位小数。",
+      "points": 10
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "knowledgePointId": "g4-angle-measure",
+  "passThreshold": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "prompt": "直角等于多少度？",
+      "options": ["60度", "90度", "180度", "360度"],
+      "correctAnswer": "90度",
+      "explanation": "直角正好是90度。锐角小于90度，钝角大于90度小于180度，平角180度，周角360度。",
+      "points": 10
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "prompt": "一个角是 45°，它是什么角？",
+      "options": ["锐角", "直角", "钝角", "平角"],
+      "correctAnswer": "锐角",
+      "explanation": "小于90度的角是锐角。45° < 90°，所以45°是锐角。",
+      "points": 10
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "prompt": "1 周角 = ？个直角",
+      "options": ["2个", "3个", "4个", "6个"],
+      "correctAnswer": "4个",
+      "explanation": "1周角=360度，1直角=90度，360÷90=4。所以1周角=2平角=4直角。",
+      "points": 10
+    },
+    {
+      "id": "q4",
+      "type": "choice",
+      "prompt": "量角时，量角器的中心点应该对准哪里？",
+      "options": [
+        "角的一条边的中点",
+        "角的顶点",
+        "角的开口中间",
+        "随便放就行"
+      ],
+      "correctAnswer": "角的顶点",
+      "explanation": "量角三步走：中心对顶点、0°线对一边、读另一边的刻度。量角器的中心点必须对准角的顶点。",
+      "points": 10
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "prompt": "钟表上 3 点整，时针和分针成的角是什么角？",
+      "options": ["锐角", "直角", "钝角", "平角"],
+      "correctAnswer": "直角",
+      "explanation": "3点整时，时针指3，分针指12，它们之间的夹角正好是90度，是直角。",
+      "points": 10
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "g4-triangle",
+  "grade": 4,
+  "unit": 12,
+  "title": "三角形（分类与内角和）",
+  "objectives": [
+    "认识三角形及三角形的分类",
+    "理解三角形内角和为180度",
+    "能运用三角形内角和解决问题"
+  ],
+  "prerequisites": [
+    "g4-angle-measure",
+    "g4-parallel-perpendicular"
+  ],
+  "textbookRefs": [
+    {
+      "version": "人教版",
+      "grade": 4,
+      "chapter": "四下第5单元"
+    },
+    {
+      "version": "北师大版",
+      "grade": 4,
+      "chapter": "四下第2单元"
+    },
+    {
+      "version": "苏教版",
+      "grade": 4,
+      "chapter": "四下第7单元"
+    }
+  ],
+  "vizType": "shape-transform",
+  "hasFormula": true,
+  "formula": "内角和 = 180°"
+}

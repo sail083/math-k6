@@ -1,0 +1,264 @@
+{
+  "title": "平行四边形面积公式是怎么来的？",
+  "formula": "S = a × h",
+  "steps": [
+    {
+      "title": "认识平行四边形",
+      "narration": "这是一个平行四边形，它的底是 a，高是 h。我们想知道它的面积，但还不会直接算。能不能把它变成长方形呢？",
+      "scene": {
+        "shapes": [
+          {
+            "id": "para",
+            "type": "parallelogram",
+            "points": [{"x":120,"y":200},{"x":240,"y":200},{"x":270,"y":120},{"x":150,"y":120}],
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "base-label",
+            "type": "text",
+            "x": 180,
+            "y": 220,
+            "text": "底 a",
+            "fontSize": 15,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "height-label",
+            "type": "text",
+            "x": 138,
+            "y": 160,
+            "text": "高 h",
+            "fontSize": 14,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "end" }
+          }
+        ],
+        "labels": [
+          { "text": "怎么算平行四边形的面积？", "x": 200, "y": 255, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "highlight": ["para"]
+      },
+      "hint": "能不能把平行四边形变成长方形？"
+    },
+    {
+      "title": "沿高画一条线",
+      "narration": "从左上角的顶点向底边画一条垂直的线——这就是高。这条高把平行四边形分成了两部分：左边一个三角形，右边一个梯形。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "para2",
+            "type": "parallelogram",
+            "points": [{"x":120,"y":200},{"x":240,"y":200},{"x":270,"y":120},{"x":150,"y":120}],
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "height-line",
+            "type": "line",
+            "x": 150,
+            "y": 120,
+            "width": 0,
+            "height": 80,
+            "stroke": "#ef4444",
+            "strokeWidth": 2
+          },
+          {
+            "id": "h-label2",
+            "type": "text",
+            "x": 140,
+            "y": 160,
+            "text": "h",
+            "fontSize": 14,
+            "textFill": "#ef4444",
+            "data": { "anchor": "end" }
+          },
+          {
+            "id": "base-label2",
+            "type": "text",
+            "x": 180,
+            "y": 220,
+            "text": "a",
+            "fontSize": 15,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "沿高剪开", "x": 200, "y": 255, "fontSize": 14, "fill": "#ef4444" }
+        ],
+        "highlight": ["height-line"]
+      },
+      "hint": "高把平行四边形分成三角形和梯形"
+    },
+    {
+      "title": "剪开成两部分",
+      "narration": "沿着高剪开后，左边是一个直角三角形，右边是一个直角梯形。看，左边这个三角形和右边缺掉的部分形状一样！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "triangle-left",
+            "type": "triangle",
+            "points": [{"x":120,"y":200},{"x":150,"y":120},{"x":150,"y":200}],
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "trapezoid-right",
+            "type": "trapezoid",
+            "points": [{"x":150,"y":200},{"x":240,"y":200},{"x":270,"y":120},{"x":150,"y":120}],
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "tri-label",
+            "type": "text",
+            "x": 138,
+            "y": 180,
+            "text": "三角形",
+            "fontSize": 11,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "trap-label",
+            "type": "text",
+            "x": 205,
+            "y": 160,
+            "text": "梯形",
+            "fontSize": 11,
+            "textFill": "#1e3a8a",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "左边三角形和右边缺口形状相同", "x": 200, "y": 255, "fontSize": 13, "fill": "#6b7280" }
+        ],
+        "highlight": ["triangle-left"]
+      },
+      "hint": "左边的三角形可以填到右边的缺口"
+    },
+    {
+      "title": "把三角形移到右边",
+      "narration": "把左边的三角形平移到右边，刚好填满右边的缺口！拼出来的图形有四个直角——是一个长方形！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "rect-result",
+            "type": "rect",
+            "x": 150,
+            "y": 120,
+            "width": 120,
+            "height": 80,
+            "fill": "#d1fae5",
+            "stroke": "#10b981",
+            "strokeWidth": 2
+          },
+          {
+            "id": "moved-tri",
+            "type": "triangle",
+            "points": [{"x":270,"y":120},{"x":240,"y":200},{"x":270,"y":200}],
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2,
+            "opacity": 0.6
+          },
+          {
+            "id": "arrow-move",
+            "type": "arrow",
+            "x": 140,
+            "y": 160,
+            "width": 50,
+            "height": 0,
+            "stroke": "#ef4444",
+            "strokeWidth": 2
+          },
+          {
+            "id": "move-text",
+            "type": "text",
+            "x": 165,
+            "y": 145,
+            "text": "平移",
+            "fontSize": 12,
+            "textFill": "#ef4444",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "三角形移到右边 → 拼成长方形！", "x": 200, "y": 255, "fontSize": 14, "fill": "#059669" }
+        ],
+        "highlight": ["rect-result"]
+      },
+      "hint": "拼出来的长方形：长 = 底a，宽 = 高h"
+    },
+    {
+      "title": "得出公式",
+      "narration": "拼成的长方形，长就是平行四边形的底 a，宽就是平行四边形的高 h。因为面积没变，所以平行四边形面积 = 底 × 高 = a × h！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "final-rect",
+            "type": "rect",
+            "x": 150,
+            "y": 120,
+            "width": 120,
+            "height": 80,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "len-line",
+            "type": "line",
+            "x": 150,
+            "y": 210,
+            "width": 120,
+            "height": 0,
+            "stroke": "#a5b4fc",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "len-text",
+            "type": "text",
+            "x": 210,
+            "y": 223,
+            "text": "长 = a（底）",
+            "fontSize": 13,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "wid-line",
+            "type": "line",
+            "x": 138,
+            "y": 120,
+            "width": 0,
+            "height": 80,
+            "stroke": "#a5b4fc",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "wid-text",
+            "type": "text",
+            "x": 125,
+            "y": 160,
+            "text": "宽=h",
+            "fontSize": 13,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "平行四边形面积 = 长方形面积", "x": 200, "y": 255, "fontSize": 14, "fill": "#374151" }
+        ],
+        "formula": "S = a × h"
+      },
+      "hint": "底 × 高 = 长 × 宽 = 面积"
+    }
+  ]
+}

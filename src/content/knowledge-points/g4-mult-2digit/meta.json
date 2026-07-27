@@ -1,0 +1,20 @@
+{
+  "id": "g4-mult-2digit",
+  "grade": 4,
+  "unit": 2,
+  "title": "三位数乘两位数",
+  "objectives": [
+    "掌握三位数乘两位数的笔算方法",
+    "理解用面积模型拆分乘法的原理",
+    "能正确处理乘法中的进位"
+  ],
+  "prerequisites": ["g3-mult-1digit", "g4-large-numbers"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 4, "chapter": "四上第4单元" },
+    { "version": "北师大版", "grade": 4, "chapter": "四上第3单元" },
+    { "version": "苏教版", "grade": 4, "chapter": "四上第3单元" }
+  ],
+  "vizType": "area-grid",
+  "hasFormula": true,
+  "formula": "a × b = a × (十位 + 个位)"
+}

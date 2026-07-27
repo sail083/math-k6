@@ -1,0 +1,252 @@
+{
+  "title": "圆的周长公式是怎么来的？",
+  "formula": "C = πd = 2πr",
+  "steps": [
+    {
+      "title": "认识圆",
+      "narration": "这是一个圆。从圆心到边上的距离叫半径 r，穿过圆心的直线叫直径 d，d = 2r。围成圆的曲线有多长呢？这就是圆的周长 C。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "circle1",
+            "type": "circle",
+            "x": 200,
+            "y": 130,
+            "radius": 55,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "diameter",
+            "type": "line",
+            "x": 145,
+            "y": 130,
+            "width": 110,
+            "height": 0,
+            "stroke": "#ef4444",
+            "strokeWidth": 2
+          },
+          {
+            "id": "center-dot",
+            "type": "circle",
+            "x": 200,
+            "y": 130,
+            "radius": 3,
+            "fill": "#374151",
+            "stroke": "none"
+          },
+          {
+            "id": "d-label",
+            "type": "text",
+            "x": 200,
+            "y": 115,
+            "text": "d（直径）",
+            "fontSize": 13,
+            "textFill": "#ef4444",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "r-label",
+            "type": "text",
+            "x": 170,
+            "y": 155,
+            "text": "r",
+            "fontSize": 13,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "圆的周长怎么算？", "x": 200, "y": 230, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "highlight": ["circle1"]
+      },
+      "hint": "周长就是围成圆的曲线长度"
+    },
+    {
+      "title": "滚动法量周长",
+      "narration": "怎么量周长呢？把圆放在直尺上滚一圈！圆滚过的距离就是周长。看，圆从左边滚到右边，滚过的距离正好是周长 C。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "ground",
+            "type": "line",
+            "x": 50,
+            "y": 190,
+            "width": 300,
+            "height": 0,
+            "stroke": "#6b7280",
+            "strokeWidth": 2
+          },
+          {
+            "id": "start-circle",
+            "type": "circle",
+            "x": 100,
+            "y": 150,
+            "radius": 40,
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2,
+            "opacity": 0.5
+          },
+          {
+            "id": "end-circle",
+            "type": "circle",
+            "x": 300,
+            "y": 150,
+            "radius": 40,
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "roll-arrow",
+            "type": "arrow",
+            "x": 150,
+            "y": 120,
+            "width": 100,
+            "height": 0,
+            "stroke": "#ef4444",
+            "strokeWidth": 2
+          },
+          {
+            "id": "roll-label",
+            "type": "text",
+            "x": 200,
+            "y": 105,
+            "text": "滚一圈",
+            "fontSize": 13,
+            "textFill": "#ef4444",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "滚过的距离 = 周长 C", "x": 200, "y": 230, "fontSize": 14, "fill": "#374151" }
+        ],
+        "highlight": ["end-circle"]
+      },
+      "hint": "圆滚一圈的距离就是周长"
+    },
+    {
+      "title": "发现：C ÷ d = π",
+      "narration": "科学家们发现了一个惊人的规律：不管圆多大，周长 ÷ 直径 的结果总是同一个数——大约 3.14！这个数叫圆周率，用 π 表示。所以 C ÷ d = π。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "ratio-box",
+            "type": "rect",
+            "x": 60,
+            "y": 70,
+            "width": 280,
+            "height": 140,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2,
+            "radius": 8
+          },
+          {
+            "id": "ratio-title",
+            "type": "text",
+            "x": 200,
+            "y": 100,
+            "text": "圆周率 π",
+            "fontSize": 18,
+            "textFill": "#4338ca",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "ratio-formula",
+            "type": "text",
+            "x": 200,
+            "y": 135,
+            "text": "C ÷ d = π",
+            "fontSize": 18,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "ratio-value",
+            "type": "text",
+            "x": 200,
+            "y": 165,
+            "text": "π ≈ 3.14",
+            "fontSize": 16,
+            "textFill": "#374151",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "ratio-note",
+            "type": "text",
+            "x": 200,
+            "y": 195,
+            "text": "（π是无限不循环小数）",
+            "fontSize": 12,
+            "textFill": "#6b7280",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "所有圆的 C÷d 都等于 π", "x": 200, "y": 240, "fontSize": 14, "fill": "#4f46e5" }
+        ],
+        "highlight": ["ratio-formula"]
+      },
+      "hint": "不管圆多大，C÷d 总是 π"
+    },
+    {
+      "title": "得出公式",
+      "narration": "由 C ÷ d = π，得 C = π × d。又因为 d = 2r，所以 C = π × 2r = 2πr。这就是圆的周长公式！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "f-box",
+            "type": "rect",
+            "x": 60,
+            "y": 80,
+            "width": 280,
+            "height": 120,
+            "fill": "#d1fae5",
+            "stroke": "#10b981",
+            "strokeWidth": 2,
+            "radius": 8
+          },
+          {
+            "id": "f-1",
+            "type": "text",
+            "x": 200,
+            "y": 115,
+            "text": "C = π × d",
+            "fontSize": 18,
+            "textFill": "#059669",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "f-2",
+            "type": "text",
+            "x": 200,
+            "y": 150,
+            "text": "d = 2r",
+            "fontSize": 15,
+            "textFill": "#374151",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "f-3",
+            "type": "text",
+            "x": 200,
+            "y": 185,
+            "text": "C = 2πr",
+            "fontSize": 18,
+            "textFill": "#059669",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "圆的周长公式", "x": 200, "y": 230, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "formula": "C = πd = 2πr"
+      },
+      "hint": "C = πd，因为 d=2r，所以 C = 2πr"
+    }
+  ]
+}

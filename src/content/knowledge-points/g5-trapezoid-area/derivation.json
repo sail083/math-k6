@@ -1,0 +1,289 @@
+{
+  "title": "梯形面积公式是怎么来的？",
+  "formula": "S = ½ × (a + b) × h",
+  "steps": [
+    {
+      "title": "认识梯形",
+      "narration": "这是一个梯形，上底是 a，下底是 b，高是 h。上底和下底是平行的两条边。我们想知道它的面积——还是用拼一拼的方法！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "trap1",
+            "type": "trapezoid",
+            "points": [{"x":120,"y":200},{"x":240,"y":200},{"x":210,"y":110},{"x":150,"y":110}],
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "top-label",
+            "type": "text",
+            "x": 180,
+            "y": 98,
+            "text": "上底 a",
+            "fontSize": 13,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "bottom-label",
+            "type": "text",
+            "x": 180,
+            "y": 218,
+            "text": "下底 b",
+            "fontSize": 13,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "h-line1",
+            "type": "line",
+            "x": 180,
+            "y": 110,
+            "width": 0,
+            "height": 90,
+            "stroke": "#ef4444",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "h-label1",
+            "type": "text",
+            "x": 168,
+            "y": 155,
+            "text": "高 h",
+            "fontSize": 12,
+            "textFill": "#ef4444",
+            "data": { "anchor": "end" }
+          }
+        ],
+        "labels": [
+          { "text": "梯形面积怎么算？", "x": 200, "y": 255, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "highlight": ["trap1"]
+      },
+      "hint": "上底和下底是平行的两条边"
+    },
+    {
+      "title": "复制一个相同的梯形",
+      "narration": "我们再拿一个完全一样的梯形。现在有两个完全相同的梯形了，一个蓝色，一个黄色。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "trap2a",
+            "type": "trapezoid",
+            "points": [{"x":70,"y":200},{"x":170,"y":200},{"x":150,"y":120},{"x":90,"y":120}],
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "trap2b",
+            "type": "trapezoid",
+            "points": [{"x":230,"y":200},{"x":330,"y":200},{"x":310,"y":120},{"x":250,"y":120}],
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "label2a",
+            "type": "text",
+            "x": 120,
+            "y": 215,
+            "text": "梯形①",
+            "fontSize": 11,
+            "textFill": "#1e3a8a",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "label2b",
+            "type": "text",
+            "x": 280,
+            "y": 215,
+            "text": "梯形②",
+            "fontSize": 11,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "两个完全相同的梯形", "x": 200, "y": 255, "fontSize": 14, "fill": "#374151" }
+        ],
+        "highlight": ["trap2a", "trap2b"]
+      },
+      "hint": "两个梯形完全一样"
+    },
+    {
+      "title": "翻转梯形②",
+      "narration": "把梯形②翻转 180°（倒过来），让它的上底朝下、下底朝上。然后把它和梯形①拼在一起。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "rot-arrow",
+            "type": "arrow",
+            "x": 250,
+            "y": 160,
+            "width": -40,
+            "height": 0,
+            "stroke": "#ef4444",
+            "strokeWidth": 2
+          },
+          {
+            "id": "rot-text",
+            "type": "text",
+            "x": 230,
+            "y": 145,
+            "text": "翻转180°",
+            "fontSize": 11,
+            "textFill": "#ef4444",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "rot-trap2a",
+            "type": "trapezoid",
+            "points": [{"x":120,"y":200},{"x":240,"y":200},{"x":210,"y":110},{"x":150,"y":110}],
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2,
+            "opacity": 0.4
+          },
+          {
+            "id": "rot-trap2b",
+            "type": "trapezoid",
+            "points": [{"x":120,"y":200},{"x":240,"y":200},{"x":210,"y":290},{"x":150,"y":290}],
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2,
+            "opacity": 0.4
+          }
+        ],
+        "labels": [
+          { "text": "翻转后准备拼接", "x": 200, "y": 255, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "highlight": ["rot-trap2b"]
+      },
+      "hint": "翻转后上下底的朝向相反"
+    },
+    {
+      "title": "拼成平行四边形",
+      "narration": "两个梯形拼在一起，形成了一个平行四边形！这个平行四边形的底 = 上底 + 下底 = a + b，高 = 梯形的高 h。它的面积等于两个梯形的面积之和。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "para-trap-a",
+            "type": "trapezoid",
+            "points": [{"x":120,"y":200},{"x":300,"y":200},{"x":270,"y":110},{"x":150,"y":110}],
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2,
+            "opacity": 0.7
+          },
+          {
+            "id": "para-trap-b",
+            "type": "trapezoid",
+            "points": [{"x":150,"y":110},{"x":270,"y":110},{"x":300,"y":200},{"x":120,"y":200}],
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2,
+            "opacity": 0.7
+          },
+          {
+            "id": "base-label4",
+            "type": "text",
+            "x": 210,
+            "y": 218,
+            "text": "底 = a + b",
+            "fontSize": 14,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "h-line4",
+            "type": "line",
+            "x": 180,
+            "y": 110,
+            "width": 0,
+            "height": 90,
+            "stroke": "#ef4444",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "h-label4",
+            "type": "text",
+            "x": 168,
+            "y": 155,
+            "text": "高 h",
+            "fontSize": 12,
+            "textFill": "#ef4444",
+            "data": { "anchor": "end" }
+          }
+        ],
+        "labels": [
+          { "text": "平行四边形面积 = (a + b) × h", "x": 200, "y": 255, "fontSize": 14, "fill": "#4f46e5" }
+        ],
+        "highlight": ["para-trap-a", "para-trap-b"]
+      },
+      "hint": "平行四边形的底 = 上底 + 下底"
+    },
+    {
+      "title": "得出公式",
+      "narration": "平行四边形的面积 = (上底 + 下底) × 高，这是两个梯形的面积。所以一个梯形的面积 = (上底 + 下底) × 高 ÷ 2，即 S = ½ × (a + b) × h！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "final-trap",
+            "type": "trapezoid",
+            "points": [{"x":130,"y":200},{"x":270,"y":200},{"x":240,"y":110},{"x":160,"y":110}],
+            "fill": "#d1fae5",
+            "stroke": "#10b981",
+            "strokeWidth": 2
+          },
+          {
+            "id": "final-top",
+            "type": "text",
+            "x": 200,
+            "y": 98,
+            "text": "上底 a",
+            "fontSize": 13,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "final-bottom",
+            "type": "text",
+            "x": 200,
+            "y": 218,
+            "text": "下底 b",
+            "fontSize": 13,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "final-h-line",
+            "type": "line",
+            "x": 200,
+            "y": 110,
+            "width": 0,
+            "height": 90,
+            "stroke": "#ef4444",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "final-h-label",
+            "type": "text",
+            "x": 188,
+            "y": 155,
+            "text": "高 h",
+            "fontSize": 12,
+            "textFill": "#ef4444",
+            "data": { "anchor": "end" }
+          }
+        ],
+        "labels": [
+          { "text": "梯形面积 = 平行四边形面积 ÷ 2", "x": 200, "y": 255, "fontSize": 14, "fill": "#374151" }
+        ],
+        "formula": "S = ½ × (a + b) × h"
+      },
+      "hint": "一个梯形 = 平行四边形的一半，所以要 ÷ 2"
+    }
+  ]
+}

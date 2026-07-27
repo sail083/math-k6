@@ -1,0 +1,330 @@
+{
+  "title": "圆锥体积公式是怎么来的？",
+  "formula": "V = ⅓πr²h",
+  "steps": [
+    {
+      "title": "等底等高的圆锥和圆柱",
+      "narration": "左边是一个圆锥，右边是一个圆柱。它们的底面半径相同（都是 r），高也相同（都是 h），叫做等底等高。它们之间有什么关系呢？",
+      "scene": {
+        "shapes": [
+          {
+            "id": "cone-tri",
+            "type": "triangle",
+            "points": [ {"x": 130, "y": 80}, {"x": 90, "y": 210}, {"x": 170, "y": 210} ],
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "cone-base",
+            "type": "circle",
+            "x": 130,
+            "y": 210,
+            "radius": 40,
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "cone-label",
+            "type": "text",
+            "x": 130,
+            "y": 235,
+            "text": "圆锥",
+            "fontSize": 13,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "cyl-top",
+            "type": "circle",
+            "x": 280,
+            "y": 90,
+            "radius": 40,
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "cyl-left",
+            "type": "line",
+            "x": 240,
+            "y": 90,
+            "width": 0,
+            "height": 120,
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "cyl-right",
+            "type": "line",
+            "x": 320,
+            "y": 90,
+            "width": 0,
+            "height": 120,
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "cyl-bot",
+            "type": "circle",
+            "x": 280,
+            "y": 210,
+            "radius": 40,
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "cyl-label",
+            "type": "text",
+            "x": 280,
+            "y": 235,
+            "text": "圆柱",
+            "fontSize": 13,
+            "textFill": "#1e40af",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "等底等高的圆锥和圆柱", "x": 200, "y": 265, "fontSize": 14, "fill": "#374151" }
+        ]
+      },
+      "hint": "它们底面相同、高也相同"
+    },
+    {
+      "title": "沙子实验：倒1次",
+      "narration": "用圆锥装满沙子，倒进圆柱里。倒 1 次后，圆柱里大约装了 ⅓ 的沙子。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "cone-tri2",
+            "type": "triangle",
+            "points": [ {"x": 130, "y": 80}, {"x": 90, "y": 210}, {"x": 170, "y": 210} ],
+            "fill": "none",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2,
+            "opacity": 0.4
+          },
+          {
+            "id": "cone-base2",
+            "type": "circle",
+            "x": 130,
+            "y": 210,
+            "radius": 40,
+            "fill": "none",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2,
+            "opacity": 0.4
+          },
+          {
+            "id": "arrow1",
+            "type": "arrow",
+            "x": 175,
+            "y": 150,
+            "width": 60,
+            "height": 0,
+            "stroke": "#ef4444",
+            "strokeWidth": 2
+          },
+          {
+            "id": "cyl-top2",
+            "type": "circle",
+            "x": 280,
+            "y": 90,
+            "radius": 40,
+            "fill": "none",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "cyl-left2",
+            "type": "line",
+            "x": 240,
+            "y": 90,
+            "width": 0,
+            "height": 120,
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "cyl-right2",
+            "type": "line",
+            "x": 320,
+            "y": 90,
+            "width": 0,
+            "height": 120,
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "cyl-bot2",
+            "type": "circle",
+            "x": 280,
+            "y": 210,
+            "radius": 40,
+            "fill": "none",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "sand1",
+            "type": "rect",
+            "x": 240,
+            "y": 170,
+            "width": 80,
+            "height": 40,
+            "fill": "#fbbf24",
+            "stroke": "none",
+            "opacity": 0.7
+          },
+          {
+            "id": "count1",
+            "type": "text",
+            "x": 280,
+            "y": 130,
+            "text": "第 1 次",
+            "fontSize": 14,
+            "textFill": "#ef4444",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "倒了1次，约装满 ⅓", "x": 200, "y": 265, "fontSize": 14, "fill": "#374151" }
+        ]
+      },
+      "hint": "倒1次约装满圆柱的 ⅓"
+    },
+    {
+      "title": "倒满3次",
+      "narration": "继续倒第 2 次、第 3 次。倒了 3 次后，圆柱正好被装满！所以 3 个圆锥的体积 = 1 个圆柱的体积。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "cyl-top3",
+            "type": "circle",
+            "x": 200,
+            "y": 90,
+            "radius": 45,
+            "fill": "#fbbf24",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2,
+            "opacity": 0.7
+          },
+          {
+            "id": "cyl-left3",
+            "type": "line",
+            "x": 155,
+            "y": 90,
+            "width": 0,
+            "height": 120,
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "cyl-right3",
+            "type": "line",
+            "x": 245,
+            "y": 90,
+            "width": 0,
+            "height": 120,
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "cyl-bot3",
+            "type": "circle",
+            "x": 200,
+            "y": 210,
+            "radius": 45,
+            "fill": "#fbbf24",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2,
+            "opacity": 0.7
+          },
+          {
+            "id": "sand-fill",
+            "type": "rect",
+            "x": 155,
+            "y": 90,
+            "width": 90,
+            "height": 120,
+            "fill": "#fbbf24",
+            "stroke": "none",
+            "opacity": 0.7
+          },
+          {
+            "id": "count3",
+            "type": "text",
+            "x": 200,
+            "y": 145,
+            "text": "3次装满！",
+            "fontSize": 16,
+            "textFill": "#ef4444",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "3个圆锥 = 1个圆柱", "x": 200, "y": 265, "fontSize": 15, "fill": "#374151" }
+        ],
+        "highlight": ["sand-fill"]
+      },
+      "hint": "3个圆锥的沙子正好装满1个圆柱"
+    },
+    {
+      "title": "得出公式",
+      "narration": "因为 3 个圆锥体积 = 1 个圆柱体积，所以圆锥体积 = 圆柱体积 ÷ 3 = πr²h ÷ 3 = ⅓πr²h。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "f-box",
+            "type": "rect",
+            "x": 60,
+            "y": 75,
+            "width": 280,
+            "height": 130,
+            "fill": "#d1fae5",
+            "stroke": "#10b981",
+            "strokeWidth": 2,
+            "radius": 8
+          },
+          {
+            "id": "f-1",
+            "type": "text",
+            "x": 200,
+            "y": 110,
+            "text": "圆锥体积 = 圆柱体积 ÷ 3",
+            "fontSize": 14,
+            "textFill": "#374151",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "f-2",
+            "type": "text",
+            "x": 200,
+            "y": 140,
+            "text": "= πr²h ÷ 3",
+            "fontSize": 16,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "f-3",
+            "type": "text",
+            "x": 200,
+            "y": 178,
+            "text": "= ⅓πr²h",
+            "fontSize": 20,
+            "textFill": "#059669",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "圆锥体积 = ⅓ × 底面积 × 高", "x": 200, "y": 235, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "formula": "V = ⅓πr²h"
+      },
+      "hint": "圆锥体积 = 圆柱体积 ÷ 3 = ⅓πr²h"
+    }
+  ]
+}

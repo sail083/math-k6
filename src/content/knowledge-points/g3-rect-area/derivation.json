@@ -1,0 +1,229 @@
+{
+  "title": "长方形面积公式是怎么来的？",
+  "formula": "S = a × b",
+  "steps": [
+    {
+      "title": "认识面积",
+      "narration": "面积就是图形内部有多大。我们想知道这个长方形里面能装多少东西——用一个个小正方形铺满它，数一数有多少个，面积就是多少。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "rect-outline",
+            "type": "rect",
+            "x": 120,
+            "y": 90,
+            "width": 160,
+            "height": 120,
+            "fill": "none",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "question-mark",
+            "type": "text",
+            "x": 200,
+            "y": 150,
+            "text": "?",
+            "fontSize": 40,
+            "textFill": "#c7d2fe",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "长方形", "x": 200, "y": 75, "fontSize": 14, "fill": "#6b7280" },
+          { "text": "里面能铺多少个小正方形？", "x": 200, "y": 245, "fontSize": 13, "fill": "#9ca3af" }
+        ],
+        "highlight": ["rect-outline"]
+      },
+      "hint": "面积就是图形里面能铺多少个单位正方形"
+    },
+    {
+      "title": "数格子",
+      "narration": "我们用 1 平方厘米的小正方形铺满这个长方形。一个一个数：1、2、3……4、5、6……一直数到 12，一共 12 个！所以面积是 12 平方厘米。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "counting-grid",
+            "type": "grid",
+            "x": 120,
+            "y": 90,
+            "cols": 4,
+            "rows": 3,
+            "cellSize": 40,
+            "highlightCells": [
+              { "row": 0, "col": 0 }, { "row": 0, "col": 1 }, { "row": 0, "col": 2 }, { "row": 0, "col": 3 },
+              { "row": 1, "col": 0 }, { "row": 1, "col": 1 }, { "row": 1, "col": 2 }, { "row": 1, "col": 3 },
+              { "row": 2, "col": 0 }, { "row": 2, "col": 1 }, { "row": 2, "col": 2 }, { "row": 2, "col": 3 }
+            ],
+            "showCount": true,
+            "fill": "#818cf8",
+            "stroke": "#d1d5db",
+            "data": { "animated": true }
+          }
+        ],
+        "labels": [
+          { "text": "面积 = 12 平方厘米", "x": 200, "y": 245, "fontSize": 16, "fill": "#4f46e5" }
+        ]
+      },
+      "hint": "一个一个数：1, 2, 3, ... 12"
+    },
+    {
+      "title": "发现规律",
+      "narration": "仔细观察：每行有 4 个小正方形，一共有 3 行。4 乘 3 等于 12，正好就是面积！我们不需要再一个一个数，用乘法就能算出来。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "pattern-grid",
+            "type": "grid",
+            "x": 106,
+            "y": 76,
+            "cols": 4,
+            "rows": 3,
+            "cellSize": 40,
+            "highlightCells": [
+              { "row": 0, "col": 0 }, { "row": 0, "col": 1 }, { "row": 0, "col": 2 }, { "row": 0, "col": 3 },
+              { "row": 1, "col": 0 }, { "row": 1, "col": 1 }, { "row": 1, "col": 2 }, { "row": 1, "col": 3 },
+              { "row": 2, "col": 0 }, { "row": 2, "col": 1 }, { "row": 2, "col": 2 }, { "row": 2, "col": 3 }
+            ],
+            "showCount": true,
+            "fill": "#818cf8",
+            "stroke": "#d1d5db",
+            "data": { "showLabels": true }
+          }
+        ],
+        "labels": [
+          { "text": "每行 4 个 × 3 行 = 12", "x": 200, "y": 255, "fontSize": 16, "fill": "#4f46e5" }
+        ]
+      },
+      "hint": "每行的个数 × 行数 = 总数"
+    },
+    {
+      "title": "归纳公式",
+      "narration": "每行的个数就是长方形的“长”（a），行数就是长方形的“宽”（b）。所以面积 = 长 × 宽，也就是 S = a × b。以后不管长方形多大，都不用再数格子了！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "formula-rect",
+            "type": "rect",
+            "x": 120,
+            "y": 90,
+            "width": 160,
+            "height": 120,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "dim-a-line",
+            "type": "line",
+            "x": 120,
+            "y": 80,
+            "width": 160,
+            "height": 0,
+            "stroke": "#a5b4fc",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "dim-a-text",
+            "type": "text",
+            "x": 200,
+            "y": 68,
+            "text": "a（长）",
+            "fontSize": 14,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "dim-b-line",
+            "type": "line",
+            "x": 108,
+            "y": 90,
+            "width": 0,
+            "height": 120,
+            "stroke": "#a5b4fc",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "dim-b-text",
+            "type": "text",
+            "x": 92,
+            "y": 145,
+            "text": "b",
+            "fontSize": 14,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "dim-b-sub",
+            "type": "text",
+            "x": 92,
+            "y": 162,
+            "text": "（宽）",
+            "fontSize": 11,
+            "textFill": "#9ca3af",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "面积 = 长 × 宽", "x": 200, "y": 245, "fontSize": 15, "fill": "#374151" }
+        ],
+        "formula": "S = a × b"
+      },
+      "hint": "每行个数 = 长(a)，行数 = 宽(b)"
+    },
+    {
+      "title": "正方形面积",
+      "narration": "正方形是特殊的长方形——它的长和宽一样长，都叫“边长”（a）。把长 = 宽 = a 代入公式，就得到正方形面积 = a × a。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "square-rect",
+            "type": "rect",
+            "x": 140,
+            "y": 90,
+            "width": 120,
+            "height": 120,
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "dim-top-line",
+            "type": "line",
+            "x": 140,
+            "y": 80,
+            "width": 120,
+            "height": 0,
+            "stroke": "#fbbf24",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "dim-top-text",
+            "type": "text",
+            "x": 200,
+            "y": 68,
+            "text": "a（边长）",
+            "fontSize": 14,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "dim-left-text",
+            "type": "text",
+            "x": 122,
+            "y": 150,
+            "text": "a",
+            "fontSize": 14,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "正方形：长 = 宽 = 边长 a", "x": 200, "y": 245, "fontSize": 14, "fill": "#92400e" }
+        ],
+        "formula": "S = a × a"
+      },
+      "hint": "正方形是长和宽相等的特殊长方形"
+    }
+  ]
+}

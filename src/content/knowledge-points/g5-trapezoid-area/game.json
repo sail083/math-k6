@@ -1,0 +1,51 @@
+{
+  "knowledgePointId": "g5-trapezoid-area",
+  "passThreshold": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "prompt": "梯形的面积公式是什么？",
+      "options": ["S = a × h", "S = ½ × (a + b) × h", "S = (a + b) × h", "S = ½ × a × b"],
+      "correctAnswer": "S = ½ × (a + b) × h",
+      "explanation": "梯形面积 = (上底 + 下底) × 高 ÷ 2，即 S = ½ × (a + b) × h。两个完全相同的梯形拼成平行四边形，底 = 上底 + 下底。",
+      "points": 10
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "prompt": "上底 3 厘米，下底 5 厘米，高 4 厘米的梯形，面积是多少？",
+      "options": ["32平方厘米", "16平方厘米", "12平方厘米", "8平方厘米"],
+      "correctAnswer": "16平方厘米",
+      "explanation": "S = ½ × (3 + 5) × 4 = ½ × 8 × 4 = ½ × 32 = 16（平方厘米）。先算上底加下底，再乘高，最后除以2。",
+      "points": 10
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "prompt": "上底 4 米，下底 6 米，高 3 米的梯形，面积是多少？",
+      "options": ["10平方米", "30平方米", "15平方米", "20平方米"],
+      "correctAnswer": "15平方米",
+      "explanation": "S = ½ × (4 + 6) × 3 = ½ × 10 × 3 = 15（平方米）。",
+      "points": 10
+    },
+    {
+      "id": "q4",
+      "type": "choice",
+      "prompt": "推导梯形面积公式时，两个完全相同的梯形拼成了什么图形？",
+      "options": ["长方形", "三角形", "平行四边形", "正方形"],
+      "correctAnswer": "平行四边形",
+      "explanation": "两个完全相同的梯形，翻转其中一个后拼在一起，拼成一个平行四边形。平行四边形的底 = 上底 + 下底，高 = 梯形的高。",
+      "points": 10
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "prompt": "梯形面积是 20 平方分米，上底 3 分米，下底 5 分米，高是多少？",
+      "options": ["2.5分米", "5分米", "4分米", "10分米"],
+      "correctAnswer": "5分米",
+      "explanation": "由 S = ½ × (a + b) × h 得 h = 2S ÷ (a + b) = 2 × 20 ÷ (3 + 5) = 40 ÷ 8 = 5（分米）。",
+      "points": 10
+    }
+  ]
+}

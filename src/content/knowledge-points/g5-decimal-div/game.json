@@ -1,0 +1,51 @@
+{
+  "knowledgePointId": "g5-decimal-div",
+  "passThreshold": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "prompt": "7.2 ÷ 6 的结果是多少？",
+      "options": ["1.2", "12", "0.12", "1.4"],
+      "correctAnswer": "1.2",
+      "explanation": "7 ÷ 6 = 1 余 1，落下 2 得 12，12 ÷ 6 = 2，商的小数点与被除数对齐，所以 7.2 ÷ 6 = 1.2。",
+      "points": 10
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "prompt": "1.2 ÷ 0.3 的结果是多少？",
+      "options": ["0.4", "4", "0.36", "40"],
+      "correctAnswer": "4",
+      "explanation": "把除数和被除数同时扩大 10 倍：0.3 → 3，1.2 → 12，12 ÷ 3 = 4。",
+      "points": 10
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "prompt": "计算 0.56 ÷ 0.08 时，需要把除数和被除数的小数点同时向右移几位？",
+      "options": ["1 位", "2 位", "3 位", "不需要移"],
+      "correctAnswer": "2 位",
+      "explanation": "除数 0.08 有 2 位小数，需要把除数和被除数的小数点同时向右移 2 位，变成 56 ÷ 8 = 7。",
+      "points": 10
+    },
+    {
+      "id": "q4",
+      "type": "choice",
+      "prompt": "一个数除以 0.5，结果一定比原来的数（ ）",
+      "options": ["大", "小", "相等", "无法确定"],
+      "correctAnswer": "大",
+      "explanation": "0.5 比 1 小，一个非零数除以比 1 小的数，商比被除数大。例如 10 ÷ 0.5 = 20 > 10。",
+      "points": 10
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "prompt": "10 ÷ 3 的商保留两位小数约是（ ）",
+      "options": ["3.33", "3.34", "3.30", "3.33…"],
+      "correctAnswer": "3.33",
+      "explanation": "10 ÷ 3 = 3.333…，保留两位小数看第三位，第三位是 3，四舍舍去，所以约是 3.33。",
+      "points": 10
+    }
+  ]
+}

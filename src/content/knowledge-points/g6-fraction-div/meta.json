@@ -1,0 +1,35 @@
+{
+  "id": "g6-fraction-div",
+  "grade": 6,
+  "unit": 2,
+  "title": "分数除法",
+  "objectives": [
+    "理解分数除法的意义",
+    "掌握分数除法的计算方法",
+    "能解决分数除法的实际问题"
+  ],
+  "prerequisites": [
+    "g5-fraction-add-sub",
+    "g6-fraction-mult"
+  ],
+  "textbookRefs": [
+    {
+      "version": "人教版",
+      "grade": 6,
+      "chapter": "六上第3单元"
+    },
+    {
+      "version": "北师大版",
+      "grade": 6,
+      "chapter": "六上第2单元"
+    },
+    {
+      "version": "苏教版",
+      "grade": 6,
+      "chapter": "六上第4单元"
+    }
+  ],
+  "vizType": "fraction-pie",
+  "hasFormula": true,
+  "formula": "a/b ÷ c/d = a/b × d/c"
+}

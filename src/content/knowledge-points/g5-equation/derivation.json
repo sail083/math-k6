@@ -1,0 +1,380 @@
+{
+  "title": "等式的性质是怎么来的？",
+  "formula": "等式性质：a = b ⟹ a ± c = b ± c",
+  "steps": [
+    {
+      "title": "天平平衡",
+      "narration": "想象一个天平：左边放着 x + 3 的砝码，右边放着 7 的砝码。天平刚好平衡，说明两边一样重，我们就写成等式：x + 3 = 7。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "beam1",
+            "type": "line",
+            "x": 90,
+            "y": 150,
+            "width": 220,
+            "height": 0,
+            "stroke": "#475569",
+            "strokeWidth": 3
+          },
+          {
+            "id": "fulcrum1",
+            "type": "triangle",
+            "points": [{"x":190,"y":150},{"x":210,"y":150},{"x":200,"y":180}],
+            "fill": "#94a3b8",
+            "stroke": "#475569",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "base1",
+            "type": "rect",
+            "x": 175,
+            "y": 180,
+            "width": 50,
+            "height": 8,
+            "fill": "#94a3b8",
+            "stroke": "#475569"
+          },
+          {
+            "id": "conn-l1",
+            "type": "line",
+            "x": 120,
+            "y": 150,
+            "width": 0,
+            "height": 25,
+            "stroke": "#94a3b8",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "conn-r1",
+            "type": "line",
+            "x": 280,
+            "y": 150,
+            "width": 0,
+            "height": 25,
+            "stroke": "#94a3b8",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "box-l1",
+            "type": "rect",
+            "x": 85,
+            "y": 105,
+            "width": 70,
+            "height": 30,
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "text-l1",
+            "type": "text",
+            "x": 120,
+            "y": 120,
+            "text": "x + 3",
+            "fontSize": 15,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "box-r1",
+            "type": "rect",
+            "x": 245,
+            "y": 105,
+            "width": 70,
+            "height": 30,
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "text-r1",
+            "type": "text",
+            "x": 280,
+            "y": 120,
+            "text": "7",
+            "fontSize": 15,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "天平平衡：x + 3 = 7", "x": 200, "y": 230, "fontSize": 16, "fill": "#4f46e5" }
+        ],
+        "highlight": ["beam1"]
+      },
+      "hint": "天平平衡说明左右两边相等"
+    },
+    {
+      "title": "两边同时减去 3",
+      "narration": "现在我们从天平的左边和右边同时拿走 3 的砝码。因为两边拿走的一样多，天平仍然保持平衡！左边变成了 x，右边变成了 4。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "beam2",
+            "type": "line",
+            "x": 90,
+            "y": 150,
+            "width": 220,
+            "height": 0,
+            "stroke": "#475569",
+            "strokeWidth": 3
+          },
+          {
+            "id": "fulcrum2",
+            "type": "triangle",
+            "points": [{"x":190,"y":150},{"x":210,"y":150},{"x":200,"y":180}],
+            "fill": "#94a3b8",
+            "stroke": "#475569",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "base2",
+            "type": "rect",
+            "x": 175,
+            "y": 180,
+            "width": 50,
+            "height": 8,
+            "fill": "#94a3b8",
+            "stroke": "#475569"
+          },
+          {
+            "id": "arrow-l2",
+            "type": "arrow",
+            "x": 120,
+            "y": 100,
+            "width": 0,
+            "height": 20,
+            "stroke": "#ef4444",
+            "strokeWidth": 2
+          },
+          {
+            "id": "arrow-r2",
+            "type": "arrow",
+            "x": 280,
+            "y": 100,
+            "width": 0,
+            "height": 20,
+            "stroke": "#ef4444",
+            "strokeWidth": 2
+          },
+          {
+            "id": "minus-l2",
+            "type": "text",
+            "x": 120,
+            "y": 85,
+            "text": "−3",
+            "fontSize": 13,
+            "textFill": "#ef4444",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "minus-r2",
+            "type": "text",
+            "x": 280,
+            "y": 85,
+            "text": "−3",
+            "fontSize": 13,
+            "textFill": "#ef4444",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "box-l2",
+            "type": "rect",
+            "x": 95,
+            "y": 105,
+            "width": 50,
+            "height": 30,
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "text-l2",
+            "type": "text",
+            "x": 120,
+            "y": 120,
+            "text": "x",
+            "fontSize": 16,
+            "textFill": "#1e3a8a",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "box-r2",
+            "type": "rect",
+            "x": 255,
+            "y": 105,
+            "width": 50,
+            "height": 30,
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "text-r2",
+            "type": "text",
+            "x": 280,
+            "y": 120,
+            "text": "4",
+            "fontSize": 16,
+            "textFill": "#1e3a8a",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "两边同时减 3，天平仍然平衡", "x": 200, "y": 230, "fontSize": 15, "fill": "#4f46e5" }
+        ],
+        "highlight": ["arrow-l2", "arrow-r2"]
+      },
+      "hint": "两边同时减去同一个数，等式仍然成立"
+    },
+    {
+      "title": "解出 x",
+      "narration": "天平仍然平衡，左边是 x，右边是 4，所以 x = 4。这就是解方程的过程——通过等式的性质，把未知数单独留在一边！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "beam3",
+            "type": "line",
+            "x": 90,
+            "y": 150,
+            "width": 220,
+            "height": 0,
+            "stroke": "#475569",
+            "strokeWidth": 3
+          },
+          {
+            "id": "fulcrum3",
+            "type": "triangle",
+            "points": [{"x":190,"y":150},{"x":210,"y":150},{"x":200,"y":180}],
+            "fill": "#94a3b8",
+            "stroke": "#475569",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "base3",
+            "type": "rect",
+            "x": 175,
+            "y": 180,
+            "width": 50,
+            "height": 8,
+            "fill": "#94a3b8",
+            "stroke": "#475569"
+          },
+          {
+            "id": "box-l3",
+            "type": "rect",
+            "x": 95,
+            "y": 105,
+            "width": 50,
+            "height": 30,
+            "fill": "#d1fae5",
+            "stroke": "#10b981",
+            "strokeWidth": 2
+          },
+          {
+            "id": "text-l3",
+            "type": "text",
+            "x": 120,
+            "y": 120,
+            "text": "x",
+            "fontSize": 18,
+            "textFill": "#065f46",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "box-r3",
+            "type": "rect",
+            "x": 255,
+            "y": 105,
+            "width": 50,
+            "height": 30,
+            "fill": "#d1fae5",
+            "stroke": "#10b981",
+            "strokeWidth": 2
+          },
+          {
+            "id": "text-r3",
+            "type": "text",
+            "x": 280,
+            "y": 120,
+            "text": "4",
+            "fontSize": 18,
+            "textFill": "#065f46",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "x = 4 ✓", "x": 200, "y": 230, "fontSize": 18, "fill": "#059669" }
+        ],
+        "formula": "x + 3 − 3 = 7 − 3 ⟹ x = 4"
+      },
+      "hint": "未知数 x 单独留在一边，就解出来了"
+    },
+    {
+      "title": "归纳等式的性质",
+      "narration": "通过天平实验我们发现：等式就像天平，两边同时加、减、乘、除同一个数（除数不能为0），等式仍然成立。这就是等式的性质，是解方程的依据。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "prop-box",
+            "type": "rect",
+            "x": 60,
+            "y": 70,
+            "width": 280,
+            "height": 140,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2,
+            "radius": 8
+          },
+          {
+            "id": "prop-title",
+            "type": "text",
+            "x": 200,
+            "y": 95,
+            "text": "等式的性质",
+            "fontSize": 18,
+            "textFill": "#4338ca",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "prop1",
+            "type": "text",
+            "x": 200,
+            "y": 130,
+            "text": "① a = b ⟹ a ± c = b ± c",
+            "fontSize": 15,
+            "textFill": "#374151",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "prop2",
+            "type": "text",
+            "x": 200,
+            "y": 160,
+            "text": "② a = b ⟹ a × c = b × c",
+            "fontSize": 15,
+            "textFill": "#374151",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "prop3",
+            "type": "text",
+            "x": 200,
+            "y": 190,
+            "text": "③ a = b ⟹ a ÷ c = b ÷ c  (c ≠ 0)",
+            "fontSize": 15,
+            "textFill": "#374151",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "两边做相同运算，等式仍然成立", "x": 200, "y": 250, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "formula": "等式性质：a = b ⟹ a ± c = b ± c"
+      },
+      "hint": "等式两边同时做相同运算，等式仍然成立"
+    }
+  ]
+}

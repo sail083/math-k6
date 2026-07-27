@@ -1,0 +1,234 @@
+{
+  "title": "长方形周长公式是怎么来的？",
+  "formula": "C = 2(a + b)",
+  "steps": [
+    {
+      "title": "认识周长",
+      "narration": "周长就是围成一个图形的所有边的长度之和——也就是图形一圈有多长。我们来看这个长方形，沿着它的四条边走一圈，总长度就是它的周长。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "rect-outline",
+            "type": "rect",
+            "x": 100,
+            "y": 80,
+            "width": 200,
+            "height": 120,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "arrow-top",
+            "type": "arrow",
+            "x": 95,
+            "y": 70,
+            "width": 0,
+            "height": 0,
+            "stroke": "#a5b4fc",
+            "strokeWidth": 2,
+            "points": [{"x": 310, "y": 70}, {"x": 90, "y": 70}, {"x": 90, "y": 210}, {"x": 310, "y": 210}, {"x": 310, "y": 70}]
+          }
+        ],
+        "labels": [
+          { "text": "长方形", "x": 200, "y": 65, "fontSize": 14, "fill": "#6b7280" },
+          { "text": "绕一圈的长度 = 周长", "x": 200, "y": 240, "fontSize": 13, "fill": "#9ca3af" }
+        ],
+        "highlight": ["rect-outline"]
+      },
+      "hint": "周长 = 图形一圈的长度"
+    },
+    {
+      "title": "数四条边",
+      "narration": "长方形有4条边：上面一条长5厘米，右边一条宽3厘米，下面一条长5厘米，左边一条宽3厘米。长方形的对边相等，所以有2条长和2条宽。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "rect-sides",
+            "type": "rect",
+            "x": 100,
+            "y": 80,
+            "width": 200,
+            "height": 120,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "top-label",
+            "type": "text",
+            "x": 200,
+            "y": 70,
+            "text": "长 5",
+            "fontSize": 14,
+            "textFill": "#4f46e5"
+          },
+          {
+            "id": "right-label",
+            "type": "text",
+            "x": 320,
+            "y": 140,
+            "text": "宽 3",
+            "fontSize": 14,
+            "textFill": "#4f46e5"
+          },
+          {
+            "id": "bottom-label",
+            "type": "text",
+            "x": 200,
+            "y": 215,
+            "text": "长 5",
+            "fontSize": 14,
+            "textFill": "#4f46e5"
+          },
+          {
+            "id": "left-label",
+            "type": "text",
+            "x": 80,
+            "y": 140,
+            "text": "宽 3",
+            "fontSize": 14,
+            "textFill": "#4f46e5"
+          }
+        ],
+        "labels": [
+          { "text": "对边相等：2条长 + 2条宽", "x": 200, "y": 250, "fontSize": 14, "fill": "#6b7280" }
+        ]
+      },
+      "hint": "长方形有2条长和2条宽"
+    },
+    {
+      "title": "四条边相加",
+      "narration": "把四条边加起来：5 + 3 + 5 + 3 = 16。所以这个长方形的周长是16厘米。这是最基本的方法，但每次都加四条数有点麻烦。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "rect-add",
+            "type": "rect",
+            "x": 100,
+            "y": 80,
+            "width": 200,
+            "height": 120,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "add-text",
+            "type": "text",
+            "x": 200,
+            "y": 140,
+            "text": "5 + 3 + 5 + 3",
+            "fontSize": 18,
+            "textFill": "#4f46e5"
+          },
+          {
+            "id": "add-result",
+            "type": "text",
+            "x": 200,
+            "y": 170,
+            "text": "= 16",
+            "fontSize": 22,
+            "textFill": "#4f46e5"
+          }
+        ],
+        "labels": [
+          { "text": "周长 = 长+宽+长+宽 = 16厘米", "x": 200, "y": 250, "fontSize": 14, "fill": "#6b7280" }
+        ]
+      },
+      "hint": "四条边加起来就是周长"
+    },
+    {
+      "title": "发现规律",
+      "narration": "仔细看：5+3+5+3 里面有2个5和2个3。也就是2个长和2个宽，可以写成2×5 + 2×3。还可以这样想：5+3=8是一组长加宽，有2组，所以是2×(5+3)=16。这样算更快！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "rect-pattern",
+            "type": "rect",
+            "x": 100,
+            "y": 80,
+            "width": 200,
+            "height": 120,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "group-top",
+            "type": "text",
+            "x": 200,
+            "y": 120,
+            "text": "长 + 宽 = 5 + 3 = 8",
+            "fontSize": 15,
+            "textFill": "#4f46e5"
+          },
+          {
+            "id": "group-result",
+            "type": "text",
+            "x": 200,
+            "y": 160,
+            "text": "2 × 8 = 16",
+            "fontSize": 20,
+            "textFill": "#4f46e5"
+          },
+          {
+            "id": "arrow-down",
+            "type": "text",
+            "x": 200,
+            "y": 190,
+            "text": "(长 + 宽) × 2",
+            "fontSize": 14,
+            "textFill": "#9ca3af"
+          }
+        ],
+        "labels": [
+          { "text": "2组长加宽 = (长+宽) × 2", "x": 200, "y": 250, "fontSize": 14, "fill": "#6b7280" }
+        ]
+      },
+      "hint": "2个长+2个宽 = (长+宽) × 2"
+    },
+    {
+      "title": "归纳公式",
+      "narration": "把长用a表示，宽用b表示，周长就是C = 2(a + b)，也就是(长+宽)×2。以后不管长方形多大，用这个公式就能快速算出周长！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "formula-rect",
+            "type": "rect",
+            "x": 100,
+            "y": 80,
+            "width": 200,
+            "height": 120,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "dim-a-text",
+            "type": "text",
+            "x": 200,
+            "y": 70,
+            "text": "a（长）",
+            "fontSize": 14,
+            "textFill": "#4f46e5"
+          },
+          {
+            "id": "dim-b-text",
+            "type": "text",
+            "x": 80,
+            "y": 140,
+            "text": "b（宽）",
+            "fontSize": 14,
+            "textFill": "#4f46e5"
+          }
+        ],
+        "labels": [
+          { "text": "正方形周长 = 边长 × 4", "x": 200, "y": 245, "fontSize": 14, "fill": "#92400e" }
+        ],
+        "formula": "C = 2(a + b)"
+      },
+      "hint": "长方形周长 = (长+宽) × 2；正方形周长 = 边长 × 4"
+    }
+  ]
+}

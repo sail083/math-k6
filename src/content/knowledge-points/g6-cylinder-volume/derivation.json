@@ -1,0 +1,264 @@
+{
+  "title": "圆柱体积公式是怎么来的？",
+  "formula": "V = πr²h",
+  "steps": [
+    {
+      "title": "认识圆柱",
+      "narration": "这是一个圆柱，底面半径是 r，高是 h。我们想知道它的体积——能不能用已经学过的方法来算呢？",
+      "scene": {
+        "shapes": [
+          {
+            "id": "top-circle",
+            "type": "circle",
+            "x": 200,
+            "y": 90,
+            "radius": 45,
+            "fill": "#e0e7ff",
+            "stroke": "#4f46e5",
+            "strokeWidth": 2
+          },
+          {
+            "id": "side-left",
+            "type": "line",
+            "x": 155,
+            "y": 90,
+            "width": 0,
+            "height": 120,
+            "stroke": "#4f46e5",
+            "strokeWidth": 2
+          },
+          {
+            "id": "side-right",
+            "type": "line",
+            "x": 245,
+            "y": 90,
+            "width": 0,
+            "height": 120,
+            "stroke": "#4f46e5",
+            "strokeWidth": 2
+          },
+          {
+            "id": "bot-circle",
+            "type": "circle",
+            "x": 200,
+            "y": 210,
+            "radius": 45,
+            "fill": "#e0e7ff",
+            "stroke": "#4f46e5",
+            "strokeWidth": 2
+          },
+          {
+            "id": "r-line",
+            "type": "line",
+            "x": 200,
+            "y": 90,
+            "width": 45,
+            "height": 0,
+            "stroke": "#ef4444",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "r-label",
+            "type": "text",
+            "x": 222,
+            "y": 80,
+            "text": "r",
+            "fontSize": 14,
+            "textFill": "#ef4444",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "h-label",
+            "type": "text",
+            "x": 275,
+            "y": 155,
+            "text": "h",
+            "fontSize": 14,
+            "textFill": "#f59e0b",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "圆柱的体积怎么算？", "x": 200, "y": 260, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "highlight": ["top-circle", "side-left", "side-right", "bot-circle"]
+      },
+      "hint": "能不能把圆柱变成学过的立体图形？"
+    },
+    {
+      "title": "底面切分再拼",
+      "narration": "把圆柱的底面圆分成很多小扇形，一正一反交错拼起来，底面圆就变成了一个近似长方形。圆柱就变成了近似长方体！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "rect-base",
+            "type": "rect",
+            "x": 120,
+            "y": 180,
+            "width": 160,
+            "height": 60,
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "rect-front",
+            "type": "rect",
+            "x": 120,
+            "y": 100,
+            "width": 160,
+            "height": 80,
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "top-edge",
+            "type": "line",
+            "x": 120,
+            "y": 100,
+            "width": 160,
+            "height": 0,
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "label-r",
+            "type": "text",
+            "x": 200,
+            "y": 175,
+            "text": "底面积 = πr²",
+            "fontSize": 13,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "label-h",
+            "type": "text",
+            "x": 300,
+            "y": 140,
+            "text": "h",
+            "fontSize": 14,
+            "textFill": "#f59e0b",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "圆柱 → 近似长方体", "x": 200, "y": 265, "fontSize": 14, "fill": "#374151" }
+        ],
+        "highlight": ["rect-front", "rect-base"]
+      },
+      "hint": "底面圆拼成近似长方形，圆柱变成近似长方体"
+    },
+    {
+      "title": "用长方体公式",
+      "narration": "圆柱变成了近似长方体，底面积 = πr²，高 = h。长方体体积 = 底面积 × 高，所以圆柱体积 = πr² × h。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "f-box",
+            "type": "rect",
+            "x": 60,
+            "y": 80,
+            "width": 280,
+            "height": 125,
+            "fill": "#d1fae5",
+            "stroke": "#10b981",
+            "strokeWidth": 2,
+            "radius": 8
+          },
+          {
+            "id": "f-1",
+            "type": "text",
+            "x": 200,
+            "y": 115,
+            "text": "长方体体积 = 底面积 × 高",
+            "fontSize": 14,
+            "textFill": "#374151",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "f-2",
+            "type": "text",
+            "x": 200,
+            "y": 145,
+            "text": "= πr² × h",
+            "fontSize": 16,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "f-3",
+            "type": "text",
+            "x": 200,
+            "y": 178,
+            "text": "= πr²h",
+            "fontSize": 18,
+            "textFill": "#059669",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "所有柱体体积 = 底面积 × 高", "x": 200, "y": 235, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "formula": "V = πr²h"
+      },
+      "hint": "底面积 πr² × 高 h = πr²h"
+    },
+    {
+      "title": "验证举例",
+      "narration": "比如半径 3 厘米、高 5 厘米的圆柱：底面积 = 3.14 × 9 = 28.26，体积 = 28.26 × 5 = 141.3 立方厘米。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "ex-box",
+            "type": "rect",
+            "x": 70,
+            "y": 80,
+            "width": 260,
+            "height": 120,
+            "fill": "#fefce8",
+            "stroke": "#eab308",
+            "strokeWidth": 2,
+            "radius": 8
+          },
+          {
+            "id": "ex-1",
+            "type": "text",
+            "x": 200,
+            "y": 110,
+            "text": "r = 3cm，h = 5cm",
+            "fontSize": 14,
+            "textFill": "#374151",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "ex-2",
+            "type": "text",
+            "x": 200,
+            "y": 140,
+            "text": "底面积 = 3.14 × 3² = 28.26",
+            "fontSize": 14,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "ex-3",
+            "type": "text",
+            "x": 200,
+            "y": 170,
+            "text": "V = 28.26 × 5 = 141.3cm³",
+            "fontSize": 16,
+            "textFill": "#059669",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "先算底面积，再乘高", "x": 200, "y": 230, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "formula": "V = πr²h"
+      },
+      "hint": "先算 πr²（底面积），再乘 h（高）"
+    }
+  ]
+}

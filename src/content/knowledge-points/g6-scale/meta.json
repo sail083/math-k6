@@ -1,0 +1,19 @@
+{
+  "id": "g6-scale",
+  "grade": 6,
+  "unit": 12,
+  "title": "图形的放大与缩小",
+  "objectives": [
+    "理解图形放大和缩小的含义",
+    "掌握按比例放大和缩小图形的方法",
+    "能利用比例尺解决实际问题"
+  ],
+  "prerequisites": ["g6-ratio", "g6-proportion"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 6, "chapter": "六下第4单元" },
+    { "version": "北师大版", "grade": 6, "chapter": "六下第2单元" },
+    { "version": "苏教版", "grade": 6, "chapter": "六下第3单元" }
+  ],
+  "vizType": "shape-transform",
+  "hasFormula": false
+}

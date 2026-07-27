@@ -1,0 +1,51 @@
+{
+  "knowledgePointId": "g5-possibility",
+  "passThreshold": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "prompt": "盒子里有3个红球和1个白球，任意摸一个，摸到什么颜色的球可能性大？",
+      "options": ["白球", "红球", "一样大", "不可能摸到"],
+      "correctAnswer": "红球",
+      "explanation": "红球有3个，白球只有1个，红球数量多，所以摸到红球的可能性更大。",
+      "points": 10
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "prompt": "盒子里全是红球，任意摸一个，摸到白球是什么事件？",
+      "options": ["一定", "可能", "不可能", "很可能"],
+      "correctAnswer": "不可能",
+      "explanation": "盒子里全是红球，没有白球，所以摸到白球是不可能事件。",
+      "points": 10
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "prompt": "太阳从东方升起，这是什么事件？",
+      "options": ["一定", "可能", "不可能", "不太可能"],
+      "correctAnswer": "一定",
+      "explanation": "太阳从东方升起是自然规律，一定会发生，是确定事件中的必然事件。",
+      "points": 10
+    },
+    {
+      "id": "q4",
+      "type": "choice",
+      "prompt": "要让摸到红球和摸到白球的可能性一样大，应该怎么做？",
+      "options": ["红球比白球多", "红球比白球少", "红球和白球一样多", "只放红球"],
+      "correctAnswer": "红球和白球一样多",
+      "explanation": "当两种球的数量相同时，摸到每种球的可能性一样大。",
+      "points": 10
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "prompt": "抛一枚硬币，正面朝上的可能性是？",
+      "options": ["一定", "不可能", "可能", "比反面朝上可能性大"],
+      "correctAnswer": "可能",
+      "explanation": "抛硬币有两种可能（正面或反面），正面朝上可能发生也可能不发生，是不确定事件。",
+      "points": 10
+    }
+  ]
+}

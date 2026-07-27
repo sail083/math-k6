@@ -1,0 +1,51 @@
+{
+  "knowledgePointId": "g6-circle-area",
+  "passThreshold": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "prompt": "圆的面积公式是什么？",
+      "options": ["S = πr", "S = 2πr", "S = πr²", "S = πd"],
+      "correctAnswer": "S = πr²",
+      "explanation": "圆的面积 = π × 半径的平方，即 S = πr²。把圆剪拼成近似长方形，长=πr，宽=r，面积=πr×r=πr²。",
+      "points": 10
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "prompt": "半径是3厘米的圆，面积约是多少？（π取3.14）",
+      "options": ["9.42平方厘米", "28.26平方厘米", "18.84平方厘米", "18平方厘米"],
+      "correctAnswer": "28.26平方厘米",
+      "explanation": "S = πr² = 3.14 × 3² = 3.14 × 9 = 28.26（平方厘米）。先算 r²=9，再乘 π。",
+      "points": 10
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "prompt": "直径是10厘米的圆，面积约是多少？（π取3.14）",
+      "options": ["31.4平方厘米", "78.5平方厘米", "314平方厘米", "157平方厘米"],
+      "correctAnswer": "78.5平方厘米",
+      "explanation": "r = 10÷2 = 5，S = πr² = 3.14 × 5² = 3.14 × 25 = 78.5（平方厘米）。",
+      "points": 10
+    },
+    {
+      "id": "q4",
+      "type": "choice",
+      "prompt": "推导圆面积公式时，把圆剪拼成了什么图形？",
+      "options": ["三角形", "长方形", "梯形", "正方形"],
+      "correctAnswer": "长方形",
+      "explanation": "把圆等分成很多小扇形，交替排列后拼成近似长方形。长=πr（周长一半），宽=r，面积=πr×r=πr²。",
+      "points": 10
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "prompt": "半径是5厘米的圆，面积约是多少？（π取3.14）",
+      "options": ["15.7平方厘米", "31.4平方厘米", "78.5平方厘米", "157平方厘米"],
+      "correctAnswer": "78.5平方厘米",
+      "explanation": "S = πr² = 3.14 × 5² = 3.14 × 25 = 78.5（平方厘米）。注意 r²=25，不是 r×2=10。",
+      "points": 10
+    }
+  ]
+}

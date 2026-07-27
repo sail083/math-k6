@@ -1,0 +1,20 @@
+{
+  "id": "g5-triangle-area",
+  "grade": 5,
+  "unit": 5,
+  "title": "三角形面积",
+  "objectives": [
+    "理解三角形面积公式的推导过程",
+    "掌握三角形面积公式",
+    "能运用公式计算三角形面积"
+  ],
+  "prerequisites": ["g5-parallelogram-area"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 5, "chapter": "五上第6单元" },
+    { "version": "北师大版", "grade": 5, "chapter": "五上第4单元" },
+    { "version": "苏教版", "grade": 5, "chapter": "五上第2单元" }
+  ],
+  "vizType": "shape-transform",
+  "hasFormula": true,
+  "formula": "S = ½ × a × h"
+}

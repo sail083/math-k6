@@ -1,0 +1,19 @@
+{
+  "id": "g5-fraction-meaning",
+  "grade": 5,
+  "unit": 12,
+  "title": "分数的意义和性质",
+  "objectives": [
+    "理解分数的意义",
+    "掌握分数的基本性质",
+    "理解约分和通分的概念"
+  ],
+  "prerequisites": [],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 5, "chapter": "五下第4单元" },
+    { "version": "北师大版", "grade": 5, "chapter": "五上第5单元" },
+    { "version": "苏教版", "grade": 5, "chapter": "五下第4单元" }
+  ],
+  "vizType": "fraction-pie",
+  "hasFormula": false
+}

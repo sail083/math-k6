@@ -1,0 +1,51 @@
+{
+  "knowledgePointId": "g5-cuboid-surface",
+  "passThreshold": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "prompt": "长方体的表面积公式是什么？",
+      "options": ["S = ab + ah + bh", "S = 2(ab + ah + bh)", "S = 6ab", "S = abc"],
+      "correctAnswer": "S = 2(ab + ah + bh)",
+      "explanation": "长方体有6个面，三对相对的面分别相等。表面积 = 2×(长×宽 + 长×高 + 宽×高) = 2(ab + ah + bh)。",
+      "points": 10
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "prompt": "长5厘米，宽4厘米，高3厘米的长方体，表面积是多少？",
+      "options": ["47平方厘米", "94平方厘米", "60平方厘米", "74平方厘米"],
+      "correctAnswer": "94平方厘米",
+      "explanation": "S = 2×(5×4 + 5×3 + 4×3) = 2×(20 + 15 + 12) = 2×47 = 94（平方厘米）。",
+      "points": 10
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "prompt": "正方体边长3厘米，表面积是多少？",
+      "options": ["9平方厘米", "27平方厘米", "54平方厘米", "18平方厘米"],
+      "correctAnswer": "54平方厘米",
+      "explanation": "正方体表面积 = 6 × 边长² = 6 × 3² = 6 × 9 = 54（平方厘米）。",
+      "points": 10
+    },
+    {
+      "id": "q4",
+      "type": "choice",
+      "prompt": "长方体有6个面，相对的两个面面积怎样？",
+      "options": ["不相等", "相等", "有时相等", "无法确定"],
+      "correctAnswer": "相等",
+      "explanation": "长方体相对的两个面完全相同，面积相等。上面=下面，前面=后面，左面=右面。",
+      "points": 10
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "prompt": "一个长方体长6米，宽4米，高3米，它的表面积是？",
+      "options": ["54平方米", "108平方米", "72平方米", "84平方米"],
+      "correctAnswer": "108平方米",
+      "explanation": "S = 2×(6×4 + 6×3 + 4×3) = 2×(24 + 18 + 12) = 2×54 = 108（平方米）。",
+      "points": 10
+    }
+  ]
+}

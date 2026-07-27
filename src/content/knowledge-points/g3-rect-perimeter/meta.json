@@ -1,0 +1,20 @@
+{
+  "id": "g3-rect-perimeter",
+  "grade": 3,
+  "unit": 6,
+  "title": "长方形和正方形周长",
+  "objectives": [
+    "理解周长的含义",
+    "掌握长方形和正方形周长公式的推导",
+    "能运用公式计算周长"
+  ],
+  "prerequisites": ["g3-measurement"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 3, "chapter": "三上第7单元" },
+    { "version": "北师大版", "grade": 3, "chapter": "三上第5单元" },
+    { "version": "苏教版", "grade": 3, "chapter": "三上第3单元" }
+  ],
+  "vizType": "shape-transform",
+  "hasFormula": true,
+  "formula": "C = 2(a + b)"
+}

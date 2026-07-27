@@ -1,0 +1,19 @@
+{
+  "id": "g6-ratio",
+  "grade": 6,
+  "unit": 3,
+  "title": "比的意义",
+  "objectives": [
+    "理解比的意义",
+    "掌握比的读写和各部分名称",
+    "能求比值并化简比"
+  ],
+  "prerequisites": ["g5-fraction-meaning"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 6, "chapter": "六上第4单元" },
+    { "version": "北师大版", "grade": 6, "chapter": "六上第4单元" },
+    { "version": "苏教版", "grade": 6, "chapter": "六上第5单元" }
+  ],
+  "vizType": "bar-chart",
+  "hasFormula": false
+}

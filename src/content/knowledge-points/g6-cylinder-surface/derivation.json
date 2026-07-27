@@ -1,0 +1,281 @@
+{
+  "title": "圆柱表面积公式是怎么来的？",
+  "formula": "S = 2πr² + 2πrh",
+  "steps": [
+    {
+      "title": "认识圆柱",
+      "narration": "这是一个圆柱。它有底面半径 r 和高 h。圆柱的表面由三部分组成：侧面、上底面和下底面。我们想知道它的表面积怎么算。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "top-circle",
+            "type": "circle",
+            "x": 200,
+            "y": 90,
+            "radius": 45,
+            "fill": "#e0e7ff",
+            "stroke": "#4f46e5",
+            "strokeWidth": 2
+          },
+          {
+            "id": "side-left",
+            "type": "line",
+            "x": 155,
+            "y": 90,
+            "width": 0,
+            "height": 120,
+            "stroke": "#4f46e5",
+            "strokeWidth": 2
+          },
+          {
+            "id": "side-right",
+            "type": "line",
+            "x": 245,
+            "y": 90,
+            "width": 0,
+            "height": 120,
+            "stroke": "#4f46e5",
+            "strokeWidth": 2
+          },
+          {
+            "id": "bot-circle",
+            "type": "circle",
+            "x": 200,
+            "y": 210,
+            "radius": 45,
+            "fill": "#e0e7ff",
+            "stroke": "#4f46e5",
+            "strokeWidth": 2
+          },
+          {
+            "id": "r-line",
+            "type": "line",
+            "x": 200,
+            "y": 90,
+            "width": 45,
+            "height": 0,
+            "stroke": "#ef4444",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "r-label",
+            "type": "text",
+            "x": 222,
+            "y": 80,
+            "text": "r",
+            "fontSize": 14,
+            "textFill": "#ef4444",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "h-label",
+            "type": "text",
+            "x": 275,
+            "y": 155,
+            "text": "h",
+            "fontSize": 14,
+            "textFill": "#f59e0b",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "圆柱有哪些面？", "x": 200, "y": 260, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "highlight": ["top-circle", "side-left", "side-right", "bot-circle"]
+      },
+      "hint": "圆柱表面 = 侧面 + 上底面 + 下底面"
+    },
+    {
+      "title": "展开侧面",
+      "narration": "把圆柱的侧面剪开展开，它变成了一个长方形！长方形的长 = 底面周长 = 2πr，长方形的宽 = 圆柱的高 = h。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "rect-side",
+            "type": "rect",
+            "x": 100,
+            "y": 100,
+            "width": 200,
+            "height": 100,
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "len-label",
+            "type": "text",
+            "x": 200,
+            "y": 76,
+            "text": "长 = 2πr（周长）",
+            "fontSize": 13,
+            "textFill": "#3b82f6",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "wid-label",
+            "type": "text",
+            "x": 72,
+            "y": 150,
+            "text": "宽=h",
+            "fontSize": 13,
+            "textFill": "#f59e0b",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "侧面展开 = 长方形", "x": 200, "y": 230, "fontSize": 14, "fill": "#374151" }
+        ],
+        "highlight": ["rect-side"]
+      },
+      "hint": "侧面展开后长 = 周长 = 2πr，宽 = 高 = h"
+    },
+    {
+      "title": "侧面积 + 底面积",
+      "narration": "侧面展开成长方形，面积 = 长 × 宽 = 2πr × h = 2πrh。上下两个底面各是一个圆，面积 = 2 × πr² = 2πr²。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "rect-side2",
+            "type": "rect",
+            "x": 80,
+            "y": 90,
+            "width": 160,
+            "height": 80,
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "rect-label",
+            "type": "text",
+            "x": 160,
+            "y": 135,
+            "text": "侧面积 = 2πrh",
+            "fontSize": 14,
+            "textFill": "#3b82f6",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "circle1",
+            "type": "circle",
+            "x": 300,
+            "y": 105,
+            "radius": 30,
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "circle1-label",
+            "type": "text",
+            "x": 300,
+            "y": 110,
+            "text": "πr²",
+            "fontSize": 12,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "circle2",
+            "type": "circle",
+            "x": 300,
+            "y": 175,
+            "radius": 30,
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "circle2-label",
+            "type": "text",
+            "x": 300,
+            "y": 180,
+            "text": "πr²",
+            "fontSize": 12,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "plus1",
+            "type": "text",
+            "x": 255,
+            "y": 135,
+            "text": "+",
+            "fontSize": 22,
+            "textFill": "#374151",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "plus2",
+            "type": "text",
+            "x": 255,
+            "y": 155,
+            "text": "+",
+            "fontSize": 22,
+            "textFill": "#374151",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "侧面 + 上底面 + 下底面", "x": 200, "y": 235, "fontSize": 14, "fill": "#374151" }
+        ]
+      },
+      "hint": "侧面积 = 2πrh，两个底面 = 2 × πr² = 2πr²"
+    },
+    {
+      "title": "得出公式",
+      "narration": "表面积 = 侧面积 + 两个底面积 = 2πrh + 2πr² = 2πr² + 2πrh。也可以写成 S = 2πr(r + h)。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "f-box",
+            "type": "rect",
+            "x": 60,
+            "y": 75,
+            "width": 280,
+            "height": 130,
+            "fill": "#d1fae5",
+            "stroke": "#10b981",
+            "strokeWidth": 2,
+            "radius": 8
+          },
+          {
+            "id": "f-1",
+            "type": "text",
+            "x": 200,
+            "y": 110,
+            "text": "表面积 = 侧面积 + 底面积",
+            "fontSize": 14,
+            "textFill": "#374151",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "f-2",
+            "type": "text",
+            "x": 200,
+            "y": 140,
+            "text": "= 2πrh + 2πr²",
+            "fontSize": 16,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "f-3",
+            "type": "text",
+            "x": 200,
+            "y": 175,
+            "text": "= 2πr² + 2πrh",
+            "fontSize": 18,
+            "textFill": "#059669",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "圆柱表面积 = 2πr² + 2πrh", "x": 200, "y": 235, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "formula": "S = 2πr² + 2πrh"
+      },
+      "hint": "2πr²（两个底面）+ 2πrh（侧面）"
+    }
+  ]
+}

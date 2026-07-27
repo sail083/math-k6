@@ -1,0 +1,19 @@
+{
+  "id": "g6-percentage",
+  "grade": 6,
+  "unit": 6,
+  "title": "百分数",
+  "objectives": [
+    "理解百分数的意义，能正确读写百分数",
+    "掌握百分数与分数、小数的互化方法",
+    "能解决百分数的实际问题"
+  ],
+  "prerequisites": ["g5-fraction-meaning", "g5-decimal-mult"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 6, "chapter": "六上第6单元" },
+    { "version": "北师大版", "grade": 6, "chapter": "六上第4单元" },
+    { "version": "苏教版", "grade": 6, "chapter": "六上第7单元" }
+  ],
+  "vizType": "bar-chart",
+  "hasFormula": false
+}

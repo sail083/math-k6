@@ -1,0 +1,20 @@
+{
+  "id": "g3-fraction-add-sub",
+  "grade": 3,
+  "unit": 9,
+  "title": "同分母分数加减法",
+  "objectives": [
+    "理解同分母分数加减法的原理",
+    "掌握同分母分数加减法的计算方法",
+    "能正确进行同分母分数加减法运算"
+  ],
+  "prerequisites": ["g3-fraction-intro", "g3-fraction-compare"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 3, "chapter": "三上第8单元" },
+    { "version": "北师大版", "grade": 3, "chapter": "三上第6单元" },
+    { "version": "苏教版", "grade": 3, "chapter": "三上第7单元" }
+  ],
+  "vizType": "fraction-pie",
+  "hasFormula": true,
+  "formula": "a/c + b/c = (a+b)/c"
+}

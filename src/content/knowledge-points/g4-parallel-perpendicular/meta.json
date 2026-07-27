@@ -1,0 +1,19 @@
+{
+  "id": "g4-parallel-perpendicular",
+  "grade": 4,
+  "unit": 5,
+  "title": "平行与垂直",
+  "objectives": [
+    "理解平行线的概念",
+    "理解垂直的概念",
+    "能用直尺和三角板画平行线和垂线"
+  ],
+  "prerequisites": ["g4-angle-measure"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 4, "chapter": "四上第5单元" },
+    { "version": "北师大版", "grade": 4, "chapter": "四上第2单元" },
+    { "version": "苏教版", "grade": 4, "chapter": "四上第8单元" }
+  ],
+  "vizType": "shape-transform",
+  "hasFormula": false
+}

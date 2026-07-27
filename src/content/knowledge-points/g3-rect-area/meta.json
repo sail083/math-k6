@@ -1,0 +1,20 @@
+{
+  "id": "g3-rect-area",
+  "grade": 3,
+  "unit": 5,
+  "title": "长方形和正方形面积",
+  "objectives": [
+    "理解面积的含义",
+    "掌握长方形面积公式的推导过程",
+    "能运用公式计算长方形和正方形的面积"
+  ],
+  "prerequisites": [],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 3, "chapter": "三下第5单元" },
+    { "version": "北师大版", "grade": 3, "chapter": "三下第4单元" },
+    { "version": "苏教版", "grade": 3, "chapter": "三下第6单元" }
+  ],
+  "vizType": "area-grid",
+  "hasFormula": true,
+  "formula": "S = a × b"
+}

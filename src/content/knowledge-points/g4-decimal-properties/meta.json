@@ -1,0 +1,33 @@
+{
+  "id": "g4-decimal-properties",
+  "grade": 4,
+  "unit": 10,
+  "title": "小数的性质",
+  "objectives": [
+    "理解小数的基本性质",
+    "掌握小数大小的比较方法",
+    "能正确进行小数的改写和化简"
+  ],
+  "prerequisites": [
+    "g4-decimal-meaning"
+  ],
+  "textbookRefs": [
+    {
+      "version": "人教版",
+      "grade": 4,
+      "chapter": "四下第4单元"
+    },
+    {
+      "version": "北师大版",
+      "grade": 4,
+      "chapter": "四下第1单元"
+    },
+    {
+      "version": "苏教版",
+      "grade": 4,
+      "chapter": "四下第3单元"
+    }
+  ],
+  "vizType": "number-line",
+  "hasFormula": false
+}

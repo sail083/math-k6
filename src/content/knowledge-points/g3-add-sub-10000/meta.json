@@ -1,0 +1,19 @@
+{
+  "id": "g3-add-sub-10000",
+  "grade": 3,
+  "unit": 1,
+  "title": "万以内的加减法",
+  "objectives": [
+    "掌握万以内加减法的笔算方法",
+    "理解进位加法和退位减法的原理",
+    "能正确进行万以内的加减法估算"
+  ],
+  "prerequisites": [],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 3, "chapter": "三上第2单元" },
+    { "version": "北师大版", "grade": 3, "chapter": "三上第3单元" },
+    { "version": "苏教版", "grade": 3, "chapter": "三上第1单元" }
+  ],
+  "vizType": "number-line",
+  "hasFormula": false
+}

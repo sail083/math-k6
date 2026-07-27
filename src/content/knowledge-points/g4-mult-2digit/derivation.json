@@ -1,0 +1,282 @@
+{
+  "title": "三位数乘两位数怎么算？",
+  "formula": "a × b = a × (十位 + 个位)",
+  "steps": [
+    {
+      "title": "一个乘法问题",
+      "narration": "我们来算 234 × 12。12 是两位数，怎么乘呢？想象一个长方形，长是 234，宽是 12，面积就是 234 × 12。我们用面积模型来拆解它。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "problem-text",
+            "type": "text",
+            "x": 200,
+            "y": 120,
+            "text": "234 × 12 = ?",
+            "fontSize": 28,
+            "textFill": "#4f46e5"
+          },
+          {
+            "id": "hint-text",
+            "type": "text",
+            "x": 200,
+            "y": 165,
+            "text": "用面积模型来理解",
+            "fontSize": 14,
+            "textFill": "#9ca3af"
+          }
+        ],
+        "labels": [
+          { "text": "长 234 × 宽 12", "x": 200, "y": 230, "fontSize": 14, "fill": "#6b7280" }
+        ]
+      },
+      "hint": "把两位数拆成十位和个位"
+    },
+    {
+      "title": "拆分面积模型",
+      "narration": "把 12 拆成 10 + 2。大长方形分成两部分：上面是 234 × 10 的大块，下面是 234 × 2 的小块。两部分面积加起来，就是总面积。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "big-rect",
+            "type": "rect",
+            "x": 70,
+            "y": 70,
+            "width": 260,
+            "height": 120,
+            "fill": "none",
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "split-line",
+            "type": "line",
+            "x": 70,
+            "y": 170,
+            "width": 260,
+            "height": 0,
+            "stroke": "#6366f1",
+            "strokeWidth": 2
+          },
+          {
+            "id": "top-part",
+            "type": "rect",
+            "x": 70,
+            "y": 70,
+            "width": 260,
+            "height": 100,
+            "fill": "#dbeafe",
+            "stroke": "none",
+            "opacity": 0.6
+          },
+          {
+            "id": "bottom-part",
+            "type": "rect",
+            "x": 70,
+            "y": 170,
+            "width": 260,
+            "height": 20,
+            "fill": "#fef3c7",
+            "stroke": "none",
+            "opacity": 0.8
+          },
+          {
+            "id": "top-label",
+            "type": "text",
+            "x": 200,
+            "y": 115,
+            "text": "234 × 10",
+            "fontSize": 16,
+            "textFill": "#1e40af"
+          },
+          {
+            "id": "bottom-label",
+            "type": "text",
+            "x": 200,
+            "y": 180,
+            "text": "234 × 2",
+            "fontSize": 13,
+            "textFill": "#92400e"
+          },
+          {
+            "id": "width-label",
+            "type": "text",
+            "x": 35,
+            "y": 130,
+            "text": "234",
+            "fontSize": 13,
+            "textFill": "#6b7280"
+          },
+          {
+            "id": "height-10-label",
+            "type": "text",
+            "x": 345,
+            "y": 120,
+            "text": "10",
+            "fontSize": 13,
+            "textFill": "#6b7280"
+          },
+          {
+            "id": "height-2-label",
+            "type": "text",
+            "x": 345,
+            "y": 180,
+            "text": "2",
+            "fontSize": 13,
+            "textFill": "#6b7280"
+          }
+        ],
+        "labels": [
+          { "text": "12 = 10 + 2，分成两部分", "x": 200, "y": 230, "fontSize": 14, "fill": "#6b7280" }
+        ]
+      },
+      "hint": "把12拆成10和2，分别乘234"
+    },
+    {
+      "title": "分别计算",
+      "narration": "分别算每一部分的面积：234 × 10 = 2340，这是上面大块的面积；234 × 2 = 468，这是下面小块的面积。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "top-rect-2",
+            "type": "rect",
+            "x": 70,
+            "y": 70,
+            "width": 260,
+            "height": 80,
+            "fill": "#dbeafe",
+            "stroke": "#6366f1",
+            "strokeWidth": 2,
+            "opacity": 0.6
+          },
+          {
+            "id": "bottom-rect-2",
+            "type": "rect",
+            "x": 70,
+            "y": 160,
+            "width": 260,
+            "height": 30,
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2,
+            "opacity": 0.8
+          },
+          {
+            "id": "top-calc",
+            "type": "text",
+            "x": 200,
+            "y": 100,
+            "text": "234 × 10 = 2340",
+            "fontSize": 17,
+            "textFill": "#1e40af"
+          },
+          {
+            "id": "bottom-calc",
+            "type": "text",
+            "x": 200,
+            "y": 175,
+            "text": "234 × 2 = 468",
+            "fontSize": 15,
+            "textFill": "#92400e"
+          }
+        ],
+        "labels": [
+          { "text": "分别算出两部分的积", "x": 200, "y": 230, "fontSize": 14, "fill": "#6b7280" }
+        ]
+      },
+      "hint": "234×10=2340，234×2=468"
+    },
+    {
+      "title": "合在一起",
+      "narration": "把两部分加起来：2340 + 468 = 2808。所以 234 × 12 = 2808。这就是笔算乘法的原理——先用个位乘，再用十位乘，最后相加！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "add-display",
+            "type": "text",
+            "x": 200,
+            "y": 100,
+            "text": "2340 + 468",
+            "fontSize": 22,
+            "textFill": "#4f46e5"
+          },
+          {
+            "id": "result-display",
+            "type": "text",
+            "x": 200,
+            "y": 145,
+            "text": "= 2808",
+            "fontSize": 28,
+            "textFill": "#4f46e5"
+          },
+          {
+            "id": "formula-display",
+            "type": "text",
+            "x": 200,
+            "y": 190,
+            "text": "234 × 12 = 2808",
+            "fontSize": 16,
+            "textFill": "#9ca3af"
+          }
+        ],
+        "labels": [
+          { "text": "两部分相加 = 最终结果", "x": 200, "y": 240, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "formula": "234 × 12 = 2808"
+      },
+      "hint": "个位的积 + 十位的积 = 最终结果"
+    },
+    {
+      "title": "归纳方法",
+      "narration": "三位数乘两位数的方法：先把两位数拆成十位和个位，分别乘三位数，再把两个积加起来。用字母表示就是 a × b = a × (十位) + a × (个位)。这就是笔算乘法的原理！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "method-box",
+            "type": "rect",
+            "x": 60,
+            "y": 85,
+            "width": 280,
+            "height": 90,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2,
+            "radius": 8
+          },
+          {
+            "id": "step1-text",
+            "type": "text",
+            "x": 200,
+            "y": 110,
+            "text": "1. 用个位乘 → a × 个位",
+            "fontSize": 15,
+            "textFill": "#4f46e5"
+          },
+          {
+            "id": "step2-text",
+            "type": "text",
+            "x": 200,
+            "y": 140,
+            "text": "2. 用十位乘 → a × 十位",
+            "fontSize": 15,
+            "textFill": "#4f46e5"
+          },
+          {
+            "id": "step3-text",
+            "type": "text",
+            "x": 200,
+            "y": 170,
+            "text": "3. 两个积相加",
+            "fontSize": 15,
+            "textFill": "#4f46e5"
+          }
+        ],
+        "labels": [
+          { "text": "a × b = a×十位 + a×个位", "x": 200, "y": 230, "fontSize": 15, "fill": "#6b7280" }
+        ],
+        "formula": "a × b = a × (十位 + 个位)"
+      },
+      "hint": "拆开分别乘，再相加"
+    }
+  ]
+}

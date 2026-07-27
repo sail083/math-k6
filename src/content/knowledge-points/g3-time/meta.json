@@ -1,0 +1,19 @@
+{
+  "id": "g3-time",
+  "grade": 3,
+  "unit": 4,
+  "title": "时分秒",
+  "objectives": [
+    "认识时、分、秒及其关系",
+    "会读写钟面上的时间",
+    "掌握时间的简单计算"
+  ],
+  "prerequisites": [],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 3, "chapter": "三上第1单元" },
+    { "version": "北师大版", "grade": 3, "chapter": "三上第2单元" },
+    { "version": "苏教版", "grade": 3, "chapter": "三上第2单元" }
+  ],
+  "vizType": "clock-dial",
+  "hasFormula": false
+}

@@ -1,0 +1,139 @@
+{
+  "title": "乘法是怎么来的？",
+  "formula": "a × b",
+  "steps": [
+    {
+      "title": "从加法开始",
+      "narration": "如果我们有 3 行小方格，每行有 12 个，一共多少个？用加法算：12 + 12 + 12 = ？这样算太麻烦了，有没有更快的方法呢？",
+      "scene": {
+        "shapes": [
+          {
+            "id": "add-text-1",
+            "type": "text",
+            "x": 200,
+            "y": 110,
+            "text": "12 + 12 + 12 = ?",
+            "fontSize": 24,
+            "textFill": "#4f46e5"
+          },
+          {
+            "id": "add-text-2",
+            "type": "text",
+            "x": 200,
+            "y": 160,
+            "text": "三个12相加",
+            "fontSize": 14,
+            "textFill": "#9ca3af"
+          }
+        ],
+        "labels": [
+          { "text": "3 行小方格，每行 12 个", "x": 200, "y": 230, "fontSize": 14, "fill": "#6b7280" }
+        ]
+      },
+      "hint": "相同的数加好几次，可以用乘法"
+    },
+    {
+      "title": "用面积模型来看",
+      "narration": "我们把 3 行小方格画出来——每行 12 个，一共 3 行。一个一个数：1、2、3……一直数到 36！所以一共是 36 个。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "mult-grid-count",
+            "type": "grid",
+            "x": 80,
+            "y": 100,
+            "cols": 12,
+            "rows": 3,
+            "cellSize": 20,
+            "highlightCells": [
+              { "row": 0, "col": 0 }, { "row": 0, "col": 1 }, { "row": 0, "col": 2 }, { "row": 0, "col": 3 }, { "row": 0, "col": 4 }, { "row": 0, "col": 5 }, { "row": 0, "col": 6 }, { "row": 0, "col": 7 }, { "row": 0, "col": 8 }, { "row": 0, "col": 9 }, { "row": 0, "col": 10 }, { "row": 0, "col": 11 },
+              { "row": 1, "col": 0 }, { "row": 1, "col": 1 }, { "row": 1, "col": 2 }, { "row": 1, "col": 3 }, { "row": 1, "col": 4 }, { "row": 1, "col": 5 }, { "row": 1, "col": 6 }, { "row": 1, "col": 7 }, { "row": 1, "col": 8 }, { "row": 1, "col": 9 }, { "row": 1, "col": 10 }, { "row": 1, "col": 11 },
+              { "row": 2, "col": 0 }, { "row": 2, "col": 1 }, { "row": 2, "col": 2 }, { "row": 2, "col": 3 }, { "row": 2, "col": 4 }, { "row": 2, "col": 5 }, { "row": 2, "col": 6 }, { "row": 2, "col": 7 }, { "row": 2, "col": 8 }, { "row": 2, "col": 9 }, { "row": 2, "col": 10 }, { "row": 2, "col": 11 }
+            ],
+            "showCount": true,
+            "fill": "#818cf8",
+            "stroke": "#d1d5db",
+            "data": { "animated": true }
+          }
+        ],
+        "labels": [
+          { "text": "每行 12 个 × 3 行 = 36", "x": 200, "y": 210, "fontSize": 16, "fill": "#4f46e5" }
+        ]
+      },
+      "hint": "每行的个数 × 行数 = 总数"
+    },
+    {
+      "title": "发现规律",
+      "narration": "仔细看：每行 12 个，3 行，用乘法算就是 12 × 3 = 36。乘法就是求几个相同加数的和的简便方法，不用再一个一个加了！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "mult-grid-label",
+            "type": "grid",
+            "x": 66,
+            "y": 86,
+            "cols": 12,
+            "rows": 3,
+            "cellSize": 20,
+            "highlightCells": [
+              { "row": 0, "col": 0 }, { "row": 0, "col": 1 }, { "row": 0, "col": 2 }, { "row": 0, "col": 3 }, { "row": 0, "col": 4 }, { "row": 0, "col": 5 }, { "row": 0, "col": 6 }, { "row": 0, "col": 7 }, { "row": 0, "col": 8 }, { "row": 0, "col": 9 }, { "row": 0, "col": 10 }, { "row": 0, "col": 11 },
+              { "row": 1, "col": 0 }, { "row": 1, "col": 1 }, { "row": 1, "col": 2 }, { "row": 1, "col": 3 }, { "row": 1, "col": 4 }, { "row": 1, "col": 5 }, { "row": 1, "col": 6 }, { "row": 1, "col": 7 }, { "row": 1, "col": 8 }, { "row": 1, "col": 9 }, { "row": 1, "col": 10 }, { "row": 1, "col": 11 },
+              { "row": 2, "col": 0 }, { "row": 2, "col": 1 }, { "row": 2, "col": 2 }, { "row": 2, "col": 3 }, { "row": 2, "col": 4 }, { "row": 2, "col": 5 }, { "row": 2, "col": 6 }, { "row": 2, "col": 7 }, { "row": 2, "col": 8 }, { "row": 2, "col": 9 }, { "row": 2, "col": 10 }, { "row": 2, "col": 11 }
+            ],
+            "showCount": false,
+            "fill": "#818cf8",
+            "stroke": "#d1d5db",
+            "data": { "showLabels": true }
+          },
+          {
+            "id": "result-text",
+            "type": "text",
+            "x": 200,
+            "y": 240,
+            "text": "12 × 3 = 36",
+            "fontSize": 22,
+            "textFill": "#4f46e5"
+          }
+        ],
+        "labels": []
+      },
+      "hint": "乘法 = 求几个相同加数的和的简便运算"
+    },
+    {
+      "title": "归纳公式",
+      "narration": "每行的个数用 a 表示，行数用 b 表示，那么总数就是 a × b。不管数字多大，乘法都是这个道理——求 b 个 a 相加的和。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "formula-rect",
+            "type": "rect",
+            "x": 100,
+            "y": 100,
+            "width": 200,
+            "height": 80,
+            "fill": "#eef2ff",
+            "stroke": "#6366f1",
+            "strokeWidth": 2,
+            "radius": 8
+          },
+          {
+            "id": "formula-text",
+            "type": "text",
+            "x": 200,
+            "y": 140,
+            "text": "a × b",
+            "fontSize": 28,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "a = 每行的个数（多位数）", "x": 200, "y": 220, "fontSize": 13, "fill": "#6b7280" },
+          { "text": "b = 行数（一位数）", "x": 200, "y": 245, "fontSize": 13, "fill": "#6b7280" }
+        ],
+        "formula": "a × b"
+      },
+      "hint": "b 个 a 相加 = a × b"
+    }
+  ]
+}

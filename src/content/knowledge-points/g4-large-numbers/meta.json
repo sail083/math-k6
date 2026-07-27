@@ -1,0 +1,19 @@
+{
+  "id": "g4-large-numbers",
+  "grade": 4,
+  "unit": 1,
+  "title": "大数的认识",
+  "objectives": [
+    "认识亿以内的数及数位顺序",
+    "掌握大数的读写方法",
+    "能进行大数的比较和改写"
+  ],
+  "prerequisites": ["g3-add-sub-10000"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 4, "chapter": "四上第1单元" },
+    { "version": "北师大版", "grade": 4, "chapter": "四上第1单元" },
+    { "version": "苏教版", "grade": 4, "chapter": "四上第1单元" }
+  ],
+  "vizType": "place-value-chart",
+  "hasFormula": false
+}

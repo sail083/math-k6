@@ -1,0 +1,19 @@
+{
+  "id": "g3-measurement",
+  "grade": 3,
+  "unit": 5,
+  "title": "测量（长度与质量）",
+  "objectives": [
+    "认识毫米、分米、千米等长度单位",
+    "认识吨等质量单位",
+    "掌握长度和质量单位的换算"
+  ],
+  "prerequisites": [],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 3, "chapter": "三上第3单元" },
+    { "version": "北师大版", "grade": 3, "chapter": "三上第1单元" },
+    { "version": "苏教版", "grade": 3, "chapter": "三上第2单元" }
+  ],
+  "vizType": "number-line",
+  "hasFormula": false
+}

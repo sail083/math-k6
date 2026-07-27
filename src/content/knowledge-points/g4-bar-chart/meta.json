@@ -1,0 +1,19 @@
+{
+  "id": "g4-bar-chart",
+  "grade": 4,
+  "unit": 7,
+  "title": "条形统计图",
+  "objectives": [
+    "认识条形统计图的结构和特点",
+    "能根据数据绘制条形统计图",
+    "能从统计图中分析数据"
+  ],
+  "prerequisites": [],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 4, "chapter": "四上第7单元" },
+    { "version": "北师大版", "grade": 4, "chapter": "四上第2单元" },
+    { "version": "苏教版", "grade": 4, "chapter": "四上第4单元" }
+  ],
+  "vizType": "bar-chart",
+  "hasFormula": false
+}

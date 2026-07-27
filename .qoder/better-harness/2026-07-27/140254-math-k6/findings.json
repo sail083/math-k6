@@ -1,0 +1,116 @@
+{
+  "summary": {
+    "projectName": "math-k6",
+    "locale": "zh-CN",
+    "modelId": "agent-work-loop-v4",
+    "reportContractVersion": 25,
+    "overview": "项目具备基本本地工具链（Vite + Vitest + oxlint），但缺少版本控制、agent 导航入口和强制执行点，导致变更安全性与学习捕获能力严重受限。30 天窗口内无可观测会话，行为证据为 session-limited。",
+    "aiAgentPractice": {
+      "inspectedSurfaces": [],
+      "coverageRows": [
+        {
+          "surface": "Memories",
+          "scopes": [
+            "Project"
+          ],
+          "count": 5
+        },
+        {
+          "surface": "Custom Agents",
+          "scopes": [
+            "Project"
+          ],
+          "count": 0
+        }
+      ]
+    },
+    "assignmentSummaries": [],
+    "dimensions": [
+      {
+        "id": "task-understanding",
+        "label": "任务理解",
+        "score": 42,
+        "summary": "5 条项目 Memory 提供基础上下文，但无 AGENTS.md 或架构文档路由任务边界；会话行为不可观测。",
+        "findingRefs": [
+          "no-agent-navigation"
+        ]
+      },
+      {
+        "id": "controlled-execution",
+        "label": "可控执行",
+        "score": 45,
+        "summary": "npm install/dev/build 路径可用，但运行时版本未固定，无诊断或重置命令，权限边界未配置。",
+        "findingRefs": []
+      },
+      {
+        "id": "change-validation",
+        "label": "改动验证",
+        "score": 45,
+        "summary": "Vitest 与 oxlint 提供快速本地反馈，但无变更感知路由、无强制执行点，检查可被完全跳过。",
+        "findingRefs": [
+          "no-enforcement-gate"
+        ]
+      },
+      {
+        "id": "reliable-delivery",
+        "label": "可靠交付",
+        "score": 30,
+        "summary": "无 Git 仓库导致验收路径、回滚与恢复机制完全缺失；变更直接写入工作区，不可追溯。",
+        "findingRefs": [
+          "no-version-control"
+        ]
+      },
+      {
+        "id": "learning-capture",
+        "label": "经验沉淀",
+        "score": 35,
+        "summary": "零可观测会话、零 Episode，无法检测重复机会或验证改进效果；学习循环处于最低基线。",
+        "findingRefs": []
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "no-version-control",
+      "title": "无版本控制导致变更不可恢复且无验收路径",
+      "severity": "High",
+      "reason": "项目目录不是 Git 仓库（evidence-pack 命令返回 fatal: not a git repository）。所有变更直接写入文件系统，无法产生 diff、review、CI 或回滚。agent 或人工误操作不可恢复，Reliable Delivery 维度所有检查均被阻断。",
+      "expectedOutput": [
+        "项目拥有可用的 Git 仓库，变更可追溯、可回滚，为后续 CI 和 review 流程提供基础。"
+      ],
+      "expectedArtifact": "Git repository",
+      "aiFixPrompt": "/better-harness fix this issue\n\n在项目根目录初始化 Git 仓库并创建首次提交，确保 .gitignore 已正确排除 node_modules 和 dist。\n\n## Validation\n\n- 运行 git status 确认仓库已初始化\n- 运行 git log --oneline 确认首次提交存在\n- 确认 .gitignore 排除了 node_modules/ 和 dist/",
+      "dimensionRefs": [
+        "reliable-delivery"
+      ]
+    },
+    {
+      "id": "no-agent-navigation",
+      "title": "Agent 缺少任务入口与上下文路由文件",
+      "severity": "Medium",
+      "reason": "项目无 AGENTS.md、贡献指南或风险路由文件。agent 每次任务需全量遍历推断项目形状、修改范围和验证路径，无法快速定位核心边界与高风险区域。目录结构虽清晰（components/content/lib/pages/visualizations），但无职责说明。",
+      "expectedOutput": [
+        "agent 可从 AGENTS.md 快速获取项目结构、修改路径和验证方式，减少全量探索成本。"
+      ],
+      "expectedArtifact": "AGENTS.md",
+      "aiFixPrompt": "/better-harness fix this issue\n\n创建 AGENTS.md 文件，包含：项目简介、目录职责映射、核心修改路径（内容添加走 src/content/knowledge-points/）、验证命令（npm run test && npm run build）、高风险区域标注。\n\n## Validation\n\n- 确认 AGENTS.md 存在于项目根目录\n- 确认包含目录映射、验证命令和高风险区域三个核心段落",
+      "dimensionRefs": [
+        "task-understanding"
+      ]
+    },
+    {
+      "id": "no-enforcement-gate",
+      "title": "质量检查无强制执行点，可被完全跳过",
+      "severity": "Medium",
+      "reason": "项目配置了 oxlint（lint）、vitest（测试）和 tsc（类型检查），但无 Git hooks、无 CI、无 pre-commit 配置。所有检查仅为手动可选脚本，无法阻止不合规变更进入工作区。oxlint 仅启用 2 条显式规则，覆盖面有限。",
+      "expectedOutput": [
+        "每次提交或推送前自动执行 lint + typecheck + test，不合规变更无法绕过检查。"
+      ],
+      "expectedArtifact": "Pre-commit hook or CI config",
+      "aiFixPrompt": "/better-harness fix this issue\n\n在 Git 初始化后，添加 pre-commit hook（如 husky + lint-staged）或 CI 配置，确保 lint、typecheck 和 test 在提交前自动执行。\n\n## Validation\n\n- 确认 hook 或 CI 配置存在\n- 模拟一次 lint 错误，确认提交被阻止\n- 运行 npm run build 确认正常通过",
+      "dimensionRefs": [
+        "change-validation"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,267 @@
+{
+  "title": "三角形面积公式是怎么来的？",
+  "formula": "S = ½ × a × h",
+  "steps": [
+    {
+      "title": "认识三角形",
+      "narration": "这是一个三角形，底是 a，高是 h。我们想知道它的面积，但还不会直接算。如果能把它变成我们学过的图形就好了！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "tri1",
+            "type": "triangle",
+            "points": [{"x":110,"y":180},{"x":270,"y":180},{"x":180,"y":90}],
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "base-label1",
+            "type": "text",
+            "x": 190,
+            "y": 200,
+            "text": "底 a",
+            "fontSize": 15,
+            "textFill": "#1e3a8a",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "height-line1",
+            "type": "line",
+            "x": 180,
+            "y": 90,
+            "width": 0,
+            "height": 90,
+            "stroke": "#ef4444",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "h-label1",
+            "type": "text",
+            "x": 168,
+            "y": 135,
+            "text": "高 h",
+            "fontSize": 13,
+            "textFill": "#ef4444",
+            "data": { "anchor": "end" }
+          }
+        ],
+        "labels": [
+          { "text": "三角形面积怎么算？", "x": 200, "y": 250, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "highlight": ["tri1"]
+      },
+      "hint": "能不能用两个三角形拼成学过的图形？"
+    },
+    {
+      "title": "复制一个相同的三角形",
+      "narration": "我们再拿一个完全一样的三角形，颜色不同但形状大小一模一样。现在有两个完全相同的三角形了。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "tri2a",
+            "type": "triangle",
+            "points": [{"x":80,"y":180},{"x":240,"y":180},{"x":150,"y":90}],
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "tri2b",
+            "type": "triangle",
+            "points": [{"x":260,"y":180},{"x":380,"y":180},{"x":320,"y":90}],
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "label2a",
+            "type": "text",
+            "x": 150,
+            "y": 200,
+            "text": "三角形①",
+            "fontSize": 12,
+            "textFill": "#1e3a8a",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "label2b",
+            "type": "text",
+            "x": 320,
+            "y": 200,
+            "text": "三角形②",
+            "fontSize": 12,
+            "textFill": "#92400e",
+            "data": { "anchor": "middle" }
+          }
+        ],
+        "labels": [
+          { "text": "两个完全相同的三角形", "x": 200, "y": 250, "fontSize": 14, "fill": "#374151" }
+        ],
+        "highlight": ["tri2a", "tri2b"]
+      },
+      "hint": "两个三角形完全一样"
+    },
+    {
+      "title": "旋转三角形②",
+      "narration": "把三角形②旋转 180°（倒过来），然后把它和三角形①拼在一起。注意看，两个三角形刚好拼成了一个平行四边形！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "rot-arrow",
+            "type": "arrow",
+            "x": 300,
+            "y": 170,
+            "width": -60,
+            "height": 0,
+            "stroke": "#ef4444",
+            "strokeWidth": 2
+          },
+          {
+            "id": "rot-label",
+            "type": "text",
+            "x": 300,
+            "y": 155,
+            "text": "旋转180°",
+            "fontSize": 12,
+            "textFill": "#ef4444",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "rot-tri2a",
+            "type": "triangle",
+            "points": [{"x":110,"y":180},{"x":270,"y":180},{"x":180,"y":90}],
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2,
+            "opacity": 0.4
+          },
+          {
+            "id": "rot-tri2b",
+            "type": "triangle",
+            "points": [{"x":110,"y":180},{"x":270,"y":180},{"x":200,"y":270}],
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2,
+            "opacity": 0.4
+          }
+        ],
+        "labels": [
+          { "text": "旋转后准备拼接", "x": 200, "y": 250, "fontSize": 14, "fill": "#6b7280" }
+        ],
+        "highlight": ["rot-tri2b"]
+      },
+      "hint": "旋转 180° 后拼在一起"
+    },
+    {
+      "title": "拼成平行四边形",
+      "narration": "两个三角形拼在一起，形成了一个平行四边形！这个平行四边形的底就是三角形的底 a，高就是三角形的高 h。而平行四边形的面积 = 两个三角形的面积之和。",
+      "scene": {
+        "shapes": [
+          {
+            "id": "para-tri-a",
+            "type": "triangle",
+            "points": [{"x":110,"y":180},{"x":270,"y":180},{"x":180,"y":90}],
+            "fill": "#dbeafe",
+            "stroke": "#3b82f6",
+            "strokeWidth": 2
+          },
+          {
+            "id": "para-tri-b",
+            "type": "triangle",
+            "points": [{"x":110,"y":180},{"x":270,"y":180},{"x":200,"y":270}],
+            "fill": "#fef3c7",
+            "stroke": "#f59e0b",
+            "strokeWidth": 2
+          },
+          {
+            "id": "base-label4",
+            "type": "text",
+            "x": 190,
+            "y": 290,
+            "text": "底 a",
+            "fontSize": 14,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "h-line4",
+            "type": "line",
+            "x": 180,
+            "y": 90,
+            "width": 0,
+            "height": 90,
+            "stroke": "#ef4444",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "h-label4",
+            "type": "text",
+            "x": 168,
+            "y": 135,
+            "text": "高 h",
+            "fontSize": 13,
+            "textFill": "#ef4444",
+            "data": { "anchor": "end" }
+          }
+        ],
+        "labels": [
+          { "text": "平行四边形面积 = 底 × 高 = a × h", "x": 200, "y": 35, "fontSize": 14, "fill": "#4f46e5" }
+        ],
+        "highlight": ["para-tri-a", "para-tri-b"]
+      },
+      "hint": "平行四边形面积 = 两个三角形面积"
+    },
+    {
+      "title": "得出公式",
+      "narration": "平行四边形的面积 = 两个三角形的面积。所以一个三角形的面积 = 平行四边形面积 ÷ 2 = 底 × 高 ÷ 2，也就是 S = ½ × a × h！",
+      "scene": {
+        "shapes": [
+          {
+            "id": "final-tri",
+            "type": "triangle",
+            "points": [{"x":130,"y":190},{"x":270,"y":190},{"x":185,"y":95}],
+            "fill": "#d1fae5",
+            "stroke": "#10b981",
+            "strokeWidth": 2
+          },
+          {
+            "id": "final-base",
+            "type": "text",
+            "x": 200,
+            "y": 210,
+            "text": "底 a",
+            "fontSize": 14,
+            "textFill": "#4f46e5",
+            "data": { "anchor": "middle" }
+          },
+          {
+            "id": "final-h-line",
+            "type": "line",
+            "x": 185,
+            "y": 95,
+            "width": 0,
+            "height": 95,
+            "stroke": "#ef4444",
+            "strokeWidth": 1.5
+          },
+          {
+            "id": "final-h-label",
+            "type": "text",
+            "x": 173,
+            "y": 142,
+            "text": "高 h",
+            "fontSize": 13,
+            "textFill": "#ef4444",
+            "data": { "anchor": "end" }
+          }
+        ],
+        "labels": [
+          { "text": "三角形面积 = 平行四边形面积 ÷ 2", "x": 200, "y": 245, "fontSize": 14, "fill": "#374151" }
+        ],
+        "formula": "S = ½ × a × h"
+      },
+      "hint": "一个三角形 = 平行四边形的一半，所以要 ÷ 2"
+    }
+  ]
+}

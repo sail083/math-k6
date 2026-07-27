@@ -1,0 +1,19 @@
+{
+  "id": "g5-decimal-mult",
+  "grade": 5,
+  "unit": 1,
+  "title": "小数乘法",
+  "objectives": [
+    "理解小数乘法的算理",
+    "掌握小数乘法的计算方法",
+    "能正确确定积的小数位数"
+  ],
+  "prerequisites": [],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 5, "chapter": "五上第1单元" },
+    { "version": "北师大版", "grade": 5, "chapter": "五上第1单元" },
+    { "version": "苏教版", "grade": 5, "chapter": "五上第3单元" }
+  ],
+  "vizType": "area-grid",
+  "hasFormula": false
+}

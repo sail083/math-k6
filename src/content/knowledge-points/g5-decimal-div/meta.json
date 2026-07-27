@@ -1,0 +1,19 @@
+{
+  "id": "g5-decimal-div",
+  "grade": 5,
+  "unit": 2,
+  "title": "小数除法",
+  "objectives": [
+    "理解小数除法的算理",
+    "掌握除数是整数和除数是小数的除法计算方法",
+    "能用四舍五入法求商的近似值"
+  ],
+  "prerequisites": ["g5-decimal-mult"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 5, "chapter": "五上第3单元" },
+    { "version": "北师大版", "grade": 5, "chapter": "五上第1单元" },
+    { "version": "苏教版", "grade": 5, "chapter": "五上第5单元" }
+  ],
+  "vizType": "number-line",
+  "hasFormula": false
+}

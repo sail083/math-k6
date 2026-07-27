@@ -1,0 +1,51 @@
+{
+  "knowledgePointId": "g3-measurement",
+  "passThreshold": 0.6,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "prompt": "1 分米 = ？厘米",
+      "options": ["10厘米", "100厘米", "1厘米", "5厘米"],
+      "correctAnswer": "10厘米",
+      "explanation": "相邻长度单位之间是10进制，1分米=10厘米。",
+      "points": 10
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "prompt": "3 千米 = ？米",
+      "options": ["300米", "3000米", "30米", "30000米"],
+      "correctAnswer": "3000米",
+      "explanation": "千米和米之间是1000进制，1千米=1000米，3千米=3×1000=3000米。",
+      "points": 10
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "prompt": "测量一支铅笔的长度，最合适的单位是？",
+      "options": ["千米", "米", "分米", "厘米"],
+      "correctAnswer": "厘米",
+      "explanation": "一支铅笔长约18厘米。用厘米做单位最合适，数字大小合适也符合日常习惯。",
+      "points": 10
+    },
+    {
+      "id": "q4",
+      "type": "choice",
+      "prompt": "1 吨 = ？千克",
+      "options": ["100千克", "1000千克", "10000千克", "10千克"],
+      "correctAnswer": "1000千克",
+      "explanation": "吨和千克之间是1000进制，1吨=1000千克。吨用来量比较重的东西。",
+      "points": 10
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "prompt": "2 米 50 厘米 = ？厘米",
+      "options": ["250厘米", "205厘米", "200厘米", "52厘米"],
+      "correctAnswer": "250厘米",
+      "explanation": "2米=200厘米（1米=100厘米），200+50=250厘米。注意要把米换算成厘米再加。",
+      "points": 10
+    }
+  ]
+}

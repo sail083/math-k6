@@ -1,0 +1,20 @@
+{
+  "id": "g6-circle-area",
+  "grade": 6,
+  "unit": 5,
+  "title": "圆的面积",
+  "objectives": [
+    "理解圆面积公式的推导过程",
+    "掌握圆面积公式",
+    "能运用公式计算圆的面积"
+  ],
+  "prerequisites": ["g6-circle-perimeter"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 6, "chapter": "六上第5单元" },
+    { "version": "北师大版", "grade": 6, "chapter": "六上第1单元" },
+    { "version": "苏教版", "grade": 6, "chapter": "六下第4单元" }
+  ],
+  "vizType": "circle-unroll",
+  "hasFormula": true,
+  "formula": "S = πr²"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "g4-angle-measure",
+  "grade": 4,
+  "unit": 4,
+  "title": "角的度量",
+  "objectives": [
+    "认识角的各部分名称",
+    "认识量角器并掌握量角方法",
+    "了解角的分类及各类角的特征"
+  ],
+  "prerequisites": [],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 4, "chapter": "四上第3单元" },
+    { "version": "北师大版", "grade": 4, "chapter": "四上第2单元" },
+    { "version": "苏教版", "grade": 4, "chapter": "四上第2单元" }
+  ],
+  "vizType": "protractor",
+  "hasFormula": false
+}

@@ -1,0 +1,19 @@
+{
+  "id": "g5-possibility",
+  "grade": 5,
+  "unit": 8,
+  "title": "可能性",
+  "objectives": [
+    "理解可能性的含义",
+    "能用一定、可能、不可能描述事件",
+    "能比较不同事件可能性的大小"
+  ],
+  "prerequisites": [],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 5, "chapter": "五上第4单元" },
+    { "version": "北师大版", "grade": 5, "chapter": "五上第7单元" },
+    { "version": "苏教版", "grade": 5, "chapter": "五上第6单元" }
+  ],
+  "vizType": "probability-model",
+  "hasFormula": false
+}

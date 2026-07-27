@@ -1,0 +1,19 @@
+{
+  "id": "g4-decimal-meaning",
+  "grade": 4,
+  "unit": 9,
+  "title": "小数的意义",
+  "objectives": [
+    "理解小数的含义",
+    "认识小数的计数单位",
+    "掌握小数与分数的关系"
+  ],
+  "prerequisites": ["g3-fraction-intro", "g3-measurement"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 4, "chapter": "四下第4单元" },
+    { "version": "北师大版", "grade": 4, "chapter": "四下第1单元" },
+    { "version": "苏教版", "grade": 4, "chapter": "四下第3单元" }
+  ],
+  "vizType": "place-value-chart",
+  "hasFormula": false
+}

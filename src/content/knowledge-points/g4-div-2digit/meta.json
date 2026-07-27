@@ -1,0 +1,19 @@
+{
+  "id": "g4-div-2digit",
+  "grade": 4,
+  "unit": 3,
+  "title": "除数是两位数的除法",
+  "objectives": [
+    "掌握除数是两位数的笔算除法",
+    "学会试商和调商的方法",
+    "能正确进行除法计算和验算"
+  ],
+  "prerequisites": ["g3-division-remainder", "g4-mult-2digit"],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 4, "chapter": "四上第6单元" },
+    { "version": "北师大版", "grade": 4, "chapter": "四上第6单元" },
+    { "version": "苏教版", "grade": 4, "chapter": "四上第2单元" }
+  ],
+  "vizType": "number-line",
+  "hasFormula": false
+}

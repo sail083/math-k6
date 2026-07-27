@@ -1,0 +1,19 @@
+{
+  "id": "g5-position",
+  "grade": 5,
+  "unit": 7,
+  "title": "位置（数对）",
+  "objectives": [
+    "理解用数对表示位置的方法",
+    "能在方格纸上用数对确定位置",
+    "理解数对中列和行的含义"
+  ],
+  "prerequisites": [],
+  "textbookRefs": [
+    { "version": "人教版", "grade": 5, "chapter": "五上第2单元" },
+    { "version": "北师大版", "grade": 5, "chapter": "五上第6单元" },
+    { "version": "苏教版", "grade": 5, "chapter": "五下第2单元" }
+  ],
+  "vizType": "coordinate-grid",
+  "hasFormula": false
+}
