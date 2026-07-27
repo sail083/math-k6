@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: game_engine/simple_games
+title: 数学题游戏组件（选择题/填空题/判断题）
+scope:
+    - src/components/games/ChoiceGame.tsx
+    - src/components/games/FillBlankGame.tsx
+    - src/components/games/TrueFalseGame.tsx
+source_files: []
+depends_on: []
+related_to:
+    - path: game_engine/interactive_games

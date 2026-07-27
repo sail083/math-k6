@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: game_engine/interactive_games
+title: 交互式答题游戏组件集
+scope:
+    - src/components/games/DragAssembleGame.tsx
+    - src/components/games/DragMatchGame.tsx
+    - src/components/games/TimedChallengeGame.tsx
+    - src/components/games/TimelineGame.tsx
+source_files: []
+depends_on: []
+related_to:
+    - path: game_engine/simple_games

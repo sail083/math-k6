@@ -46,6 +46,20 @@
       "correctAnswer": "18平方厘米",
       "explanation": "等底等高的三角形面积是平行四边形面积的一半。36 ÷ 2 = 18（平方厘米）。",
       "points": 10
+    },
+    {
+      "id": "q-drag-match-1",
+      "type": "drag-match",
+      "prompt": "将图形与对应的面积公式匹配起来",
+      "options": ["S = ½ × a × h", "S = a × h", "S = a × b"],
+      "correctAnswer": "三角形→S = ½ × a × h,平行四边形→S = a × h,长方形→S = a × b",
+      "explanation": "三角形面积=½×底×高；平行四边形面积=底×高；长方形面积=长×宽",
+      "dragItems": [
+        {"id": "item1", "label": "三角形", "target": "S = ½ × a × h"},
+        {"id": "item2", "label": "平行四边形", "target": "S = a × h"},
+        {"id": "item3", "label": "长方形", "target": "S = a × b"}
+      ],
+      "points": 10
     }
   ]
 }

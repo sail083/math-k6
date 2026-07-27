@@ -35,8 +35,6 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,md}'],
-        // Don't cache content knowledge point files (they're lazy loaded)
-        navigateFallbackDenylist: [/^\/kp\//],
       },
     }),
   ],

@@ -104,7 +104,17 @@ export default function DragMatchGame({ question, onAnswer }: DragMatchGameProps
         const matchDescription = dragItems
           .map((i) => `${i.label}→${i.target}`)
           .join('，');
-        onAnswer(matchDescription, !hadMistake);
+        // Prefer correctAnswer as the authority (consistent with other game types);
+        // fall back to the constructed mapping string when not provided.
+        const hasCorrectAnswer = Array.isArray(question.correctAnswer)
+          ? question.correctAnswer.length > 0
+          : question.correctAnswer !== '';
+        const answerValue = hasCorrectAnswer
+          ? Array.isArray(question.correctAnswer)
+            ? question.correctAnswer.join('、')
+            : question.correctAnswer
+          : matchDescription;
+        onAnswer(answerValue, !hadMistake);
       }
     } else {
       // Wrong match — flash red and return item

@@ -46,6 +46,21 @@
       "correctAnswer": "78.5平方厘米",
       "explanation": "S = πr² = 3.14 × 5² = 3.14 × 25 = 78.5（平方厘米）。注意 r²=25，不是 r×2=10。",
       "points": 10
+    },
+    {
+      "id": "q-timeline-1",
+      "type": "timeline",
+      "prompt": "请按正确顺序排列圆面积公式的推导步骤。",
+      "dragItems": [
+        { "id": "t1", "label": "将圆等分成若干扇形", "order": 1 },
+        { "id": "t2", "label": "将扇形重新排列", "order": 2 },
+        { "id": "t3", "label": "拼成近似长方形", "order": 3 },
+        { "id": "t4", "label": "长方形长 = πr，宽 = r", "order": 4 },
+        { "id": "t5", "label": "S = πr × r = πr²", "order": 5 }
+      ],
+      "correctAnswer": ["t1", "t2", "t3", "t4", "t5"],
+      "explanation": "将圆等分成若干小扇形后重新排列，可以拼成近似长方形。长方形的长等于圆周长的一半（πr），宽等于半径（r），所以圆面积 S = πr × r = πr²。",
+      "points": 10
     }
   ]
 }

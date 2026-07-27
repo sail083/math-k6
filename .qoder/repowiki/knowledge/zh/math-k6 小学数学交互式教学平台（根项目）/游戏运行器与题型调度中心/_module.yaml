@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: game_engine
+title: 游戏运行器与题型调度中心
+scope:
+    - src/components/GameRunner.tsx
+    - src/components/games/
+source_files: []
+depends_on: []
+related_to:
+    - path: shared_lib
+    - path: tests

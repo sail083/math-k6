@@ -46,6 +46,16 @@
       "correctAnswer": "72个",
       "explanation": "3箱就是3个24，用乘法：24×3。个位：4×3=12，写2进1；十位：2×3=6，加进位1=7。所以24×3=72（个）。",
       "points": 10
+    },
+    {
+      "id": "q-timed-challenge-1",
+      "type": "timed-challenge",
+      "prompt": "23 × 4 = ?",
+      "options": ["82", "92", "86", "96"],
+      "correctAnswer": "92",
+      "explanation": "23 × 4：个位 3 × 4 = 12，写 2 进 1；十位 2 × 4 = 8，加进位 1 = 9。所以 23 × 4 = 92。",
+      "timeLimit": 15,
+      "points": 10
     }
   ]
 }

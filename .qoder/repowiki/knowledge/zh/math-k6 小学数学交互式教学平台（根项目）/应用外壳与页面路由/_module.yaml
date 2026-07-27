@@ -1,0 +1,15 @@
+schema_version: 1
+module_path: app_shell
+title: 应用外壳与页面路由
+scope:
+    - src/App.tsx
+    - src/main.tsx
+    - src/index.css
+    - src/pages/
+    - src/context/
+source_files: []
+depends_on: []
+related_to:
+    - path: content_data
+    - path: shared_lib
+    - path: visualizations

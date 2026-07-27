@@ -130,6 +130,7 @@ export interface DragItemSpec {
   id: string;
   label: string;
   target?: string;               // 匹配题的目标槽位 ID
+  order?: number;                // 拖拽拼装 / 排序题的顺序
 }
 
 export interface Question {

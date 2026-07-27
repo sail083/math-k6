@@ -11,14 +11,20 @@ export default function KnowledgePointPage() {
 
   useEffect(() => {
     if (!id) {
+      setKp(null);
       setLoading(false);
       return;
     }
+    let cancelled = false;
     setLoading(true);
     loadKnowledgePointDetail(id).then((detail) => {
+      if (cancelled) return;
       setKp(detail ?? null);
       setLoading(false);
     });
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   if (loading) {

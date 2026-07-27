@@ -76,9 +76,18 @@ export async function loadKnowledgePointDetail(id: string): Promise<KnowledgePoi
   const gamePath = `/src/content/knowledge-points/${id}/game.json`;
 
   const [explain, derivation, game] = await Promise.all([
-    explainLoader[explainPath]?.().catch(() => ''),
-    derivationLoader[derivPath]?.().catch(() => undefined),
-    gameLoader[gamePath]?.().catch(() => undefined),
+    explainLoader[explainPath]?.().catch((e) => {
+      console.error(`[content] Failed to load explain.md for ${id}:`, e);
+      return '';
+    }),
+    derivationLoader[derivPath]?.().catch((e) => {
+      console.error(`[content] Failed to load derivation.json for ${id}:`, e);
+      return undefined;
+    }),
+    gameLoader[gamePath]?.().catch((e) => {
+      console.error(`[content] Failed to load game.json for ${id}:`, e);
+      return undefined;
+    }),
   ]);
 
   return {

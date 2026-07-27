@@ -1,0 +1,131 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: zh-CN
+branch: Q0DeR-MaG1C-BrAnCh-Fo2-NoN-GiT-Or-No-C0MmIt
+nodes_managed: true
+exported_at: "2026-07-27T07:20:53Z"
+modules:
+    "":
+        dir_name: math-k6 小学数学交互式教学平台（根项目）
+        title: math-k6 小学数学交互式教学平台（根项目）
+        scope:
+            - README.md
+            - .gitignore
+            - .oxlintrc.json
+            - index.html
+            - package.json
+            - package-lock.json
+            - tsconfig.json
+            - tsconfig.app.json
+            - tsconfig.node.json
+            - vite.config.ts
+        source_files: []
+        children:
+            - app_shell
+            - content_data
+            - game_engine
+            - shared_lib
+            - tests
+            - visualizations
+        depends_on: []
+        related_to: []
+    app_shell:
+        dir_name: 应用外壳与页面路由
+        title: 应用外壳与页面路由
+        scope:
+            - src/App.tsx
+            - src/main.tsx
+            - src/index.css
+            - src/pages/
+            - src/context/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: content_data
+            - path: shared_lib
+            - path: visualizations
+    content_data:
+        dir_name: 小学数学知识点内容数据
+        title: 小学数学知识点内容数据
+        scope:
+            - src/content/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: app_shell
+    game_engine:
+        dir_name: 游戏运行器与题型调度中心
+        title: 游戏运行器与题型调度中心
+        scope:
+            - src/components/GameRunner.tsx
+            - src/components/games/
+        source_files: []
+        children:
+            - game_engine/interactive_games
+            - game_engine/simple_games
+        depends_on: []
+        related_to:
+            - path: shared_lib
+            - path: tests
+    game_engine/interactive_games:
+        dir_name: 交互式答题游戏组件集
+        title: 交互式答题游戏组件集
+        scope:
+            - src/components/games/DragAssembleGame.tsx
+            - src/components/games/DragMatchGame.tsx
+            - src/components/games/TimedChallengeGame.tsx
+            - src/components/games/TimelineGame.tsx
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: game_engine/simple_games
+    game_engine/simple_games:
+        dir_name: 数学题游戏组件（选择题_填空题_判断题）
+        title: 数学题游戏组件（选择题/填空题/判断题）
+        scope:
+            - src/components/games/ChoiceGame.tsx
+            - src/components/games/FillBlankGame.tsx
+            - src/components/games/TrueFalseGame.tsx
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: game_engine/interactive_games
+    shared_lib:
+        dir_name: 数学知识点共享库（类型定义、内容加载与进度管理）
+        title: 数学知识点共享库（类型定义、内容加载与进度管理）
+        scope:
+            - src/lib/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: app_shell
+            - path: game_engine
+            - path: tests
+            - path: visualizations
+    tests:
+        dir_name: 单元测试套件（Vitest）
+        title: 单元测试套件（Vitest）
+        scope:
+            - src/test/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: game_engine
+            - path: shared_lib
+    visualizations:
+        dir_name: 数学可视化组件库
+        title: 数学可视化组件库
+        scope:
+            - src/visualizations/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: app_shell
+            - path: shared_lib

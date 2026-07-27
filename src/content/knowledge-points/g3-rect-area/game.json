@@ -51,6 +51,21 @@
       "correctAnswer": "用1平方厘米的小正方形去铺满图形，数出多少个就是多少平方厘米",
       "explanation": "面积是图形内部的大小，周长是图形一圈的长度，两者不同。面积单位必须带“平方”（如平方厘米）。周长相同的图形面积不一定相同。用单位面积铺满图形数个数——这正是推导面积公式的方法。",
       "points": 10
+    },
+    {
+      "id": "q-drag-assemble-1",
+      "type": "drag-assemble",
+      "prompt": "请按正确顺序排列长方形面积公式的推导步骤。",
+      "dragItems": [
+        { "id": "step1", "label": "数格子，发现长方形有4列3行", "order": 1 },
+        { "id": "step2", "label": "每行有4个小方格，共3行", "order": 2 },
+        { "id": "step3", "label": "总格数 = 4 × 3 = 12", "order": 3 },
+        { "id": "step4", "label": "归纳：面积 = 长 × 宽", "order": 4 },
+        { "id": "step5", "label": "公式：S = a × b", "order": 5 }
+      ],
+      "correctAnswer": ["step1", "step2", "step3", "step4", "step5"],
+      "explanation": "通过数格子发现长方形的面积等于每行的格数乘以行数，即长乘以宽。由此归纳出长方形面积公式 S = a × b。",
+      "points": 10
     }
   ]
 }
