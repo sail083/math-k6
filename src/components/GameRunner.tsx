@@ -336,7 +336,7 @@ export default function GameRunner({
         </div>
 
         {/* 操作按钮 */}
-        <div className="flex flex-wrap gap-3 justify-center">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 justify-center">
           {!passed && (
             <button
               onClick={handleRestart}
@@ -348,9 +348,10 @@ export default function GameRunner({
           {passed && onNextCourse ? (
             <button
               onClick={onNextCourse}
-              className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[48px] flex items-center"
+              className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[48px] flex items-center gap-2 max-w-full"
             >
-              下一课{nextCourseTitle ? `：${nextCourseTitle}` : ''} →
+              <span className="truncate">下一课{nextCourseTitle ? `：${nextCourseTitle}` : ''}</span>
+              <span className="shrink-0">→</span>
             </button>
           ) : null}
           <button
