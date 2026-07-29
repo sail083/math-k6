@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
 import { ProgressProvider } from '@/context/ProgressContext';
 import Layout from '@/components/Layout';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const GradePage = lazy(() => import('@/pages/GradePage'));
@@ -26,10 +27,10 @@ export default function App() {
           <Layout>
             <Suspense fallback={<SuspenseFallback />}>
               <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/grade/:grade" element={<GradePage />} />
-                <Route path="/kp/:id" element={<KnowledgePointPage />} />
-                <Route path="/dashboard" element={<ProgressDashboard />} />
+                <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+                <Route path="/grade/:grade" element={<ProtectedRoute><GradePage /></ProtectedRoute>} />
+                <Route path="/kp/:id" element={<ProtectedRoute><KnowledgePointPage /></ProtectedRoute>} />
+                <Route path="/dashboard" element={<ProtectedRoute><ProgressDashboard /></ProtectedRoute>} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
 const PHONE_RE = /^1[3-9]\d{9}$/;
@@ -7,6 +7,8 @@ const PHONE_RE = /^1[3-9]\d{9}$/;
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
 
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -35,7 +37,7 @@ export default function LoginPage() {
       return;
     }
 
-    navigate('/', { replace: true });
+    navigate(from, { replace: true });
   };
 
   return (

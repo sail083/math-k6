@@ -96,13 +96,22 @@ export default function Layout({ children }: { children: ReactNode }) {
                   </button>
                 </div>
               ) : (
-                <NavLink
-                  to="/login"
-                  className="inline-flex items-center h-9 px-4 rounded-lg text-xs font-semibold text-white transition-colors"
-                  style={{ background: 'var(--color-primary)' }}
-                >
-                  登录
-                </NavLink>
+                <div className="flex items-center gap-2">
+                  <NavLink
+                    to="/login"
+                    className="inline-flex items-center h-9 px-4 rounded-lg text-xs font-semibold text-white transition-colors"
+                    style={{ background: 'var(--color-primary)' }}
+                  >
+                    登录
+                  </NavLink>
+                  <NavLink
+                    to="/register"
+                    className="inline-flex items-center h-9 px-4 rounded-lg text-xs font-semibold transition-colors hover:bg-slate-100"
+                    style={{ color: 'var(--color-primary)', border: '1px solid var(--color-primary)' }}
+                  >
+                    注册
+                  </NavLink>
+                </div>
               )}
             </div>
           </div>
@@ -120,13 +129,22 @@ export default function Layout({ children }: { children: ReactNode }) {
                   退出
                 </button>
               ) : (
-                <NavLink
-                  to="/login"
-                  className="text-xs font-semibold px-2 py-1"
-                  style={{ color: 'var(--color-primary)' }}
-                >
-                  登录
-                </NavLink>
+                <div className="flex items-center gap-2">
+                  <NavLink
+                    to="/login"
+                    className="text-xs font-semibold px-2 py-1"
+                    style={{ color: 'var(--color-primary)' }}
+                  >
+                    登录
+                  </NavLink>
+                  <NavLink
+                    to="/register"
+                    className="text-xs font-semibold px-2 py-1"
+                    style={{ color: 'var(--color-muted)' }}
+                  >
+                    注册
+                  </NavLink>
+                </div>
               )}
             </div>
             <div className="header-progress__track">
