@@ -17,6 +17,7 @@
     "*.{ts,tsx}": "oxlint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.110.9",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-markdown": "^10.1.0",

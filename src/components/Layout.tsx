@@ -1,6 +1,7 @@
 import { useMemo, type ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useProgress } from '@/context/ProgressContext';
+import { useAuth } from '@/context/AuthContext';
 import { getAllKnowledgePoints, getGrades, getKnowledgePointById } from '@/lib/content';
 import { getOverallProgress } from '@/lib/progress';
 import UiIcon from '@/components/UiIcon';
@@ -14,6 +15,7 @@ const gradeLabels: Record<number, string> = {
 
 export default function Layout({ children }: { children: ReactNode }) {
   const { progress } = useProgress();
+  const { user, logout } = useAuth();
   const allKPs = useMemo(() => getAllKnowledgePoints(), []);
   const total = allKPs.length;
   const overall = getOverallProgress(progress, total);
@@ -27,6 +29,12 @@ export default function Layout({ children }: { children: ReactNode }) {
       ? getKnowledgePointById(routeParts[1])?.meta.grade
       : undefined;
 
+  // Extract phone from user metadata, fallback to email prefix
+  const displayPhone = user?.user_metadata?.phone as string | undefined;
+  const displayLabel = displayPhone
+    ? `${displayPhone.slice(0, 3)}****${displayPhone.slice(7)}`
+    : user?.email?.split('@')[0] ?? '';
+
   return (
     <div className="app-frame min-h-screen flex flex-col">
       {/* 顶部栏 */}
@@ -39,7 +47,7 @@ export default function Layout({ children }: { children: ReactNode }) {
               <span className="brand-copy"><strong>Math Lab</strong><small>小学数学 3-6 年级</small></span>
             </NavLink>
 
-            {/* 桌面端：年级导航 + 进度 */}
+            {/* 桌面端：年级导航 + 进度 + 用户 */}
             <div className="hidden md:flex items-center gap-5">
               <nav className="grade-nav" aria-label="年级导航">
                 {grades.map((g) => (
@@ -68,12 +76,59 @@ export default function Layout({ children }: { children: ReactNode }) {
                   />
                 </div>
               </NavLink>
+
+              {/* 用户状态 */}
+              {user ? (
+                <div className="flex items-center gap-2">
+                  <span
+                    className="inline-flex items-center h-9 px-3 rounded-lg text-xs font-semibold"
+                    style={{ background: '#eef1ff', color: 'var(--color-primary)' }}
+                    title={user.email ?? ''}
+                  >
+                    {displayLabel}
+                  </span>
+                  <button
+                    onClick={logout}
+                    className="inline-flex items-center h-9 px-3 rounded-lg text-xs font-semibold transition-colors hover:bg-slate-100"
+                    style={{ color: 'var(--color-muted)' }}
+                  >
+                    退出
+                  </button>
+                </div>
+              ) : (
+                <NavLink
+                  to="/login"
+                  className="inline-flex items-center h-9 px-4 rounded-lg text-xs font-semibold text-white transition-colors"
+                  style={{ background: 'var(--color-primary)' }}
+                >
+                  登录
+                </NavLink>
+              )}
             </div>
           </div>
 
           {/* 移动端：进度条 */}
           <div className="md:hidden mobile-progress">
-            <NavLink to="/dashboard" className="mobile-progress__label"><UiIcon name="progress" size={16}/><span>学习进度</span><strong>{percent}%</strong></NavLink>
+            <div className="flex items-center justify-between">
+              <NavLink to="/dashboard" className="mobile-progress__label"><UiIcon name="progress" size={16}/><span>学习进度</span><strong>{percent}%</strong></NavLink>
+              {user ? (
+                <button
+                  onClick={logout}
+                  className="text-xs font-semibold px-2 py-1"
+                  style={{ color: 'var(--color-muted)' }}
+                >
+                  退出
+                </button>
+              ) : (
+                <NavLink
+                  to="/login"
+                  className="text-xs font-semibold px-2 py-1"
+                  style={{ color: 'var(--color-primary)' }}
+                >
+                  登录
+                </NavLink>
+              )}
+            </div>
             <div className="header-progress__track">
                 <div
                   className="header-progress__fill"
