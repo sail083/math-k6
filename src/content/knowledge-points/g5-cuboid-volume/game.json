@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g5-cuboid-volume",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -51,6 +51,7 @@
       "correctAnswer": "体积是占了多少空间，表面积是外表面有多大",
       "explanation": "体积是物体所占空间的大小（单位：立方），表面积是所有外面面积之和（单位：平方）。两者完全不同。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "长4、宽3、高2的长方体体积是____立方单位。", "correctAnswer": "24", "explanation": "每层4×3=12个单位立方体，共2层，12×2=24。", "points": 10 }
   ]
 }

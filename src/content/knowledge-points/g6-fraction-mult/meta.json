@@ -29,7 +29,7 @@
       "chapter": "六上第3单元"
     }
   ],
-  "vizType": "fraction-pie",
+  "vizType": "fraction-product",
   "hasFormula": true,
   "formula": "a/b × c/d = (a×c)/(b×d)"
 }

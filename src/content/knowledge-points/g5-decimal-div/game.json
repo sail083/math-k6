@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g5-decimal-div",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -32,10 +32,10 @@
     {
       "id": "q4",
       "type": "choice",
-      "prompt": "一个数除以 0.5，结果一定比原来的数（ ）",
+      "prompt": "一个正数除以 0.5，结果比原来的正数（ ）",
       "options": ["大", "小", "相等", "无法确定"],
       "correctAnswer": "大",
-      "explanation": "0.5 比 1 小，一个非零数除以比 1 小的数，商比被除数大。例如 10 ÷ 0.5 = 20 > 10。",
+      "explanation": "0.5 大于0且小于1，一个正数除以0.5后会变大。例如10 ÷ 0.5 = 20 > 10。0与负数不适用这个大小结论。",
       "points": 10
     },
     {
@@ -45,6 +45,14 @@
       "options": ["3.33", "3.34", "3.30", "3.33…"],
       "correctAnswer": "3.33",
       "explanation": "10 ÷ 3 = 3.333…，保留两位小数看第三位，第三位是 3，四舍舍去，所以约是 3.33。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "fill-blank",
+      "prompt": "迁移题：0.56 ÷ 0.08，同时扩大100倍后变成56 ÷ 8，商是？",
+      "correctAnswer": "7",
+      "explanation": "被除数和除数同时扩大100倍，商不变；56÷8=7。",
       "points": 10
     }
   ]

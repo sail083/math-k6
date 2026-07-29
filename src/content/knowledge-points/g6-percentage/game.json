@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g6-percentage",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -55,6 +55,14 @@
       ],
       "correctAnswer": "50%和1/2表示的大小关系相同",
       "explanation": "50% = 50/100 = 1/2，两者表示的大小关系相同。百分数不带单位，出勤率最多100%，25% = 0.25（不是0.025）。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "fill-blank",
+      "prompt": "迁移题：35%写成小数是？",
+      "correctAnswer": "0.35",
+      "explanation": "35%=35/100=0.35。百分号表示分母固定为100。",
       "points": 10
     }
   ]

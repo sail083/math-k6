@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g6-proportion",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -32,14 +32,8 @@
     },
     {
       "id": "q3",
-      "type": "choice",
-      "prompt": "解比例：3:4 = x:20，x等于多少？",
-      "options": [
-        "12",
-        "15",
-        "60",
-        "80"
-      ],
+      "type": "fill-blank",
+      "prompt": "解比例：3:4 = x:20，x等于多少？（请直接填写数字）",
       "correctAnswer": "15",
       "explanation": "根据基本性质：3×20 = 4×x → 60 = 4x → x = 15。",
       "points": 10
@@ -70,6 +64,14 @@
       ],
       "correctAnswer": "正比例",
       "explanation": "总价 ÷ 数量 = 单价（一定），比值不变，所以总价和数量成正比例。买得越多，花钱越多。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "true-false",
+      "prompt": "2:3和8:12能组成比例，因为2×12=3×8。",
+      "correctAnswer": "对",
+      "explanation": "两个比的交叉乘积都等于24，所以两个比值相等，能组成比例。",
       "points": 10
     }
   ]

@@ -14,7 +14,7 @@
     { "version": "北师大版", "grade": 3, "chapter": "三上第5单元" },
     { "version": "苏教版", "grade": 3, "chapter": "三上第3单元" }
   ],
-  "vizType": "shape-transform",
+  "vizType": "perimeter-walk",
   "hasFormula": true,
   "formula": "C = 2(a + b)"
 }

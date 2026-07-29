@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g4-large-numbers",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -51,6 +51,7 @@
       "correctAnswer": "万位、十万位、百万位、千万位",
       "explanation": "数位顺序表中每级有四个数位。个级是个十百千，万级是万、十万、百万、千万，亿级是亿、十亿、百亿、千亿。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "由3个千万、2个百万和5个一组成的数是____。", "correctAnswer": "32000005", "explanation": "按数位写数，没有单位的数位用0占位，得到32000005。", "points": 10 }
   ]
 }

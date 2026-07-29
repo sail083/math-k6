@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g6-scale",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -45,6 +45,14 @@
       "options": ["1:1000", "1:10000", "1:100000", "1:1000000"],
       "correctAnswer": "1:1000000",
       "explanation": "50千米 = 5000000厘米。比例尺 = 5 : 5000000 = 1 : 1000000。计算比例尺时单位要统一。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "fill-blank",
+      "prompt": "迁移题：点(2,1)以原点为中心放大3倍后，坐标是多少？请写成(x,y)。",
+      "correctAnswer": ["(6,3)", "（6，3）", "6,3"],
+      "explanation": "以原点为中心放大3倍，横坐标和纵坐标都乘3：(2×3,1×3)=(6,3)。",
       "points": 10
     }
   ]

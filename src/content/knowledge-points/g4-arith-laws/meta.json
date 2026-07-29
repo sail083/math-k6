@@ -14,7 +14,7 @@
     { "version": "北师大版", "grade": 4, "chapter": "四上第4单元" },
     { "version": "苏教版", "grade": 4, "chapter": "四下第6单元" }
   ],
-  "vizType": "area-grid",
+  "vizType": "operation-laws",
   "hasFormula": true,
   "formula": "a × (b + c) = a×b + a×c"
 }

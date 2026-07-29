@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g4-decimal-properties",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -45,6 +45,14 @@
       "options": ["0.3大", "0.299大", "一样大", "无法比较"],
       "correctAnswer": "0.3大",
       "explanation": "整数部分都是0，十分位3 > 2，所以0.3 > 0.299。比较小数大小不能看位数多少，0.3虽然只有一位小数但比0.299大。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "fill-blank",
+      "prompt": "迁移题：把2.5写成保留两位小数且大小不变的形式。",
+      "correctAnswer": "2.50",
+      "explanation": "在小数末尾添0不改变大小，所以2.5=2.50。",
       "points": 10
     }
   ]

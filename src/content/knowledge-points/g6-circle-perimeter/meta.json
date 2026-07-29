@@ -14,7 +14,7 @@
     { "version": "北师大版", "grade": 6, "chapter": "六上第1单元" },
     { "version": "苏教版", "grade": 6, "chapter": "六下第4单元" }
   ],
-  "vizType": "circle-unroll",
+  "vizType": "circle-roll",
   "hasFormula": true,
   "formula": "C = πd = 2πr"
 }

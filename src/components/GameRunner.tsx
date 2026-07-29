@@ -8,11 +8,15 @@ import DragMatchGame from '@/components/games/DragMatchGame';
 import DragAssembleGame from '@/components/games/DragAssembleGame';
 import TimelineGame from '@/components/games/TimelineGame';
 import TimedChallengeGame from '@/components/games/TimedChallengeGame';
+import UiIcon from '@/components/UiIcon';
 
 interface GameRunnerProps {
   game: GameConfig;
   knowledgePointId: string;
   className?: string;
+  onReviewCourse?: () => void;
+  onNextCourse?: () => void;
+  nextCourseTitle?: string;
 }
 
 type GameStatus = 'playing' | 'passed' | 'failed';
@@ -29,15 +33,24 @@ export function calculateStars(correctRate: number, passThreshold: number): numb
   return 1;
 }
 
+export function masteryThreshold(configuredThreshold: number): number {
+  return Math.max(0.8, configuredThreshold);
+}
+
+export function hasTransferEvidence(game: GameConfig, answers: Record<string, { correct: boolean }>): boolean {
+  const transferQuestions = game.questions.filter((question) => question.type !== 'choice' && question.type !== 'true-false');
+  return transferQuestions.length > 0 && transferQuestions.every((question) => answers[question.id]?.correct === true);
+}
+
 function StarRow({ earned, total }: { earned: number; total: number }) {
   return (
-    <div className="flex justify-center gap-2 text-4xl">
+    <div className="flex justify-center gap-2 text-4xl" role="img" aria-label={`获得 ${earned} 颗星，共 ${total} 颗`}>
       {Array.from({ length: total }, (_, i) => (
         <span
           key={i}
           className={
             i < earned
-              ? 'text-amber-400 animate-bounce'
+              ? 'text-amber-400 result-star star-burst-anim'
               : 'text-slate-300'
           }
           style={{ animationDelay: `${i * 100}ms`, animationDuration: '0.6s' }}
@@ -61,7 +74,16 @@ function NextArrowIcon() {
   );
 }
 
-export default function GameRunner({ game, knowledgePointId, className }: GameRunnerProps) {
+const confettiColors = ['#4f46e5', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
+
+export default function GameRunner({
+  game,
+  knowledgePointId,
+  className,
+  onReviewCourse,
+  onNextCourse,
+  nextCourseTitle,
+}: GameRunnerProps) {
   const { markPassed } = useProgress();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, AnswerRecord>>({});
@@ -71,6 +93,7 @@ export default function GameRunner({ game, knowledgePointId, className }: GameRu
     () => game.questions.reduce((sum, q) => sum + q.points, 0),
     [game.questions],
   );
+  const requiredRate = masteryThreshold(game.passThreshold);
 
   const score = useMemo(
     () =>
@@ -85,7 +108,7 @@ export default function GameRunner({ game, knowledgePointId, className }: GameRu
   if (game.questions.length === 0) {
     return (
       <div className={`text-center py-12${className ? ' ' + className : ''}`}>
-        <div className="text-4xl mb-3">📝</div>
+        <UiIcon name="spark" size={38} className="mx-auto mb-3 text-indigo-500"/>
         <p className="text-slate-500 text-lg">暂无题目</p>
       </div>
     );
@@ -109,8 +132,8 @@ export default function GameRunner({ game, knowledgePointId, className }: GameRu
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       const correctRate = maxScore > 0 ? score / maxScore : 0;
-      if (correctRate >= game.passThreshold) {
-        const stars = calculateStars(correctRate, game.passThreshold);
+      if (correctRate >= requiredRate && hasTransferEvidence(game, answers)) {
+        const stars = calculateStars(correctRate, requiredRate);
         setGameStatus('passed');
         markPassed(knowledgePointId, stars);
       } else {
@@ -123,10 +146,6 @@ export default function GameRunner({ game, knowledgePointId, className }: GameRu
     setCurrentQuestionIndex(0);
     setAnswers({});
     setGameStatus('playing');
-  };
-
-  const handleBack = () => {
-    window.history.back();
   };
 
   const renderQuestion = () => {
@@ -197,22 +216,48 @@ export default function GameRunner({ game, knowledgePointId, className }: GameRu
   // ===== 结果界面 =====
   if (gameStatus === 'passed' || gameStatus === 'failed') {
     const correctRate = maxScore > 0 ? score / maxScore : 0;
-    const stars = calculateStars(correctRate, game.passThreshold);
     const passed = gameStatus === 'passed';
+    const transferPassed = hasTransferEvidence(game, answers);
+    const stars = passed ? calculateStars(correctRate, requiredRate) : 0;
 
     return (
       <div className={`space-y-6${className ? ' ' + className : ''}`}>
+        {/* 庆祝彩纸 */}
+        {passed && (
+          <div className="relative h-0 overflow-visible" aria-hidden="true">
+            {confettiColors.map((color, i) => (
+              <div
+                key={i}
+                className="confetti-piece"
+                style={{
+                  left: `${10 + i * 11}%`,
+                  backgroundColor: color,
+                  animationDelay: `${i * 80}ms`,
+                }}
+              />
+            ))}
+          </div>
+        )}
+
         {/* 结果卡片 */}
-        <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-8 text-center">
+        <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-8 text-center celebrate-enter">
           {passed ? (
             <>
-              <div className="text-5xl mb-3">🎉</div>
-              <h2 className="text-2xl font-bold text-indigo-600 mb-2">恭喜过关！</h2>
+              <div className="result-icon is-success"><UiIcon name="spark" size={32}/></div>
+              <h2 className="text-2xl font-bold text-indigo-600 mb-2">这关通过啦</h2>
+              <p className="text-sm text-slate-500">你已经会用这个办法了。过一阵子再练一次，会记得更牢。</p>
             </>
           ) : (
             <>
-              <div className="text-5xl mb-3">💪</div>
-              <h2 className="text-2xl font-bold text-slate-700 mb-2">再接再厉！</h2>
+              <div className="result-icon"><UiIcon name="progress" size={32}/></div>
+              <h2 className="text-2xl font-bold text-slate-700 mb-2">最后再练一下</h2>
+              <p className="text-sm text-slate-500">{correctRate < requiredRate && !transferPassed
+                ? `再答对一些（需要达到 ${Math.round(requiredRate * 100)}%），同时把填空题也独立完成。`
+                : correctRate < requiredRate
+                  ? `再答对一些，达到 ${Math.round(requiredRate * 100)}% 就能过关。`
+                  : !transferPassed
+                    ? '选择题做得不错，再把填空、拖动或排序题自己完成一次。'
+                    : '回到”为什么”看一眼，再来试试。'}</p>
             </>
           )}
 
@@ -263,6 +308,11 @@ export default function GameRunner({ game, knowledgePointId, className }: GameRu
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-slate-700">
                         第 {index + 1} 题
+                        {(q.type === 'choice' || q.type === 'true-false') ? (
+                          <span className="question-type-tag is-choice">选择题</span>
+                        ) : (
+                          <span className="question-type-tag is-transfer">迁移验证</span>
+                        )}
                       </p>
                       <p className="text-sm text-slate-600 mt-0.5">{q.prompt}</p>
                     </div>
@@ -286,7 +336,7 @@ export default function GameRunner({ game, knowledgePointId, className }: GameRu
         </div>
 
         {/* 操作按钮 */}
-        <div className="flex gap-3 justify-center">
+        <div className="flex flex-wrap gap-3 justify-center">
           {!passed && (
             <button
               onClick={handleRestart}
@@ -295,11 +345,19 @@ export default function GameRunner({ game, knowledgePointId, className }: GameRu
               再试一次
             </button>
           )}
+          {passed && onNextCourse ? (
+            <button
+              onClick={onNextCourse}
+              className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[48px] flex items-center"
+            >
+              下一课{nextCourseTitle ? `：${nextCourseTitle}` : ''} →
+            </button>
+          ) : null}
           <button
-            onClick={handleBack}
+            onClick={onReviewCourse}
             className="px-6 py-3 rounded-xl bg-white border border-slate-300 text-slate-600 font-medium hover:bg-slate-50 transition-colors min-h-[48px] flex items-center"
           >
-            返回知识点
+            回看讲解
           </button>
         </div>
       </div>
@@ -319,16 +377,16 @@ export default function GameRunner({ game, knowledgePointId, className }: GameRu
             得分: {score} / {maxScore}
           </span>
         </div>
-        <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+        <div className="h-2 bg-slate-200 rounded-full overflow-hidden" role="progressbar" aria-valuenow={Math.round(progressPercent)} aria-valuemin={0} aria-valuemax={100}>
           <div
-            className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full transition-all duration-300"
+            className="h-full bg-indigo-600 rounded-full transition-all duration-300"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
       </div>
 
       {/* 题目卡片 */}
-      <div className="rounded-xl bg-white border border-slate-200 shadow-sm p-5 sm:p-6">
+      <div className={`rounded-xl bg-white border border-slate-200 shadow-sm p-5 sm:p-6${isAnswered ? (answers[currentQuestion.id]?.correct ? ' answer-correct-anim' : ' answer-wrong-anim') : ''}`}>
         {renderQuestion()}
       </div>
 

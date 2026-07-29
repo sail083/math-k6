@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g3-rect-perimeter",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -51,6 +51,7 @@
       "correctAnswer": "长方形对边相等，所以有2条长和2条宽",
       "explanation": "周长是一圈的长度，面积是里面的大小，两者不同。正方形周长 = 边长×4，不是2a。周长单位是长度单位（如厘米），不是面积单位（如平方厘米）。长方形对边相等，确实有2条长和2条宽。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "迁移题：长8厘米、宽5厘米的长方形周长是多少厘米？", "correctAnswer": ["26", "26厘米"], "explanation": "沿边界一圈包含两条长和两条宽：8×2+5×2=26厘米。", "points": 10 }
   ]
 }

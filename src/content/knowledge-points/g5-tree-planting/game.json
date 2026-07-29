@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g5-tree-planting",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -46,6 +46,7 @@
       "correctAnswer": "6棵",
       "explanation": "一端种一端不种：棵数 = 间隔数。间隔数 = 30 ÷ 5 = 6，棵数 = 6（棵）。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "一条直路分成6个间隔，两端都种树，一共种____棵。", "correctAnswer": "7", "explanation": "两端都种时，棵数比间隔数多1，所以是7棵。", "points": 10 }
   ]
 }

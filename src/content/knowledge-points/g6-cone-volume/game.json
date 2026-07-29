@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g6-cone-volume",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -71,6 +71,7 @@
       "correctAnswer": "37.68立方分米",
       "explanation": "r = 4÷2 = 2；底面积 = 3.14 × 4 = 12.56；V = ⅓ × 12.56 × 9 = ⅓ × 113.04 = 37.68（立方分米）。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "等底等高的圆柱体积是30立方厘米，圆锥体积是____立方厘米。", "correctAnswer": "10", "explanation": "等底等高时圆锥体积是圆柱的三分之一，30÷3=10。", "points": 10 }
   ]
 }

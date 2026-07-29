@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g4-parallelogram-trapezoid",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -41,9 +41,8 @@
     },
     {
       "id": "q4",
-      "type": "choice",
-      "prompt": "两腰相等的梯形叫什么？",
-      "options": ["直角梯形", "等腰梯形", "平行四边形", "正方形"],
+      "type": "fill-blank",
+      "prompt": "两腰相等的梯形叫什么？（请填写图形名称）",
       "correctAnswer": "等腰梯形",
       "explanation": "两腰相等的梯形叫等腰梯形。如果有一条腰垂直于底，叫直角梯形。",
       "points": 10
@@ -60,6 +59,14 @@
       ],
       "correctAnswer": "容易变形（不稳定性）",
       "explanation": "平行四边形容易变形——拉动它的角，形状会改变但边长不变。这叫不稳定性，推拉门就是利用了这个原理。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "true-false",
+      "prompt": "一个四边形只有一组对边平行，它是梯形。",
+      "correctAnswer": "对",
+      "explanation": "小学教材通常把只有一组对边平行的四边形定义为梯形；两组对边都平行的是平行四边形。",
       "points": 10
     }
   ]

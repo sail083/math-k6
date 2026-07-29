@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g4-triangle",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -46,6 +46,7 @@
       "correctAnswer": "不能",
       "explanation": "任意两边之和必须大于第三边。3+4=7 < 8，不满足条件，所以不能围成三角形。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "三角形两个内角分别是65°和45°，第三个角是____度。", "correctAnswer": "70", "explanation": "三角形内角和180°，180-65-45=70°。", "points": 10 }
   ]
 }

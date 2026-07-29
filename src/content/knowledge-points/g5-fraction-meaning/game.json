@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g5-fraction-meaning",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -27,9 +27,8 @@
     },
     {
       "id": "q3",
-      "type": "choice",
-      "prompt": "8/12 约成最简分数是？",
-      "options": ["2/3", "4/6", "8/12", "1/2"],
+      "type": "fill-blank",
+      "prompt": "8/12 约成最简分数是？（请用“分子/分母”的格式填写）",
       "correctAnswer": "2/3",
       "explanation": "8和12的最大公因数是4，8÷4=2，12÷4=3，所以 8/12 = 2/3。2和3只有公因数1，是最简分数。",
       "points": 10
@@ -50,6 +49,14 @@
       "options": ["5/3", "4/4", "3/5", "7/2"],
       "correctAnswer": "3/5",
       "explanation": "真分数的分子小于分母。3/5 中分子3 < 分母5，是真分数。其余分子≥分母，是假分数。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "true-false",
+      "prompt": "2/3和4/6大小相等，因为分子、分母同时乘了2。",
+      "correctAnswer": "对",
+      "explanation": "分子和分母同时乘同一个非零数，分数大小不变：2/3=(2×2)/(3×2)=4/6。",
       "points": 10
     }
   ]

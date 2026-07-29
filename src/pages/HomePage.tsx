@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getGrades, getKnowledgePointsByGrade } from '@/lib/content';
 import { useProgress } from '@/context/ProgressContext';
-import type { TextbookVersion } from '@/lib/types';
+import type { TextbookFilter } from '@/lib/types';
 
 const gradeMeta: Record<number, { title: string; desc: string; emoji: string }> = {
   3: { title: '三年级', desc: '面积、分数初步认识', emoji: '📐' },
@@ -11,10 +11,9 @@ const gradeMeta: Record<number, { title: string; desc: string; emoji: string }> 
   6: { title: '六年级', desc: '圆、圆柱与圆锥', emoji: '⭕' },
 };
 
-type VersionFilter = '全部' | TextbookVersion;
-const versionOptions: VersionFilter[] = ['全部', '人教版', '北师大版', '苏教版'];
+const versionOptions: TextbookFilter[] = ['全部', '人教版', '北师大版', '苏教版'];
 
-const versionColors: Record<VersionFilter, string> = {
+const versionColors: Record<TextbookFilter, string> = {
   全部: 'bg-indigo-600 text-white',
   人教版: 'bg-rose-600 text-white',
   北师大版: 'bg-sky-600 text-white',
@@ -24,7 +23,7 @@ const versionColors: Record<VersionFilter, string> = {
 export default function HomePage() {
   const grades = getGrades();
   const { progress } = useProgress();
-  const [version, setVersion] = useState<VersionFilter>('全部');
+  const [version, setVersion] = useState<TextbookFilter>('全部');
 
   // 计算每个版本覆盖的知识点总数
   const versionCoverage: Record<string, number> = {
@@ -53,7 +52,7 @@ export default function HomePage() {
       {/* 教材版本过滤 */}
       <section>
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-sm font-medium text-slate-600">📚 教材版本</span>
+          <span className="text-sm font-medium text-slate-600">📚 已收录教材</span>
         </div>
         <div className="flex flex-wrap gap-2">
           {versionOptions.map((v) => (
@@ -102,7 +101,7 @@ export default function HomePage() {
             return (
               <Link
                 key={g}
-                to={`/grade/${g}`}
+                to={`/grade/${g}?version=${encodeURIComponent(version)}`}
                 className="group block rounded-xl border border-slate-200 bg-white p-5 transition-all hover:border-indigo-400 hover:shadow-md min-h-[44px]"
               >
                 <div className="flex items-center justify-between">

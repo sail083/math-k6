@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g6-ratio",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -32,15 +32,15 @@
     {
       "id": "q4",
       "type": "choice",
-      "prompt": "下面哪个说法正确？",
+      "prompt": "关于比 a : b，下面哪个说法正确？",
       "options": [
         "比的后项可以为0",
-        "比值是一个数，不带单位",
+        "比的后项 b 不能为 0",
         "比和除法完全没关系",
         "比值必须大于1"
       ],
-      "correctAnswer": "比值是一个数，不带单位",
-      "explanation": "比的后项不能为0（除数不能为0）；比值是一个数，不带单位；比和除法有对应关系；比值可以小于1也可以大于1。",
+      "correctAnswer": "比的后项 b 不能为 0",
+      "explanation": "a:b 与 a÷b 对应，所以后项 b 不能为0。不同类量相比得到的比值可能带单位，例如路程与时间的比值是速度。",
       "points": 10
     },
     {
@@ -50,6 +50,14 @@
       "options": ["2 : 3", "3 : 2", "6 : 9", "4 : 6"],
       "correctAnswer": "2 : 3",
       "explanation": "12和18的最大公因数是6，12÷6=2，18÷6=3，所以 12:18 = 2:3。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "fill-blank",
+      "prompt": "迁移题：把6:9化成最简整数比。",
+      "correctAnswer": ["2:3", "2：3", "2 : 3"],
+      "explanation": "6和9同时除以最大公因数3，得到2:3；比值保持不变。",
       "points": 10
     }
   ]

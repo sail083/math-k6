@@ -1,12 +1,11 @@
 {
   "knowledgePointId": "g4-parallel-perpendicular",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
-      "type": "choice",
-      "prompt": "两条直线在同一平面内永不相交，这种关系叫什么？",
-      "options": ["相交", "平行", "垂直", "重合"],
+      "type": "fill-blank",
+      "prompt": "两条直线在同一平面内永不相交，这种关系叫什么？（请填写关系名称）",
       "correctAnswer": "平行",
       "explanation": "在同一平面内永不相交的两条直线叫平行线。它们之间的距离处处相等，不管延伸多长都不会碰到一起。",
       "points": 10
@@ -60,6 +59,14 @@
       ],
       "correctAnswer": "处处相等",
       "explanation": "平行线之间的距离处处相等，不管在哪里量都是一样宽。这是平行线的重要特征，也是它们永不相交的原因。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "true-false",
+      "prompt": "同一平面内，两条直线相交成直角时，这两条直线互相垂直。",
+      "correctAnswer": "对",
+      "explanation": "垂直的判定条件是相交所成的角为90°，不能只凭看起来像竖直和水平。",
       "points": 10
     }
   ]

@@ -1,4 +1,15 @@
-import type { KnowledgePoint, KnowledgePointMeta, Derivation, GameConfig, Grade } from './types';
+import type {
+  KnowledgePoint,
+  KnowledgePointMeta,
+  Derivation,
+  GameConfig,
+  Grade,
+  Semester,
+  TextbookFilter,
+  TextbookRef,
+} from './types';
+
+const CHAPTER_PATTERN = /([\u4e0a\u4e0b])第(\d+)单元/;
 
 // 元数据：eager 加载（用于列表展示，体积小）
 const metaModules = import.meta.glob('/src/content/knowledge-points/*/meta.json', {
@@ -59,6 +70,44 @@ export function getKnowledgePointsByGrade(grade: Grade): KnowledgePoint[] {
   return Object.values(knowledgePoints)
     .filter((kp) => kp.meta.grade === grade)
     .sort((a, b) => a.meta.unit - b.meta.unit);
+}
+
+export function getTextbookRef(
+  meta: KnowledgePointMeta,
+  version: TextbookFilter,
+): TextbookRef | undefined {
+  if (version === '全部') return meta.textbookRefs[0];
+  return meta.textbookRefs.find((ref) => ref.version === version);
+}
+
+export function getSemester(ref?: TextbookRef): Semester {
+  return ref?.chapter.includes('下') ? '下册' : '上册';
+}
+
+export function getTextbookUnit(ref?: TextbookRef): number {
+  if (!ref) return Number.MAX_SAFE_INTEGER;
+  return Number(ref.chapter.match(CHAPTER_PATTERN)?.[2] ?? Number.MAX_SAFE_INTEGER);
+}
+
+/** 按教材的实际册别和单元顺序返回课程，避免为不同版本复制知识点。 */
+export function getCurriculum(
+  grade: Grade,
+  version: TextbookFilter = '全部',
+): KnowledgePoint[] {
+  const candidates = version === '全部'
+    ? getKnowledgePointsByGrade(grade)
+    : getAllKnowledgePoints().filter((kp) =>
+        kp.meta.textbookRefs.some((ref) => ref.version === version && ref.grade === grade),
+      );
+
+  return candidates
+    .sort((a, b) => {
+      if (version === '全部') return a.meta.unit - b.meta.unit;
+      const refA = getTextbookRef(a.meta, version);
+      const refB = getTextbookRef(b.meta, version);
+      const semesterOrder = (getSemester(refA) === '上册' ? 0 : 1) - (getSemester(refB) === '上册' ? 0 : 1);
+      return semesterOrder || getTextbookUnit(refA) - getTextbookUnit(refB);
+    });
 }
 
 /** 获取所有支持的年级 */

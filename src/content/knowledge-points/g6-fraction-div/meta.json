@@ -29,7 +29,7 @@
       "chapter": "六上第4单元"
     }
   ],
-  "vizType": "fraction-pie",
+  "vizType": "fraction-quotient",
   "hasFormula": true,
   "formula": "a/b ÷ c/d = a/b × d/c"
 }

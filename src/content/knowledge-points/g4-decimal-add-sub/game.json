@@ -1,12 +1,12 @@
 {
   "knowledgePointId": "g4-decimal-add-sub",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
       "type": "choice",
       "prompt": "3.45 + 2.3 = ？",
-      "options": ["5.48", "5.75", "3.68", "5.75"],
+      "options": ["5.48", "5.75", "3.68", "5.58"],
       "correctAnswer": "5.75",
       "explanation": "小数点对齐：把2.3写成2.30。百分位5+0=5，十分位4+3=7，整数3+2=5。所以3.45+2.3=5.75。",
       "points": 10
@@ -50,6 +50,14 @@
       "options": ["6.0", "6", "6.00", "不用化简"],
       "correctAnswer": "6",
       "explanation": "2.5+3.5=6.0，根据小数的性质，去掉末尾的0，化简为6。得数末尾有0要化简。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "fill-blank",
+      "prompt": "迁移题：把4.2写成4.20并与3.57数位对齐，4.2 + 3.57 = ？",
+      "correctAnswer": "7.77",
+      "explanation": "4.20+3.57=7.77。末尾补0不改变小数大小，只帮助相同数位对齐。",
       "points": 10
     }
   ]

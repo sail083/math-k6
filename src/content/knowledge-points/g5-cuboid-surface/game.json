@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g5-cuboid-surface",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -46,6 +46,7 @@
       "correctAnswer": "108平方米",
       "explanation": "S = 2×(6×4 + 6×3 + 4×3) = 2×(24 + 18 + 12) = 2×54 = 108（平方米）。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "长4、宽3、高2的长方体表面积是____平方单位。", "correctAnswer": "52", "explanation": "2×(4×3+4×2+3×2)=52。", "points": 10 }
   ]
 }

@@ -14,7 +14,7 @@
     { "version": "北师大版", "grade": 4, "chapter": "四上第3单元" },
     { "version": "苏教版", "grade": 4, "chapter": "四上第3单元" }
   ],
-  "vizType": "area-grid",
+  "vizType": "partial-products",
   "hasFormula": true,
   "formula": "a × b = a × (十位 + 个位)"
 }

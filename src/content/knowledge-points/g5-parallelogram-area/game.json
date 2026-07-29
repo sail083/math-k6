@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g5-parallelogram-area",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -51,6 +51,7 @@
       "correctAnswer": "面积 = 底 × 高，高必须垂直于底",
       "explanation": "平行四边形面积 = 底 × 高，高必须垂直于底，不能量斜边。等底等高的平行四边形面积相同。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "平行四边形底7厘米、高4厘米，面积是____平方厘米。", "correctAnswer": "28", "explanation": "割补后底和高不变，面积=底×高=7×4=28。", "points": 10 }
   ]
 }

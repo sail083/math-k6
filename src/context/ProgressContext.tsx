@@ -1,6 +1,11 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, type ReactNode } from 'react';
 import type { ProgressData } from '@/lib/types';
-import { loadProgress, saveProgress, markPassed as markPassedUtil } from '@/lib/progress';
+import {
+  isUnlocked as isUnlockedUtil,
+  loadProgress,
+  markPassed as markPassedUtil,
+  saveProgress,
+} from '@/lib/progress';
 
 interface ProgressContextValue {
   progress: ProgressData;
@@ -15,9 +20,12 @@ const ProgressContext = createContext<ProgressContextValue | null>(null);
 export function ProgressProvider({ children }: { children: ReactNode }) {
   const [progress, setProgress] = useState<ProgressData>(() => loadProgress());
 
-  // 进度变化时自动持久化
+  // 进度变化时自动持久化（防抖）
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => {
-    saveProgress(progress);
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => saveProgress(progress), 300);
+    return () => clearTimeout(saveTimer.current);
   }, [progress]);
 
   const markPassed = useCallback((kpId: string, stars: number) => {
@@ -30,10 +38,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   );
 
   const isUnlocked = useCallback(
-    (prerequisites: string[]) => {
-      if (prerequisites.length === 0) return true;
-      return prerequisites.every((id) => progress.passedKnowledgePoints.includes(id));
-    },
+    (prerequisites: string[]) => isUnlockedUtil(progress, prerequisites),
     [progress],
   );
 

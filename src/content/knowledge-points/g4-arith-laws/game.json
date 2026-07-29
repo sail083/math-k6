@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g4-arith-laws",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -31,9 +31,8 @@
     },
     {
       "id": "q4",
-      "type": "choice",
-      "prompt": "25 × 102 用简便方法计算，结果是多少？",
-      "options": ["2550", "2500", "2040", "2600"],
+      "type": "fill-blank",
+      "prompt": "25 × 102 用简便方法计算，结果是多少？（请直接填写数字）",
       "correctAnswer": "2550",
       "explanation": "把102拆成100+2，用分配律：25×102 = 25×(100+2) = 25×100 + 25×2 = 2500 + 50 = 2550。",
       "points": 10
@@ -46,6 +45,7 @@
       "correctAnswer": "25 × (40 + 4) = 25×40 + 25×4",
       "explanation": "25×(40+4) = 25×40 + 25×4 用了乘法分配律：一个数乘两个数的和，等于分别乘再相加。第一个用了交换律，第二个用了结合律，第四个用了加法交换律。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "true-false", "prompt": "7×(10+2)=7×10+7×2，这里使用了乘法分配律。", "correctAnswer": "对", "explanation": "一个数乘两个数的和，可以分别相乘再相加，两边都等于84。", "points": 10 }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g3-add-sub-10000",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -56,6 +56,7 @@
       "correctAnswer": "用 785 - 458 看是否等于 327",
       "explanation": "加法验算用和减去一个加数：785 - 458 = 327，等于另一个加数，说明计算正确。这是利用加减法互逆关系来验算。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "用竖式计算5000−2768，结果是____。", "correctAnswer": "2232", "explanation": "从个位开始连续退位：5000可以逐级拆成足够的十、百和千，再按相同数位相减，结果是2232。", "points": 10 }
   ]
 }

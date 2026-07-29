@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g6-cylinder-surface",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -46,6 +46,7 @@
       "correctAnswer": "87.92平方分米",
       "explanation": "无盖水桶只有一个底面：S = πr² + 2πrh = 3.14×4 + 2×3.14×2×6 = 12.56 + 75.36 = 87.92（平方分米）。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "圆柱底面周长12.56厘米、高5厘米，侧面积是____平方厘米。", "correctAnswer": "62.8", "explanation": "侧面展开后是长方形，长等于底面周长，侧面积=12.56×5=62.8。", "points": 10 }
   ]
 }

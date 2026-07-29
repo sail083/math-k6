@@ -1,0 +1,175 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - link "M Math Lab 小学数学 3-6 年级" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e8]: M
+        - generic [ref=e9]:
+          - strong [ref=e10]: Math Lab
+          - generic [ref=e11]: 小学数学 3-6 年级
+      - generic [ref=e12]:
+        - navigation "年级导航" [ref=e13]:
+          - link "三年级" [ref=e14] [cursor=pointer]:
+            - /url: /grade/3
+          - link "四年级" [ref=e15] [cursor=pointer]:
+            - /url: /grade/4
+          - link "五年级" [ref=e16] [cursor=pointer]:
+            - /url: /grade/5
+          - link "六年级" [ref=e17] [cursor=pointer]:
+            - /url: /grade/6
+        - link "查看学习进度，已完成 0%" [ref=e18] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e20]:
+            - generic [ref=e21]: 全部课程
+            - strong [ref=e22]: 0%
+  - main [ref=e24]:
+    - generic [ref=e29]:
+      - generic [ref=e30]:
+        - link "3年级课程" [ref=e31] [cursor=pointer]:
+          - /url: /grade/3?version=%E5%85%A8%E9%83%A8
+        - generic [ref=e34]: /
+        - generic [ref=e35]: 万以内的加减法
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - paragraph [ref=e39]: AI 学习工作台 · 3 年级
+            - heading "万以内的加减法" [level=1] [ref=e41]
+            - paragraph [ref=e42]: 先猜一猜，再换两个数试试看
+          - generic [ref=e43]:
+            - generic [ref=e44]: 学习进度
+            - strong [ref=e45]: 1 / 3
+            - generic [ref=e46]: 正在建立理解
+        - navigation "五步学习进度" [ref=e47]:
+          - button "猜一猜 先做预测" [ref=e211] [cursor=pointer]:
+            - generic [ref=e50]:
+              - strong [ref=e51]: 猜一猜
+              - generic [ref=e52]: 先做预测
+          - button "动手试 换两个情况" [ref=e215] [cursor=pointer]:
+            - generic [ref=e55]:
+              - strong [ref=e56]: 动手试
+              - generic [ref=e57]: 换两个情况
+          - button "我发现 找出规律" [ref=e224] [cursor=pointer]:
+            - generic [ref=e60]:
+              - strong [ref=e61]: 我发现
+              - generic [ref=e62]: 找出规律
+          - button "4 为什么 说清道理" [disabled] [ref=e63]:
+            - generic [ref=e64]: "4"
+            - generic [ref=e65]:
+              - strong [ref=e66]: 为什么
+              - generic [ref=e67]: 说清道理
+          - button "5 试一题 自己会用" [disabled] [ref=e68]:
+            - generic [ref=e69]: "5"
+            - generic [ref=e70]:
+              - strong [ref=e71]: 试一题
+              - generic [ref=e72]: 自己会用
+        - region [ref=e73]:
+          - generic [ref=e74]:
+            - generic [ref=e75]: 01 / 探索
+            - generic [ref=e76]:
+              - paragraph [ref=e77]: 今天的问题
+              - heading "为什么满十要进一，不够减要退一？" [level=2] [ref=e78]
+              - generic [ref=e79]: 从个位开始操作，观察 10 个低位单位怎样换成 1 个高位单位。
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - generic [ref=e82]: 猜一猜
+              - strong [ref=e83]: 换一个数或一种情况，会发生什么？
+            - generic [ref=e84]:
+              - button "数字变了，答案可能也会变" [ref=e85] [cursor=pointer]
+              - button "不管怎么改，答案都一样" [ref=e86] [cursor=pointer]
+              - button "我还不知道，试试看" [ref=e87] [cursor=pointer]
+          - generic [ref=e89]:
+            - generic "选择计算类型" [ref=e90]:
+              - button "进位加法" [ref=e91] [cursor=pointer]
+              - button "退位减法" [ref=e92] [cursor=pointer]
+            - generic [ref=e93]:
+              - generic "356 + 278 竖式" [ref=e94]:
+                - generic [ref=e95]:
+                  - generic [ref=e96]: 百位
+                  - generic [ref=e97]: 十位
+                  - generic [ref=e98]: 个位
+                - generic [ref=e99]:
+                  - generic [ref=e100]: "1"
+                  - generic [ref=e101]: "1"
+                - generic [ref=e103]:
+                  - strong [ref=e104]: "3"
+                  - strong [ref=e105]: "5"
+                  - strong [ref=e106]: "6"
+                - generic [ref=e107]:
+                  - generic [ref=e108]: +
+                  - strong [ref=e109]: "2"
+                  - strong [ref=e110]: "7"
+                  - strong [ref=e111]: "8"
+                - generic [ref=e113]:
+                  - strong [ref=e114]: "6"
+                  - strong [ref=e115]: "3"
+                  - strong [ref=e116]: "4"
+              - generic [ref=e117]:
+                - generic [ref=e118]: 第 3 步 · 百位
+                - heading "3 + 2 + 1 = 6" [level=3] [ref=e218]
+                - paragraph [ref=e120]: 写 6，结果是 634
+                - generic [ref=e121]:
+                  - generic [ref=e122]: 10 个本位单位
+                  - generic [ref=e123]: ⇄
+                  - generic [ref=e124]: 1 个高位单位
+            - generic [ref=e125]:
+              - generic [ref=e126]:
+                - button "查看第 1 步" [ref=e127] [cursor=pointer]: "1"
+                - button "查看第 2 步" [ref=e128] [cursor=pointer]: "2"
+                - button "查看第 3 步" [ref=e129] [cursor=pointer]: "3"
+              - button "356 + 278 = 634" [disabled] [ref=e219]
+          - generic [ref=e131]:
+            - generic [ref=e132]: 动手试
+            - strong [ref=e133]: 2 / 2
+            - paragraph [ref=e134]: 试了两次。选出你发现的规律。
+          - generic [ref=e220]:
+            - generic [ref=e221]: 我发现
+            - button "数字变了，但这个办法还是能用" [active] [ref=e222] [cursor=pointer]
+            - button "我点过按钮，所以我已经会了" [ref=e223] [cursor=pointer]
+          - button "看看为什么" [ref=e227] [cursor=pointer]
+        - region "知识档案播放器" [ref=e142]:
+          - generic [ref=e143]:
+            - generic [ref=e144]:
+              - generic [ref=e145]: 课后回顾
+              - strong [ref=e146]: 翻卡片复习
+              - generic [ref=e147]: 已复习 0 / 8
+            - tablist "复习模式" [ref=e148]:
+              - tab "卡片" [selected] [ref=e149] [cursor=pointer]
+              - tab "全文" [ref=e150] [cursor=pointer]
+          - generic [ref=e151]:
+            - generic [ref=e152]: 卡片 1 / 8
+            - button "查看答案：万以内的加减法" [ref=e153] [cursor=pointer]:
+              - generic [ref=e154]:
+                - article [ref=e155]:
+                  - generic [ref=e156]: 今天学会了什么？
+                  - heading "万以内的加减法" [level=3] [ref=e157]
+                  - paragraph [ref=e158]: 点击翻面查看讲解
+                - article [ref=e159]:
+                  - generic [ref=e160]: 这一张已复习
+                  - heading "万以内的加减法" [level=3] [ref=e163]
+                  - paragraph [ref=e165]: 一页看一个重点。想慢慢读全部内容时，可以切换到“全文”。
+                  - paragraph [ref=e166]: 点击返回问题
+          - generic "复习进度 0%" [ref=e167]:
+            - strong [ref=e169]: 0%
+          - generic [ref=e170]:
+            - button "第1张卡片" [ref=e171] [cursor=pointer]
+            - button "第2张卡片" [ref=e173] [cursor=pointer]
+            - button "第3张卡片" [ref=e175] [cursor=pointer]
+            - button "第4张卡片" [ref=e177] [cursor=pointer]
+            - button "第5张卡片" [ref=e179] [cursor=pointer]
+            - button "第6张卡片" [ref=e181] [cursor=pointer]
+            - button "第7张卡片" [ref=e183] [cursor=pointer]
+            - button "第8张卡片" [ref=e185] [cursor=pointer]
+          - generic [ref=e187]:
+            - button "上一张" [disabled] [ref=e188]
+            - button "帮我播放" [ref=e191] [cursor=pointer]
+            - generic [ref=e194]: 1 / 8
+            - button "下一张" [ref=e195] [cursor=pointer]
+      - navigation "连续学习" [ref=e198]:
+        - link "下一课 多位数乘一位数 预计 8 分钟 · 待学习" [ref=e199] [cursor=pointer]:
+          - /url: /kp/g3-mult-1digit?version=%E5%85%A8%E9%83%A8
+          - generic [ref=e200]: 下一课
+          - generic [ref=e205]:
+            - heading "多位数乘一位数" [level=2] [ref=e206]
+            - paragraph [ref=e207]: 预计 8 分钟 · 待学习
+  - contentinfo [ref=e27]:
+    - generic [ref=e28]: 小学数学3-6年级 一次讲透 · 交互式教学平台

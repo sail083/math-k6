@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g6-fraction-mult",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -61,7 +61,7 @@
     {
       "id": "q5",
       "type": "choice",
-      "prompt": "一个数乘真分数（小于1的分数），结果比原来的数（ ）",
+      "prompt": "一个正数乘真分数（小于1的分数），结果比原来的正数（ ）",
       "options": [
         "大",
         "小",
@@ -69,7 +69,15 @@
         "无法确定"
       ],
       "correctAnswer": "小",
-      "explanation": "乘一个小于1的数，结果会变小。例如 10 × 1/2 = 5 < 10。",
+      "explanation": "正数乘一个大于0且小于1的数，结果会变小。例如 10 × 1/2 = 5 < 10。0 的结果仍是 0，负数需要另外比较。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "fill-blank",
+      "prompt": "迁移题：2/3 × 3/5 = ？请填写最简分数。",
+      "correctAnswer": "2/5",
+      "explanation": "分子相乘得6，分母相乘得15，6/15约分后是2/5。也可以先把3约掉再乘。",
       "points": 10
     }
   ]

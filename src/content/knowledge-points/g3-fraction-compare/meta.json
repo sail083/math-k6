@@ -14,6 +14,6 @@
     { "version": "北师大版", "grade": 3, "chapter": "三上第6单元" },
     { "version": "苏教版", "grade": 3, "chapter": "三上第7单元" }
   ],
-  "vizType": "fraction-pie",
+  "vizType": "fraction-compare-model",
   "hasFormula": false
 }

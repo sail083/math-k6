@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g4-decimal-meaning",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -71,6 +71,7 @@
       "correctAnswer": "1.3米",
       "explanation": "3分米 = 3/10米 = 0.3米。所以1米3分米 = 1.3米。分米对应十分位，所以是一位小数。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "7个0.01写成小数是____。", "correctAnswer": "0.07", "explanation": "0.01是一个百分之一，7个百分之一是0.07。", "points": 10 }
   ]
 }

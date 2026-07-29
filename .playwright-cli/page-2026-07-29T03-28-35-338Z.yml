@@ -1,0 +1,28 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - link "M Math Lab 小学数学 3-6 年级" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e8]: M
+        - generic [ref=e9]:
+          - strong [ref=e10]: Math Lab
+          - generic [ref=e11]: 小学数学 3-6 年级
+      - generic [ref=e12]:
+        - navigation "年级导航" [ref=e13]:
+          - link "三年级" [ref=e14] [cursor=pointer]:
+            - /url: /grade/3
+          - link "四年级" [ref=e15] [cursor=pointer]:
+            - /url: /grade/4
+          - link "五年级" [ref=e16] [cursor=pointer]:
+            - /url: /grade/5
+          - link "六年级" [ref=e17] [cursor=pointer]:
+            - /url: /grade/6
+        - link "查看学习进度，已完成 0%" [ref=e18] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e20]:
+            - generic [ref=e21]: 全部课程
+            - strong [ref=e22]: 0%
+  - main [ref=e24]:
+    - generic [ref=e25]: 加载中...
+  - contentinfo [ref=e27]:
+    - generic [ref=e28]: 小学数学3-6年级 一次讲透 · 交互式教学平台

@@ -14,7 +14,7 @@
     { "version": "北师大版", "grade": 5, "chapter": "五上第5单元" },
     { "version": "苏教版", "grade": 5, "chapter": "五下第5单元" }
   ],
-  "vizType": "fraction-pie",
+  "vizType": "fraction-common-parts",
   "hasFormula": true,
   "formula": "异分母分数加减：先通分，再加减"
 }

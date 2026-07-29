@@ -1,78 +1,10 @@
 import { useMemo, useState } from 'react';
 import type { Question } from '@/lib/types';
+import { CheckIcon, XIcon, InfoIcon, ArrowUpIcon, ArrowDownIcon, shuffleArray } from './shared';
 
 interface TimelineGameProps {
   question: Question;
   onAnswer: (selectedAnswer: string, isCorrect: boolean) => void;
-}
-
-function CheckIcon() {
-  return (
-    <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-      <path
-        fillRule="evenodd"
-        d="M16.704 5.29a1 1 0 010 1.42l-7.5 7.5a1 1 0 01-1.42 0l-3.5-3.5a1 1 0 111.42-1.42l2.79 2.79 6.79-6.79a1 1 0 011.42 0z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function XIcon() {
-  return (
-    <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-      <path
-        fillRule="evenodd"
-        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function InfoIcon() {
-  return (
-    <svg className="w-5 h-5 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-      <path
-        fillRule="evenodd"
-        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function ArrowUpIcon() {
-  return (
-    <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-      <path
-        fillRule="evenodd"
-        d="M10 3a1 1 0 01.707.293l5 5a1 1 0 01-1.414 1.414L11 6.414V16a1 1 0 11-2 0V6.414L5.707 9.707a1 1 0 01-1.414-1.414l5-5A1 1 0 0110 3z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function ArrowDownIcon() {
-  return (
-    <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-      <path
-        fillRule="evenodd"
-        d="M10 17a1 1 0 01-.707-.293l-5-5a1 1 0 011.414-1.414L9 13.586V4a1 1 0 112 0v9.586l3.293-3.293a1 1 0 111.414 1.414l-5 5A1 1 0 0110 17z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function shuffleArray<T>(array: T[]): T[] {
-  const result = [...array];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
 }
 
 export default function TimelineGame({ question, onAnswer }: TimelineGameProps) {
@@ -190,7 +122,7 @@ export default function TimelineGame({ question, onAnswer }: TimelineGameProps) 
                   <button
                     onClick={() => moveUp(index)}
                     disabled={index === 0}
-                    className="flex items-center justify-center w-9 h-9 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center w-11 h-11 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     aria-label="上移"
                   >
                     <ArrowUpIcon />
@@ -198,7 +130,7 @@ export default function TimelineGame({ question, onAnswer }: TimelineGameProps) 
                   <button
                     onClick={() => moveDown(index)}
                     disabled={isLast}
-                    className="flex items-center justify-center w-9 h-9 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center w-11 h-11 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     aria-label="下移"
                   >
                     <ArrowDownIcon />

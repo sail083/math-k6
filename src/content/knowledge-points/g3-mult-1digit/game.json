@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g3-mult-1digit",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -56,6 +56,7 @@
       "explanation": "23 × 4：个位 3 × 4 = 12，写 2 进 1；十位 2 × 4 = 8，加进位 1 = 9。所以 23 × 4 = 92。",
       "timeLimit": 15,
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "迁移题：把312拆成300、10和2，312×3=？", "correctAnswer": "936", "explanation": "300×3+10×3+2×3=900+30+6=936。", "points": 10 }
   ]
 }

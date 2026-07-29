@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g5-position",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -46,6 +46,7 @@
       "correctAnswer": "正方形",
       "explanation": "(1,1)到(1,3)长2格，(1,1)到(3,1)长2格，四条边都相等且四个角都是直角，所以是正方形。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "点A在第4列第2行，用数对表示为____。", "correctAnswer": "(4,2)", "explanation": "数对先写列，再写行，所以是(4,2)。", "points": 10 }
   ]
 }

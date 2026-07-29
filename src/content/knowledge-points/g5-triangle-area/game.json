@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g5-triangle-area",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -35,7 +35,7 @@
       "prompt": "推导三角形面积公式时，需要几个完全相同的三角形来拼成平行四边形？",
       "options": ["1个", "2个", "3个", "4个"],
       "correctAnswer": "2个",
-      "explanation": "两个完全相同的三角形，旋转其中一个 180° 后拼在一起，正好形成一个平行四边形。平行四边形面积 ÷ 2 = 三角形面积。",
+      "explanation": "两个全等三角形经过旋转和平移，让对应边贴合，可以拼成一个平行四边形。一个三角形的面积是拼成图形的一半。",
       "points": 10
     },
     {

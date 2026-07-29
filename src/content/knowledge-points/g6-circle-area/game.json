@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g6-circle-area",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",

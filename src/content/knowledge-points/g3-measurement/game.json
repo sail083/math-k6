@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g3-measurement",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -40,11 +40,18 @@
     },
     {
       "id": "q5",
-      "type": "choice",
-      "prompt": "2 米 50 厘米 = ？厘米",
-      "options": ["250厘米", "205厘米", "200厘米", "52厘米"],
-      "correctAnswer": "250厘米",
+      "type": "fill-blank",
+      "prompt": "2 米 50 厘米 = ？厘米（请直接填写数字）",
+      "correctAnswer": "250",
       "explanation": "2米=200厘米（1米=100厘米），200+50=250厘米。注意要把米换算成厘米再加。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "true-false",
+      "prompt": "3千克和3000克表示同一份质量，只是使用的单位不同。",
+      "correctAnswer": "对",
+      "explanation": "1千克=1000克，所以3千克=3000克。换单位不会改变物体实际质量。",
       "points": 10
     }
   ]

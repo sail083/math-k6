@@ -67,13 +67,17 @@ export function getStars(progress: ProgressData, kpId: string): number {
   return progress.stars[kpId] ?? 0;
 }
 
-/** 判断前置知识点是否全部已通过（解锁条件） */
+/**
+ * 判断课程是否可以学习。
+ *
+ * prerequisites 描述知识依赖，用于推荐学习顺序，不应成为访问门槛。
+ * 小学生可能按不同教材版本、学校进度或复习需要跳学，因此课程始终开放。
+ */
 export function isUnlocked(
-  progress: ProgressData,
-  prerequisites: string[],
+  _progress: ProgressData,
+  _prerequisites: string[],
 ): boolean {
-  if (prerequisites.length === 0) return true;
-  return prerequisites.every((id) => isPassed(progress, id));
+  return true;
 }
 
 /** 计算总体进度（0-1） */

@@ -286,16 +286,7 @@ export default function DerivationPlayer({ derivation, className }: DerivationPl
   const progress = totalSteps > 0 ? ((currentStep + 1) / totalSteps) * 100 : 0;
 
   return (
-    <div ref={containerRef} className={className}>
-      <style>{`
-        @keyframes derivation-step-fadein {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .derivation-step-enter {
-          animation: derivation-step-fadein 0.4s ease-out;
-        }
-      `}</style>
+    <div ref={containerRef} className={`derivation-player ${className ?? ''}`}>
 
       {/* Progress indicator */}
       <div className="mb-4">
@@ -303,6 +294,7 @@ export default function DerivationPlayer({ derivation, className }: DerivationPl
           <span className="text-sm text-gray-500 tabular-nums">
             第 {currentStep + 1} / {totalSteps} 步
           </span>
+          <span className="lesson-kicker"><span className={`signal-dot ${isAutoPlaying ? 'is-live' : ''}`} /> {isAutoPlaying ? '正在演示' : '等待操作'}</span>
         </div>
         <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
           <div

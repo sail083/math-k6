@@ -1,12 +1,11 @@
 {
   "knowledgePointId": "g5-possibility",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
-      "type": "choice",
-      "prompt": "盒子里有3个红球和1个白球，任意摸一个，摸到什么颜色的球可能性大？",
-      "options": ["白球", "红球", "一样大", "不可能摸到"],
+      "type": "fill-blank",
+      "prompt": "盒子里有3个红球和1个白球，任意摸一个，摸到什么颜色的球可能性大？（请填写颜色）",
       "correctAnswer": "红球",
       "explanation": "红球有3个，白球只有1个，红球数量多，所以摸到红球的可能性更大。",
       "points": 10
@@ -45,6 +44,14 @@
       "options": ["一定", "不可能", "可能", "比反面朝上可能性大"],
       "correctAnswer": "可能",
       "explanation": "抛硬币有两种可能（正面或反面），正面朝上可能发生也可能不发生，是不确定事件。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "true-false",
+      "prompt": "袋中有8个红球和2个蓝球，球除颜色外相同并充分混合，随机摸到红球的可能性更大。",
+      "correctAnswer": "对",
+      "explanation": "在等可能随机摸取的条件下，红球占8/10，蓝球占2/10，所以红球可能性更大。",
       "points": 10
     }
   ]

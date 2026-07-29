@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g6-circle-perimeter",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -46,6 +46,7 @@
       "correctAnswer": "20厘米",
       "explanation": "由 C = πd 得 d = C ÷ π = 62.8 ÷ 3.14 = 20（厘米）。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "迁移题：圆的直径是10厘米，取π=3.14，周长是多少厘米？", "correctAnswer": ["31.4", "31.4厘米"], "explanation": "圆滚动一周展开的长度是周长，C=πd=3.14×10=31.4厘米。", "points": 10 }
   ]
 }

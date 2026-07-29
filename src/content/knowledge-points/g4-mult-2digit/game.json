@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g4-mult-2digit",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -56,6 +56,7 @@
       "correctAnswer": "234 × 10 + 234 × 2",
       "explanation": "把12拆成十位10和个位2，分别乘234：234×10=2340，234×2=468，再相加得到2808。这是面积模型的核心思路。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "迁移题：123×24=123×20+123×4，结果是？", "correctAnswer": "2952", "explanation": "123×20=2460，123×4=492，两个部分积相加得2952。", "points": 10 }
   ]
 }

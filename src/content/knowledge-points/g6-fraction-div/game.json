@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g6-fraction-div",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -50,6 +50,14 @@
       "options": ["3/32", "6", "8/3", "3/8"],
       "correctAnswer": "6",
       "explanation": "3/4 ÷ 1/8 = 3/4 × 8 = 24/4 = 6。1/8 的倒数是 8，3/4 × 8 = 24/4 = 6。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "fill-blank",
+      "prompt": "迁移题：把3/4改写成6/8，其中包含几个1/8？",
+      "correctAnswer": "6",
+      "explanation": "3/4=6/8，所以3/4里面正好包含6个1/8，即3/4÷1/8=6。",
       "points": 10
     }
   ]

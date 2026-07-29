@@ -14,7 +14,7 @@
     { "version": "北师大版", "grade": 6, "chapter": "六下第1单元" },
     { "version": "苏教版", "grade": 6, "chapter": "六下第2单元" }
   ],
-  "vizType": "cylinder-model",
+  "vizType": "cylinder-layers",
   "hasFormula": true,
   "formula": "V = πr²h"
 }

@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g3-time",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -46,6 +46,7 @@
       "correctAnswer": "10:30",
       "explanation": "90分钟=1时30分。9:00+1时30分=10:30。注意分钟满60要进1到小时。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "1小时20分钟一共是____分钟。", "correctAnswer": "80", "explanation": "1小时是60分钟，60+20=80分钟。", "points": 10 }
   ]
 }

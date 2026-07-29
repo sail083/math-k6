@@ -121,12 +121,12 @@ describe('progress management', () => {
       expect(isUnlocked(progress, [])).toBe(true);
     });
 
-    it('returns false when prerequisites not met', () => {
+    it('keeps courses accessible when recommended prerequisites are not met', () => {
       const progress: ProgressData = {
         passedKnowledgePoints: ['g3-rect-area'],
         stars: {},
       };
-      expect(isUnlocked(progress, ['g3-rect-perimeter'])).toBe(false);
+      expect(isUnlocked(progress, ['g3-rect-perimeter'])).toBe(true);
     });
 
     it('returns true when all prerequisites passed', () => {

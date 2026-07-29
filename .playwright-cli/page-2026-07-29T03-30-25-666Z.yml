@@ -1,0 +1,171 @@
+- generic [ref=f3e3]:
+  - banner [ref=f3e4]:
+    - generic [ref=f3e6]:
+      - link "M Math Lab 小学数学 3-6 年级" [ref=f3e7] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f3e8]: M
+        - generic [ref=f3e9]:
+          - strong [ref=f3e10]: Math Lab
+          - generic [ref=f3e11]: 小学数学 3-6 年级
+      - generic [ref=f3e12]:
+        - navigation "年级导航" [ref=f3e13]:
+          - link "三年级" [ref=f3e14] [cursor=pointer]:
+            - /url: /grade/3
+          - link "四年级" [ref=f3e15] [cursor=pointer]:
+            - /url: /grade/4
+          - link "五年级" [ref=f3e16] [cursor=pointer]:
+            - /url: /grade/5
+          - link "六年级" [ref=f3e17] [cursor=pointer]:
+            - /url: /grade/6
+        - link "查看学习进度，已完成 0%" [ref=f3e18] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=f3e20]:
+            - generic [ref=f3e21]: 全部课程
+            - strong [ref=f3e22]: 0%
+  - main [ref=f3e24]:
+    - generic [ref=f3e25]:
+      - generic [ref=f3e26]:
+        - link "3年级课程" [ref=f3e27] [cursor=pointer]:
+          - /url: /grade/3?version=%E5%85%A8%E9%83%A8
+        - generic [ref=f3e30]: /
+        - generic [ref=f3e31]: 分数的初步认识
+      - generic [ref=f3e32]:
+        - generic [ref=f3e33]:
+          - generic [ref=f3e34]:
+            - paragraph [ref=f3e35]: AI 学习工作台 · 3 年级
+            - heading "分数的初步认识" [level=1] [ref=f3e37]
+            - paragraph [ref=f3e38]: 说出发现，再看看为什么
+          - generic [ref=f3e39]:
+            - generic [ref=f3e40]: 学习进度
+            - strong [ref=f3e41]: 4 / 5
+            - generic [ref=f3e42]: 正在建立理解
+        - navigation "五步学习进度" [ref=f3e43]:
+          - button "猜一猜 先做预测" [ref=f3e44] [cursor=pointer]:
+            - generic [ref=f3e48]:
+              - strong [ref=f3e49]: 猜一猜
+              - generic [ref=f3e50]: 先做预测
+          - button "动手试 换两个情况" [ref=f3e51] [cursor=pointer]:
+            - generic [ref=f3e55]:
+              - strong [ref=f3e56]: 动手试
+              - generic [ref=f3e57]: 换两个情况
+          - button "我发现 找出规律" [ref=f3e58] [cursor=pointer]:
+            - generic [ref=f3e62]:
+              - strong [ref=f3e63]: 我发现
+              - generic [ref=f3e64]: 找出规律
+          - button "4 为什么 说清道理" [ref=f3e65] [cursor=pointer]:
+            - generic [ref=f3e66]: "4"
+            - generic [ref=f3e67]:
+              - strong [ref=f3e68]: 为什么
+              - generic [ref=f3e69]: 说清道理
+          - button "5 试一题 自己会用" [disabled] [ref=f3e70]:
+            - generic [ref=f3e71]: "5"
+            - generic [ref=f3e72]:
+              - strong [ref=f3e73]: 试一题
+              - generic [ref=f3e74]: 自己会用
+        - region [ref=f3e75]:
+          - generic [ref=f3e76]:
+            - generic [ref=f3e77]: 02 / 发现
+            - generic [ref=f3e78]:
+              - paragraph [ref=f3e79]: 为什么
+              - heading "刚才两次都能用，这个办法藏着什么道理？" [level=2] [ref=f3e80]
+              - generic [ref=f3e81]: 跟着短短几页，把自己的发现说清楚。
+          - generic [ref=f3e83]:
+            - generic "为什么第1页，共5页" [ref=f3e84]
+            - article [ref=f3e90]:
+              - generic [ref=f3e91]:
+                - generic [ref=f3e92]: 刚才我做了什么
+                - heading "你换了两个情况来试" [level=3] [ref=f3e93]
+                - paragraph [ref=f3e94]: 你先猜“数字变了，答案可能也会变”，然后动手试了 2 次。两次的数字不一样，现在看看它们为什么都能用同一个办法。
+                - generic [ref=f3e95]:
+                  - generic [ref=f3e96]:
+                    - generic [ref=f3e97]: 我猜
+                    - strong [ref=f3e98]: 数字变了，答案可能也会变
+                  - generic [ref=f3e99]: 然后
+                  - generic [ref=f3e100]:
+                    - generic [ref=f3e101]: 我试了
+                    - strong [ref=f3e102]: 2 个不同情况
+              - generic "分数的初步认识概念关系图" [ref=f3e103]:
+                - generic [ref=f3e104]: "01"
+                - generic [ref=f3e105]:
+                  - generic [ref=f3e106]: 分数的初
+                  - generic [ref=f3e107]: →
+                  - generic [ref=f3e108]: 把一个东西平均分成几份，其中的 1 份或几份就是分数
+                - paragraph [ref=f3e109]: 刚才换了两个不同情况，这条规律仍然成立。关键不是记住例题里的数字，而是先看“平均分成几份”，再按同样的办法处理。
+            - generic [ref=f3e110]:
+              - button "上一页" [disabled] [ref=f3e111]
+              - generic [ref=f3e114]:
+                - strong [ref=f3e115]: "1"
+                - text: / 5
+              - button "继续学习" [ref=f3e116] [cursor=pointer]
+              - button "下一页" [ref=f3e119] [cursor=pointer]
+          - status [ref=f3e122]:
+            - generic [ref=f3e126]:
+              - strong [ref=f3e127]: 完成上一项后即可继续
+              - generic [ref=f3e128]: 完成“不看提示想一想”
+        - region "知识档案播放器" [ref=f3e129]:
+          - generic [ref=f3e130]:
+            - generic [ref=f3e131]:
+              - generic [ref=f3e132]: 课后回顾
+              - strong [ref=f3e133]: 翻卡片复习
+              - generic [ref=f3e134]: 已复习 1 / 8
+            - tablist "复习模式" [ref=f3e135]:
+              - tab "卡片" [selected] [ref=f3e136] [cursor=pointer]
+              - tab "全文" [ref=f3e137] [cursor=pointer]
+          - generic [ref=f3e138]:
+            - generic [ref=f3e139]: 卡片 2 / 8
+            - button "查看问题：什么是分数？" [active] [ref=f3e221] [cursor=pointer]:
+              - generic [ref=f3e141]:
+                - article [ref=f3e142]:
+                  - generic [ref=f3e143]: 先在心里想一想
+                  - heading "什么是分数？" [level=3] [ref=f3e213]
+                  - paragraph [ref=f3e145]: 点击翻面查看讲解
+                - article [ref=f3e146]:
+                  - generic [ref=f3e147]: 这一张已复习
+                  - heading "什么是分数？" [level=3] [ref=f3e214]
+                  - generic [ref=f3e151]:
+                    - paragraph [ref=f3e152]:
+                      - text: 把一个东西
+                      - strong [ref=f3e215]: 平均分成几份
+                      - text: ，其中的 1 份或几份就是
+                      - strong [ref=f3e216]: 分数
+                      - text: 。
+                    - paragraph [ref=f3e153]:
+                      - text: 比如把一个苹果
+                      - strong [ref=f3e217]: 平均分成 2 份
+                      - text: ，其中的 1 份就是它的
+                      - strong [ref=f3e218]: 二分之一
+                      - text: ，写作：
+                    - blockquote [ref=f3e219]:
+                      - heading "1/2" [level=3] [ref=f3e220]
+                    - paragraph [ref=f3e154]: 读作：二分之一。
+                  - paragraph [ref=f3e159]: 点击返回问题
+          - generic "复习进度 13%" [ref=f3e222]:
+            - strong [ref=f3e162]: 13%
+          - generic [ref=f3e163]:
+            - button "第1张卡片" [ref=f3e164] [cursor=pointer]
+            - button "第2张卡片，已复习" [ref=f3e224] [cursor=pointer]
+            - button "第3张卡片" [ref=f3e168] [cursor=pointer]
+            - button "第4张卡片" [ref=f3e170] [cursor=pointer]
+            - button "第5张卡片" [ref=f3e172] [cursor=pointer]
+            - button "第6张卡片" [ref=f3e174] [cursor=pointer]
+            - button "第7张卡片" [ref=f3e176] [cursor=pointer]
+            - button "第8张卡片" [ref=f3e178] [cursor=pointer]
+          - generic [ref=f3e180]:
+            - button "上一张" [ref=f3e181] [cursor=pointer]
+            - button "帮我播放" [ref=f3e184] [cursor=pointer]
+            - generic [ref=f3e187]: 2 / 8
+            - button "下一张" [ref=f3e188] [cursor=pointer]
+      - navigation "连续学习" [ref=f3e191]:
+        - link "上一课 长方形和正方形周长" [ref=f3e192] [cursor=pointer]:
+          - /url: /kp/g3-rect-perimeter?version=%E5%85%A8%E9%83%A8
+          - generic [ref=f3e195]:
+            - generic [ref=f3e196]: 上一课
+            - strong [ref=f3e197]: 长方形和正方形周长
+        - link "下一课 分数比较大小 预计 8 分钟 · 待学习" [ref=f3e198] [cursor=pointer]:
+          - /url: /kp/g3-fraction-compare?version=%E5%85%A8%E9%83%A8
+          - generic [ref=f3e199]: 下一课
+          - generic [ref=f3e204]:
+            - heading "分数比较大小" [level=2] [ref=f3e205]
+            - paragraph [ref=f3e206]: 预计 8 分钟 · 待学习
+  - contentinfo [ref=f3e210]:
+    - generic [ref=f3e211]: 小学数学3-6年级 一次讲透 · 交互式教学平台

@@ -14,6 +14,6 @@
     { "version": "北师大版", "grade": 5, "chapter": "五上第1单元" },
     { "version": "苏教版", "grade": 5, "chapter": "五上第3单元" }
   ],
-  "vizType": "area-grid",
+  "vizType": "decimal-product",
   "hasFormula": false
 }

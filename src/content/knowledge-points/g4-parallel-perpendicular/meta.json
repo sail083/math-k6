@@ -14,6 +14,6 @@
     { "version": "北师大版", "grade": 4, "chapter": "四上第2单元" },
     { "version": "苏教版", "grade": 4, "chapter": "四上第8单元" }
   ],
-  "vizType": "shape-transform",
+  "vizType": "line-relations",
   "hasFormula": false
 }

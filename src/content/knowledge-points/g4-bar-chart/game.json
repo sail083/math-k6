@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g4-bar-chart",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -61,6 +61,7 @@
       "correctAnswer": "宽度相同，间距均匀",
       "explanation": "画条形统计图时，所有直条的宽度要一样，间距要均匀，这样比较才公平，图也更美观。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "统计图每格表示2人，一根直条高5格，它表示____人。", "correctAnswer": "10", "explanation": "每格2人，共5格，2×5=10人。", "points": 10 }
   ]
 }

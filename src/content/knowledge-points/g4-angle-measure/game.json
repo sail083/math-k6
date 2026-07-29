@@ -1,6 +1,6 @@
 {
   "knowledgePointId": "g4-angle-measure",
-  "passThreshold": 0.6,
+  "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
@@ -51,6 +51,7 @@
       "correctAnswer": "直角",
       "explanation": "3点整时，时针指3，分针指12，它们之间的夹角正好是90度，是直角。",
       "points": 10
-    }
+    },
+    { "id": "q6", "type": "fill-blank", "prompt": "一个角的一边对准量角器0°线，另一边指向125°，这个角是____度。", "correctAnswer": "125", "explanation": "中心对顶点、零线对一边后，另一边指向的刻度就是角度。", "points": 10 }
   ]
 }

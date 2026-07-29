@@ -1,9 +1,37 @@
 // ===== 基础类型 =====
 export type Grade = 3 | 4 | 5 | 6;
 export type TextbookVersion = '人教版' | '北师大版' | '苏教版';
+export type TextbookFilter = '全部' | TextbookVersion;
+export type Semester = '上册' | '下册';
 
 // 所有可视化组件类型
 export type VizType =
+  | 'column-arithmetic'
+  | 'remainder-groups'
+  | 'trial-division'
+  | 'decimal-place-value'
+  | 'decimal-product'
+  | 'decimal-quotient'
+  | 'fraction-product'
+  | 'fraction-quotient'
+  | 'measurement-lab'
+  | 'fraction-compare-model'
+  | 'fraction-equivalence'
+  | 'decimal-equivalence'
+  | 'line-relations'
+  | 'quadrilateral-constraints'
+  | 'probability-experiment'
+  | 'percent-grid'
+  | 'ratio-mixture'
+  | 'proportion-table'
+  | 'coordinate-scale'
+  | 'place-value-product'
+  | 'perimeter-walk'
+  | 'operation-laws'
+  | 'partial-products'
+  | 'fraction-common-parts'
+  | 'circle-roll'
+  | 'cylinder-layers'
   | 'area-grid'
   | 'fraction-pie'
   | 'number-line'

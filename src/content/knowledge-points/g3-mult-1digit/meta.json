@@ -14,7 +14,7 @@
     { "version": "北师大版", "grade": 3, "chapter": "三上第4单元" },
     { "version": "苏教版", "grade": 3, "chapter": "三上第4单元" }
   ],
-  "vizType": "area-grid",
+  "vizType": "place-value-product",
   "hasFormula": true,
   "formula": "a × b"
 }
