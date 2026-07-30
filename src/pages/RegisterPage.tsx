@@ -44,14 +44,18 @@ export default function RegisterPage() {
     setSubmitting(false);
 
     if (regError) {
-      setError(regError);
+      // If the message contains "确认邮箱", it's a success with email confirmation needed
+      if (regError.includes('确认邮箱')) {
+        setSuccess(regError);
+        setTimeout(() => navigate('/login', { replace: true }), 3000);
+      } else {
+        setError(regError);
+      }
       return;
     }
 
-    // If email confirmation is disabled in Supabase, user is auto-logged in.
-    // Otherwise show confirmation message.
-    setSuccess('注册成功! 请检查邮箱完成验证，然后返回登录。');
-    setTimeout(() => navigate('/login', { replace: true }), 2500);
+    // Email confirmation disabled — user is auto-logged in
+    navigate('/', { replace: true });
   };
 
   return (

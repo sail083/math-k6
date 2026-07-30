@@ -73,6 +73,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (error) {
+      if (error.message.includes('Email not confirmed')) {
+        return { error: '请先确认邮箱后再登录（检查收件箱中的确认邮件）。' };
+      }
       return { error: '手机号或密码不正确，请重试。' };
     }
 
@@ -95,6 +98,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return { error: '该邮箱已被注册，请使用其他邮箱或直接登录。' };
         }
         return { error: `注册失败：${error.message}` };
+      }
+
+      // Supabase may require email confirmation — check if session was created
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      if (!currentSession) {
+        return { error: '注册成功！请检查邮箱中的确认邮件，确认后即可登录。' };
       }
 
       return { error: null };
