@@ -9,6 +9,7 @@ import {
 } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import { normalizeLoginIdentifier } from '@/lib/auth';
 
 /* ---------- types ---------- */
 
@@ -16,8 +17,8 @@ interface AuthContextValue {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  /** Phone + password login. Looks up email via get_email_by_phone RPC. */
-  login: (phone: string, password: string) => Promise<{ error: string | null }>;
+  /** Username/phone + password login. Resolves the internal Auth email via RPC. */
+  login: (identifier: string, password: string) => Promise<{ error: string | null }>;
   /** Register with phone + password + email. Creates Supabase account with email. */
   register: (phone: string, password: string, email: string) => Promise<{ error: string | null }>;
   /** Send password reset email. */
@@ -56,15 +57,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   /* ---- login ---- */
-  const login = useCallback(async (phone: string, password: string) => {
-    // Look up email by phone number via Supabase RPC
+  const login = useCallback(async (identifier: string, password: string) => {
+    const normalizedIdentifier = normalizeLoginIdentifier(identifier);
     const { data: email, error: rpcError } = await supabase.rpc(
-      'get_email_by_phone',
-      { phone_input: phone },
+      'get_email_by_login_identifier',
+      { identifier_input: normalizedIdentifier },
     );
 
     if (rpcError || !email) {
-      return { error: '未找到该手机号对应的账户，请检查手机号或注册新账户。' };
+      return { error: '未找到该用户名或手机号对应的账户，请检查后重试。' };
     }
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -76,7 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error.message.includes('Email not confirmed')) {
         return { error: '请先确认邮箱后再登录（检查收件箱中的确认邮件）。' };
       }
-      return { error: '手机号或密码不正确，请重试。' };
+      return { error: '用户名、手机号或密码不正确，请重试。' };
     }
 
     return { error: null };

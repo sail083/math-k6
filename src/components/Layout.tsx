@@ -29,11 +29,12 @@ export default function Layout({ children }: { children: ReactNode }) {
       ? getKnowledgePointById(routeParts[1])?.meta.grade
       : undefined;
 
-  // Extract phone from user metadata, fallback to email prefix
+  // Prefer a first-class username; otherwise mask the phone number.
+  const displayUsername = user?.user_metadata?.username as string | undefined;
   const displayPhone = user?.user_metadata?.phone as string | undefined;
-  const displayLabel = displayPhone
+  const displayLabel = displayUsername || (displayPhone
     ? `${displayPhone.slice(0, 3)}****${displayPhone.slice(7)}`
-    : user?.email?.split('@')[0] ?? '';
+    : user?.email?.split('@')[0] ?? '');
 
   return (
     <div className="app-frame min-h-screen flex flex-col">

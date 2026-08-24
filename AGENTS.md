@@ -18,6 +18,7 @@ math-k6 是基于 Vite + React 19 + TypeScript 的小学数学（三至六年级
 | `src/context/` | React Context（ProgressContext 全局进度状态） |
 | `src/test/` | Vitest 单元测试套件 |
 | `public/` | 静态资源（favicon、PWA 图标） |
+| `supabase/migrations/` | 数据库迁移脚本：登录 RPC 函数定义与权限 grant |
 
 ## 核心修改路径
 
@@ -25,6 +26,7 @@ math-k6 是基于 Vite + React 19 + TypeScript 的小学数学（三至六年级
 - **添加新游戏题型**：在 `src/components/games/` 新增组件，并在 `GameRunner.tsx` 中注册调度。
 - **添加新可视化**：在 `src/visualizations/` 新增组件，并在 `registry.tsx` 中注册。
 - **修改路由/页面**：编辑 `src/App.tsx` 和 `src/pages/` 下对应页面。
+- **修改登录/鉴权**：涉及 `src/lib/auth.ts`、`src/context/AuthContext.tsx` 时，必须同步检查 `supabase/migrations/` 中的登录 RPC 与权限 grant，并确认远端 Supabase 应用已应用对应迁移。
 
 ## 验证命令
 
@@ -47,3 +49,4 @@ npm run test && npm run build
 | `src/content/index.json` | 知识点索引，格式错误会导致整个内容系统崩溃 |
 | `vite.config.ts` | 构建配置（PWA、Tailwind、路径别名），误改会导致构建失败 |
 | `src/visualizations/registry.tsx` | 可视化注册表，derivation.json 通过此表查找组件 |
+| `supabase/migrations/` | 迁移未应用会导致登录 RPC 缺失、权限不足，整个鉴权链路不可用；修改后须确认远端 Supabase 已执行对应迁移 |

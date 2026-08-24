@@ -1,8 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-
-const PHONE_RE = /^1[3-9]\d{9}$/;
+import { isValidLoginIdentifier } from '@/lib/auth';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -10,7 +9,7 @@ export default function LoginPage() {
   const location = useLocation();
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
 
-  const [phone, setPhone] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -19,8 +18,8 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
 
-    if (!PHONE_RE.test(phone)) {
-      setError('请输入有效的11位手机号码');
+    if (!isValidLoginIdentifier(identifier)) {
+      setError('请输入有效的用户名或11位手机号码');
       return;
     }
     if (password.length < 6) {
@@ -29,7 +28,7 @@ export default function LoginPage() {
     }
 
     setSubmitting(true);
-    const { error: loginError } = await login(phone, password);
+    const { error: loginError } = await login(identifier, password);
     setSubmitting(false);
 
     if (loginError) {
@@ -47,7 +46,7 @@ export default function LoginPage() {
           登录
         </h1>
         <p className="text-center text-sm mb-6" style={{ color: 'var(--color-muted)' }}>
-          使用手机号和密码登录您的账户
+          使用用户名或手机号登录您的账户
         </p>
 
         {error && (
@@ -62,20 +61,19 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="login-phone" className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text)' }}>
-              手机号
+            <label htmlFor="login-identifier" className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text)' }}>
+              用户名或手机号
             </label>
             <input
-              id="login-phone"
-              type="tel"
-              inputMode="numeric"
-              maxLength={11}
-              placeholder="请输入手机号"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+              id="login-identifier"
+              type="text"
+              maxLength={32}
+              placeholder="请输入用户名或手机号"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               className="w-full h-12 px-4 rounded-xl border text-sm transition-colors focus:outline-none focus:ring-2"
               style={{ borderColor: 'var(--color-border)' }}
-              autoComplete="tel"
+              autoComplete="username"
               required
             />
           </div>
