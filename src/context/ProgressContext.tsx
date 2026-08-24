@@ -1,25 +1,40 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, type ReactNode } from 'react';
-import type { ProgressData } from '@/lib/types';
+import type { ProgressData, MasteryStatus } from '@/lib/types';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import {
   isUnlocked as isUnlockedUtil,
   loadProgress,
   markPassed as markPassedUtil,
+  markInitialPass as markInitialPassUtil,
+  markDelayedReviewPass as markDelayedReviewPassUtil,
+  markDelayedReviewFail as markDelayedReviewFailUtil,
+  getMasteryStatus as getMasteryStatusUtil,
+  getDueReviewIds as getDueReviewIdsUtil,
+  getReviewMode as getReviewModeUtil,
+  setCurrentLearning as setCurrentLearningUtil,
+  pickBetterMastery,
   saveProgress,
 } from '@/lib/progress';
 
 interface ProgressContextValue {
   progress: ProgressData;
   markPassed: (kpId: string, stars: number) => void;
+  markInitialPass: (kpId: string, stars: number, hasReviewSets: boolean) => void;
+  markDelayedReviewPass: (kpId: string) => void;
+  markDelayedReviewFail: (kpId: string) => void;
   isPassed: (kpId: string) => boolean;
   isUnlocked: (prerequisites: string[]) => boolean;
   getStars: (kpId: string) => number;
+  getMasteryStatus: (kpId: string) => MasteryStatus | null;
+  getDueReviewIds: () => string[];
+  getReviewMode: (kpId: string) => 'd1' | 'd7' | null;
+  setCurrentLearning: (kpId: string) => void;
 }
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
 
-/** Merge remote + local: union of passedKnowledgePoints, keep highest stars. */
+/** Merge remote + local: union of passedKnowledgePoints, keep highest stars, merge mastery. */
 function mergeProgress(local: ProgressData, remote: ProgressData): ProgressData {
   const passedSet = new Set([...local.passedKnowledgePoints, ...remote.passedKnowledgePoints]);
   const stars: Record<string, number> = {};
@@ -28,7 +43,23 @@ function mergeProgress(local: ProgressData, remote: ProgressData): ProgressData 
     const remoteStars = remote.stars[kpId] ?? 0;
     stars[kpId] = Math.max(localStars, remoteStars);
   }
-  return { passedKnowledgePoints: Array.from(passedSet), stars };
+  // Merge mastery: prefer the record with higher delayedReviewCount (or stable)
+  const mastery: Record<string, import('@/lib/types').MasteryRecord> = {};
+  const allMasteryIds = new Set([
+    ...Object.keys(local.mastery ?? {}),
+    ...Object.keys(remote.mastery ?? {}),
+  ]);
+  for (const id of allMasteryIds) {
+    const l = local.mastery?.[id];
+    const r = remote.mastery?.[id];
+    if (l && r) {
+      mastery[id] = pickBetterMastery(l, r);
+    } else {
+      mastery[id] = l ?? r!;
+    }
+  }
+  const currentLearning = local.currentLearning ?? remote.currentLearning ?? null;
+  return { passedKnowledgePoints: Array.from(passedSet), stars, mastery, currentLearning };
 }
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
@@ -116,6 +147,18 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     setProgress((prev) => markPassedUtil(prev, kpId, stars));
   }, []);
 
+  const markInitialPass = useCallback((kpId: string, stars: number, hasReviewSets: boolean) => {
+    setProgress((prev) => markInitialPassUtil(prev, kpId, stars, Date.now(), hasReviewSets));
+  }, []);
+
+  const markDelayedReviewPass = useCallback((kpId: string) => {
+    setProgress((prev) => markDelayedReviewPassUtil(prev, kpId, Date.now()));
+  }, []);
+
+  const markDelayedReviewFail = useCallback((kpId: string) => {
+    setProgress((prev) => markDelayedReviewFailUtil(prev, kpId, Date.now()));
+  }, []);
+
   const isPassed = useCallback(
     (kpId: string) => progress.passedKnowledgePoints.includes(kpId),
     [progress],
@@ -128,15 +171,54 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   const getStars = useCallback((kpId: string) => progress.stars[kpId] ?? 0, [progress]);
 
+  const getMasteryStatus = useCallback(
+    (kpId: string) => getMasteryStatusUtil(progress, kpId, Date.now()),
+    [progress],
+  );
+
+  const getDueReviewIds = useCallback(
+    () => getDueReviewIdsUtil(progress, Date.now()),
+    [progress],
+  );
+
+  const getReviewMode = useCallback(
+    (kpId: string) => getReviewModeUtil(progress, kpId, Date.now()),
+    [progress],
+  );
+
+  const setCurrentLearning = useCallback((kpId: string) => {
+    setProgress((prev) => setCurrentLearningUtil(prev, kpId));
+  }, []);
+
   const value = useMemo(
     () => ({
       progress,
       markPassed,
+      markInitialPass,
+      markDelayedReviewPass,
+      markDelayedReviewFail,
       isPassed,
       isUnlocked,
       getStars,
+      getMasteryStatus,
+      getDueReviewIds,
+      getReviewMode,
+      setCurrentLearning,
     }),
-    [progress, markPassed, isPassed, isUnlocked, getStars],
+    [
+      progress,
+      markPassed,
+      markInitialPass,
+      markDelayedReviewPass,
+      markDelayedReviewFail,
+      isPassed,
+      isUnlocked,
+      getStars,
+      getMasteryStatus,
+      getDueReviewIds,
+      getReviewMode,
+      setCurrentLearning,
+    ],
   );
 
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;

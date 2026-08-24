@@ -173,16 +173,38 @@ export interface Question {
   points: number;
 }
 
+export interface ReviewSet {
+  questions: Question[];
+}
+
 export interface GameConfig {
   knowledgePointId: string;
   passThreshold: number;         // 如 0.8 表示需要 80% 正确率才能过关
   questions: Question[];
+  reviewSets?: {                 // 可选：延迟复习题集（仅试点课程有）
+    d1?: ReviewSet;              // D1 复习：初次通过后 1 天
+    d7?: ReviewSet;              // D7 复习：D1 通过后 6 天
+  };
 }
 
 // ===== 学习进度 =====
+
+/** 掌握状态：learning(学习中) / provisional(当堂会) / review_due(待复习) / stable(已稳固) */
+export type MasteryStatus = 'learning' | 'provisional' | 'review_due' | 'stable';
+
+/** 单个知识点的掌握记录 */
+export interface MasteryRecord {
+  status: MasteryStatus;
+  lastAttemptAt: number;         // 上次答题时间戳
+  nextReviewAt: number;          // 下次复习到期时间戳（0 表示不需要复习）
+  delayedReviewCount: number;    // 已完成的延迟复习次数（0/1/2）
+}
+
 export interface ProgressData {
   passedKnowledgePoints: string[];
   stars: Record<string, number>; // 知识点 ID -> 1-3 星
+  mastery?: Record<string, MasteryRecord>; // 知识点 ID -> 掌握记录（仅含复习题集的课程）
+  currentLearning?: string | null;          // 当前学习中课程 ID（用于恢复）
 }
 
 // ===== 组合知识点（从内容文件加载）=====

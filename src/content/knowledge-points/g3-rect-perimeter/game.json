@@ -53,5 +53,49 @@
       "points": 10
     },
     { "id": "q6", "type": "fill-blank", "prompt": "迁移题：长8厘米、宽5厘米的长方形周长是多少厘米？", "correctAnswer": ["26", "26厘米"], "explanation": "沿边界一圈包含两条长和两条宽：8×2+5×2=26厘米。", "points": 10 }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1-q1",
+          "type": "choice",
+          "prompt": "一个正方形边长7厘米，周长是多少？",
+          "options": ["14厘米", "21厘米", "28厘米"],
+          "correctAnswer": "28厘米",
+          "explanation": "正方形周长=边长×4=7×4=28（厘米）。",
+          "points": 10
+        },
+        {
+          "id": "d1-q2",
+          "type": "fill-blank",
+          "prompt": "一个长方形长9厘米、宽4厘米，周长是____厘米。",
+          "correctAnswer": "26",
+          "explanation": "长方形周长=(长+宽)×2=(9+4)×2=26（厘米）。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7-q1",
+          "type": "choice",
+          "prompt": "一个长方形周长是24厘米，长是8厘米，宽是多少？",
+          "options": ["4厘米", "6厘米", "3厘米"],
+          "correctAnswer": "4厘米",
+          "explanation": "长方形周长=(长+宽)×2，所以长+宽=24÷2=12。宽=12−8=4（厘米）。",
+          "points": 10
+        },
+        {
+          "id": "d7-q2",
+          "type": "fill-blank",
+          "prompt": "一个正方形周长是36厘米，边长是____厘米。",
+          "correctAnswer": "9",
+          "explanation": "正方形周长=边长×4，所以边长=36÷4=9（厘米）。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

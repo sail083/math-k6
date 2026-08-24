@@ -24,8 +24,9 @@ export default function KnowledgeDeck({ title, markdown, textbookRefs }: Props) 
   const [playing, setPlaying] = useState(false);
   const [flipped, setFlipped] = useState(false);
   const [reviewed, setReviewed] = useState<number[]>([]);
+  const [selfMark, setSelfMark] = useState<'recalled' | 'review' | null>(null);
 
-  useEffect(() => { setIndex(0); setPlaying(false); setFlipped(false); setReviewed([]); }, [title]);
+  useEffect(() => { setIndex(0); setPlaying(false); setFlipped(false); setReviewed([]); setSelfMark(null); }, [title]);
   useEffect(() => {
     if (!playing || mode !== 'deck') return;
     const timer = window.setTimeout(() => setIndex(current => {
@@ -34,25 +35,32 @@ export default function KnowledgeDeck({ title, markdown, textbookRefs }: Props) 
     }), 4200);
     return () => window.clearTimeout(timer);
   }, [index, mode, playing, slides.length]);
+  // Auto-play flips cards but does NOT mark as reviewed — learner must self-mark
   useEffect(() => {
     if (!playing) return;
     setFlipped(true);
-    setReviewed(current => current.includes(index) ? current : [...current, index]);
   }, [index, playing]);
 
   const showBack = () => {
     setFlipped(true);
-    setReviewed(current => current.includes(index) ? current : [...current, index]);
   };
   const changeSlide = (next: number) => {
     setIndex(next);
     setFlipped(false);
     setPlaying(false);
+    setSelfMark(null);
   };
   const togglePlay = () => {
     if (!playing && index === slides.length - 1) setIndex(0);
     if (!playing) showBack();
     setPlaying(value => !value);
+  };
+  const markRecalled = () => {
+    setReviewed(current => current.includes(index) ? current : [...current, index]);
+    setSelfMark('recalled');
+  };
+  const markNeedReview = () => {
+    setSelfMark('review');
   };
   const reviewPercent = Math.round((reviewed.length / slides.length) * 100);
 
@@ -73,6 +81,20 @@ export default function KnowledgeDeck({ title, markdown, textbookRefs }: Props) 
         </div>
       </div>
       <div className="deck-review-progress" aria-label={`复习进度 ${reviewPercent}%`}><div><span style={{ width: `${reviewPercent}%` }}/></div><strong>{reviewPercent}%</strong></div>
+      {flipped && !playing && (
+        <div className="deck-self-mark">
+          {selfMark === 'recalled' ? (
+            <span className="deck-self-mark-feedback is-recalled"><UiIcon name="check" size={16}/> 想起来了，已记入复习</span>
+          ) : selfMark === 'review' ? (
+            <span className="deck-self-mark-feedback is-review">稍后再多看看这张</span>
+          ) : (
+            <>
+              <button type="button" className="deck-mark-btn is-recalled" onClick={markRecalled}><UiIcon name="check" size={16}/> 想起来了</button>
+              <button type="button" className="deck-mark-btn is-review" onClick={markNeedReview}>还要复习</button>
+            </>
+          )}
+        </div>
+      )}
       <div className="deck-dots">{slides.map((_, slideIndex) => <button type="button" aria-label={`第${slideIndex + 1}张卡片${reviewed.includes(slideIndex) ? '，已复习' : ''}`} key={slideIndex} className={`${slideIndex === index ? 'is-active' : ''} ${reviewed.includes(slideIndex) ? 'is-reviewed' : ''}`} onClick={() => changeSlide(slideIndex)}><i/></button>)}</div>
       <div className="deck-controls"><button type="button" className="icon-control" aria-label="上一张" disabled={index === 0} onClick={() => changeSlide(index - 1)}><UiIcon name="arrow-left"/></button><button type="button" className="primary-control" aria-pressed={playing} onClick={togglePlay}>{playing ? <UiIcon name="pause" size={18}/> : <UiIcon name="play" size={18}/>} {playing ? '暂停播放' : index === slides.length - 1 ? '从头播放' : '帮我播放'}</button><span className="playback-status" aria-live="polite">{playing ? '正在播放' : `${index + 1} / ${slides.length}`}</span><button type="button" className="icon-control" aria-label="下一张" disabled={index === slides.length - 1} onClick={() => changeSlide(index + 1)}><UiIcon name="arrow-right"/></button></div>
     </> : <div className="knowledge-reference"><div className="textbook-reference-row">{textbookRefs.map((ref, index) => <span key={index}>{ref.version} · {ref.chapter}</span>)}</div><div className="prose"><ReactMarkdown>{markdown}</ReactMarkdown></div></div>}

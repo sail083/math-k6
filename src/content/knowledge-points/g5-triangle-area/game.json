@@ -61,5 +61,49 @@
       ],
       "points": 10
     }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1q1",
+          "type": "choice",
+          "prompt": "一个三角形底是12厘米，高是5厘米，面积是多少？",
+          "options": ["60平方厘米", "17平方厘米", "30平方厘米", "24平方厘米"],
+          "correctAnswer": "30平方厘米",
+          "explanation": "S = ½ × 12 × 5 = ½ × 60 = 30（平方厘米）。别忘了除以2。",
+          "points": 10
+        },
+        {
+          "id": "d1q2",
+          "type": "fill-blank",
+          "prompt": "一个三角形底是10厘米，高是7厘米，面积是____平方厘米。",
+          "correctAnswer": "35",
+          "explanation": "S = ½ × 10 × 7 = ½ × 70 = 35（平方厘米）。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7q1",
+          "type": "choice",
+          "prompt": "一个三角形面积是18平方厘米，高是6厘米，底是多少？",
+          "options": ["6厘米", "3厘米", "12厘米", "108厘米"],
+          "correctAnswer": "6厘米",
+          "explanation": "a = 2S ÷ h = 2 × 18 ÷ 6 = 36 ÷ 6 = 6（厘米）。",
+          "points": 10
+        },
+        {
+          "id": "d7q2",
+          "type": "fill-blank",
+          "prompt": "一个三角形底是14分米，高是9分米，面积是____平方分米。",
+          "correctAnswer": "63",
+          "explanation": "S = ½ × 14 × 9 = ½ × 126 = 63（平方分米）。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

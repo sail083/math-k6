@@ -67,5 +67,49 @@
       "explanation": "通过数格子发现长方形的面积等于每行的格数乘以行数，即长乘以宽。由此归纳出长方形面积公式 S = a × b。",
       "points": 10
     }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1-q1",
+          "type": "choice",
+          "prompt": "一个正方形边长5厘米，面积是多少？",
+          "options": ["25平方厘米", "20平方厘米", "10平方厘米"],
+          "correctAnswer": "25平方厘米",
+          "explanation": "正方形面积=边长×边长=5×5=25（平方厘米）。",
+          "points": 10
+        },
+        {
+          "id": "d1-q2",
+          "type": "fill-blank",
+          "prompt": "一个长方形长7厘米、宽4厘米，面积是____平方厘米。",
+          "correctAnswer": "28",
+          "explanation": "长方形面积=长×宽=7×4=28（平方厘米）。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7-q1",
+          "type": "choice",
+          "prompt": "一个长方形面积是36平方米，长是9米，宽是多少？",
+          "options": ["3米", "4米", "6米"],
+          "correctAnswer": "4米",
+          "explanation": "长方形面积=长×宽，所以宽=面积÷长=36÷9=4（米）。",
+          "points": 10
+        },
+        {
+          "id": "d7-q2",
+          "type": "fill-blank",
+          "prompt": "一个正方形面积是49平方分米，它的边长是____分米。",
+          "correctAnswer": "7",
+          "explanation": "正方形面积=边长×边长。7×7=49，所以边长是7分米。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

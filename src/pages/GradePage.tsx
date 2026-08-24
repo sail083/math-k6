@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { getCurriculum, getKnowledgePointById, getSemester, getTextbookRef, getTextbookUnit } from '@/lib/content';
 import { useProgress } from '@/context/ProgressContext';
-import type { Grade, Semester, TextbookFilter } from '@/lib/types';
+import type { Grade, Semester, TextbookFilter, MasteryStatus } from '@/lib/types';
 
 const gradeLabels: Record<number, string> = { 3: '三年级', 4: '四年级', 5: '五年级', 6: '六年级' };
 const versions: TextbookFilter[] = ['全部', '人教版', '北师大版', '苏教版'];
@@ -11,11 +11,28 @@ function Stars({ count }: { count: number }) {
   return <span className="text-sm text-amber-400" aria-label={`${count} 星`}>{'★'.repeat(count)}{'☆'.repeat(3 - count)}</span>;
 }
 
+const statusLabels: Record<string, { text: string; className: string }> = {
+  provisional: { text: '当堂会', className: 'bg-sky-100 text-sky-700' },
+  review_due: { text: '待复习', className: 'bg-amber-100 text-amber-700' },
+  stable: { text: '已稳固', className: 'bg-emerald-100 text-emerald-700' },
+};
+
+function StatusBadge({ status }: { status: MasteryStatus | null }) {
+  if (!status || status === 'learning') return null;
+  const label = statusLabels[status];
+  if (!label) return null;
+  return <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${label.className}`}>{label.text}</span>;
+}
+
+function LearningBadge() {
+  return <span className="rounded-full px-2 py-0.5 text-[10px] font-bold bg-indigo-100 text-indigo-700">学习中</span>;
+}
+
 export default function GradePage() {
   const { grade } = useParams<{ grade: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState('');
-  const { progress, isPassed, getStars } = useProgress();
+  const { progress, isPassed, getStars, getMasteryStatus } = useProgress();
   const gradeNum = Number(grade) as Grade;
   const isValidGrade = [3, 4, 5, 6].includes(gradeNum);
   const requestedVersion = searchParams.get('version');
@@ -103,6 +120,7 @@ export default function GradePage() {
               {grouped[semester].map((kp) => {
                 const ref = getTextbookRef(kp.meta, version);
                 const passed = isPassed(kp.meta.id);
+                const masteryStatus = getMasteryStatus(kp.meta.id);
                 const missingPrerequisites = kp.meta.prerequisites.filter(
                   (id) => !progress.passedKnowledgePoints.includes(id),
                 );
@@ -113,7 +131,7 @@ export default function GradePage() {
                   <Link key={kp.meta.id} to={`/kp/${kp.meta.id}?version=${encodeURIComponent(version)}`} className="flex min-h-[78px] items-center gap-3 p-4 transition-colors hover:bg-indigo-50/60">
                     <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-sm font-bold ${passed ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-100 text-indigo-700'}`}>{version === '全部' ? kp.meta.unit : getTextbookUnit(ref)}</span>
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1"><h3 className="font-semibold text-slate-800">{kp.meta.title}</h3>{ref ? <span className="text-xs text-slate-400">{ref.chapter}</span> : null}</div>
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1"><h3 className="font-semibold text-slate-800">{kp.meta.title}</h3>{ref ? <span className="text-xs text-slate-400">{ref.chapter}</span> : null}{passed ? <StatusBadge status={masteryStatus} /> : progress.currentLearning === kp.meta.id ? <LearningBadge /> : null}</div>
                       <p className="mt-1 truncate text-xs text-slate-500">
                         {prerequisiteTitles.length > 0
                           ? `建议先学：${prerequisiteTitles.join('、')}`

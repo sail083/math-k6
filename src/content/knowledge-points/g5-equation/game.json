@@ -48,5 +48,49 @@
       "points": 10
     },
     { "id": "q6", "type": "fill-blank", "prompt": "解方程3x+6=18，x=____。", "correctAnswer": "4", "explanation": "两边同时减6得3x=12，再同时除以3得x=4。", "points": 10 }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1q1",
+          "type": "choice",
+          "prompt": "解方程 x − 7 = 15，x 等于多少？",
+          "options": ["8", "12", "22", "28"],
+          "correctAnswer": "22",
+          "explanation": "两边同时加 7：x − 7 + 7 = 15 + 7，所以 x = 22。检验：22 − 7 = 15 ✓",
+          "points": 10
+        },
+        {
+          "id": "d1q2",
+          "type": "fill-blank",
+          "prompt": "解方程 5x + 3 = 28，x = ____。",
+          "correctAnswer": "5",
+          "explanation": "两边同时减 3 得 5x = 25，再同时除以 5 得 x = 5。检验：5×5 + 3 = 28 ✓",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7q1",
+          "type": "choice",
+          "prompt": "一个数的3倍减去6等于21，这个数是多少？设这个数为x。",
+          "options": ["9", "5", "7", "15"],
+          "correctAnswer": "9",
+          "explanation": "列方程 3x − 6 = 21，两边加 6 得 3x = 27，再除以 3 得 x = 9。检验：3×9 − 6 = 21 ✓",
+          "points": 10
+        },
+        {
+          "id": "d7q2",
+          "type": "fill-blank",
+          "prompt": "解方程 2x + 15 = 31，x = ____。",
+          "correctAnswer": "8",
+          "explanation": "两边同时减 15 得 2x = 16，再同时除以 2 得 x = 8。检验：2×8 + 15 = 31 ✓",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

@@ -60,5 +60,49 @@
       "explanation": "同样大的蛋糕，分的份数越多，每份越小。1/3 > 1/4，因为3份比4份少，所以每份更大。",
       "points": 10
     }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1-q1",
+          "type": "choice",
+          "prompt": "比较 2/7 和 5/7 的大小，哪个大？",
+          "options": ["2/7 大", "5/7 大", "一样大"],
+          "correctAnswer": "5/7 大",
+          "explanation": "同分母分数比大小，分子大的分数大。分母都是7，5>2，所以5/7 > 2/7。",
+          "points": 10
+        },
+        {
+          "id": "d1-q2",
+          "type": "fill-blank",
+          "prompt": "一个同样大的蛋糕，小明吃了 1/5，小红吃了 1/8，吃得较多的人对应的分数是____。",
+          "correctAnswer": "1/5",
+          "explanation": "同分子分数比大小，分母小的分数大。1/5 > 1/8，所以小明吃得较多。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7-q1",
+          "type": "choice",
+          "prompt": "比较 1/6 和 1/4 的大小，哪个大？",
+          "options": ["1/6 大", "一样大", "1/4 大"],
+          "correctAnswer": "1/4 大",
+          "explanation": "同分子分数比大小，分母小的分数大。分子都是1，分母4<6，所以1/4 > 1/6。",
+          "points": 10
+        },
+        {
+          "id": "d7-q2",
+          "type": "fill-blank",
+          "prompt": "比较 5/9 和 4/9，较大的分数是____。",
+          "correctAnswer": "5/9",
+          "explanation": "同分母分数比大小，分子大的分数大。5>4，所以5/9 > 4/9。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

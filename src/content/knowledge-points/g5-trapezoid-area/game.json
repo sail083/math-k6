@@ -48,5 +48,49 @@
       "points": 10
     },
     { "id": "q6", "type": "fill-blank", "prompt": "梯形上底3、下底7、高4，面积是____平方单位。", "correctAnswer": "20", "explanation": "(3+7)×4÷2=20。除以2是因为拼成图形的面积是原梯形的2倍。", "points": 10 }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1q1",
+          "type": "choice",
+          "prompt": "一个梯形上底2厘米，下底6厘米，高5厘米，面积是多少？",
+          "options": ["40平方厘米", "30平方厘米", "20平方厘米", "10平方厘米"],
+          "correctAnswer": "20平方厘米",
+          "explanation": "S = ½ × (2 + 6) × 5 = ½ × 8 × 5 = ½ × 40 = 20（平方厘米）。",
+          "points": 10
+        },
+        {
+          "id": "d1q2",
+          "type": "fill-blank",
+          "prompt": "一个梯形上底4米，下底8米，高3米，面积是____平方米。",
+          "correctAnswer": "18",
+          "explanation": "S = ½ × (4 + 8) × 3 = ½ × 12 × 3 = ½ × 36 = 18（平方米）。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7q1",
+          "type": "choice",
+          "prompt": "一个梯形面积是24平方厘米，上底5厘米，下底7厘米，高是多少？",
+          "options": ["4厘米", "2厘米", "6厘米", "8厘米"],
+          "correctAnswer": "4厘米",
+          "explanation": "h = 2S ÷ (a + b) = 2 × 24 ÷ (5 + 7) = 48 ÷ 12 = 4（厘米）。",
+          "points": 10
+        },
+        {
+          "id": "d7q2",
+          "type": "fill-blank",
+          "prompt": "一个梯形上底6分米，下底10分米，高5分米，面积是____平方分米。",
+          "correctAnswer": "40",
+          "explanation": "S = ½ × (6 + 10) × 5 = ½ × 16 × 5 = ½ × 80 = 40（平方分米）。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

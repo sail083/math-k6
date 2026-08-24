@@ -93,6 +93,7 @@ export default function KnowledgePointPage() {
 
       {/* 知识点内容（3-tab：讲解 / 原理 / 闯关） */}
       <KnowledgePoint
+        key={kp.meta.id}
         knowledgePoint={kp}
         nextCourseTitle={next?.meta.title}
         onNextCourse={next ? () => navigate(`/kp/${next.meta.id}${queryString}`) : undefined}

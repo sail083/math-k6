@@ -48,5 +48,49 @@
       "points": 10
     },
     { "id": "q6", "type": "fill-blank", "prompt": "1小时20分钟一共是____分钟。", "correctAnswer": "80", "explanation": "1小时是60分钟，60+20=80分钟。", "points": 10 }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1-q1",
+          "type": "choice",
+          "prompt": "3 分 = ？秒",
+          "options": ["30秒", "180秒", "300秒"],
+          "correctAnswer": "180秒",
+          "explanation": "1分=60秒，3分=60×3=180秒。",
+          "points": 10
+        },
+        {
+          "id": "d1-q2",
+          "type": "fill-blank",
+          "prompt": "90 秒 = ____（请按“几分几秒”填写，例如：1分30秒）。",
+          "correctAnswer": "1分30秒",
+          "explanation": "60秒=1分，90−60=30秒，所以90秒=1分30秒。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7-q1",
+          "type": "choice",
+          "prompt": "从 8:15 到 8:50，经过了多长时间？",
+          "options": ["35分钟", "45分钟", "25分钟"],
+          "correctAnswer": "35分钟",
+          "explanation": "8:50−8:15=35分钟。也可以分段：8:15到8:30是15分钟，8:30到8:50是20分钟，共35分钟。",
+          "points": 10
+        },
+        {
+          "id": "d7-q2",
+          "type": "fill-blank",
+          "prompt": "2 时 30 分 = ____分（请直接填写数字）。",
+          "correctAnswer": "150",
+          "explanation": "1时=60分，2时=120分，120+30=150分。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

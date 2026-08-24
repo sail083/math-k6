@@ -53,5 +53,49 @@
       "points": 10
     },
     { "id": "q6", "type": "fill-blank", "prompt": "长4、宽3、高2的长方体体积是____立方单位。", "correctAnswer": "24", "explanation": "每层4×3=12个单位立方体，共2层，12×2=24。", "points": 10 }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1q1",
+          "type": "choice",
+          "prompt": "一个长方体长7厘米，宽5厘米，高2厘米，体积是多少？",
+          "options": ["70立方厘米", "14立方厘米", "35立方厘米", "28立方厘米"],
+          "correctAnswer": "70立方厘米",
+          "explanation": "V = 7 × 5 × 2 = 70（立方厘米）。",
+          "points": 10
+        },
+        {
+          "id": "d1q2",
+          "type": "fill-blank",
+          "prompt": "一个正方体的棱长是5厘米，它的体积是____立方厘米。",
+          "correctAnswer": "125",
+          "explanation": "正方体体积 = 棱长³ = 5³ = 5 × 5 × 5 = 125（立方厘米）。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7q1",
+          "type": "choice",
+          "prompt": "一个长方体体积是48立方米，长6米，宽2米，高是多少？",
+          "options": ["8米", "2米", "4米", "6米"],
+          "correctAnswer": "4米",
+          "explanation": "h = V ÷ (长 × 宽) = 48 ÷ (6 × 2) = 48 ÷ 12 = 4（米）。",
+          "points": 10
+        },
+        {
+          "id": "d7q2",
+          "type": "fill-blank",
+          "prompt": "一个长方体长9厘米，宽4厘米，高3厘米，体积是____立方厘米。",
+          "correctAnswer": "108",
+          "explanation": "V = 9 × 4 × 3 = 108（立方厘米）。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

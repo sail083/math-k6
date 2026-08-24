@@ -53,5 +53,49 @@
       "points": 10
     },
     { "id": "q6", "type": "fill-blank", "prompt": "一个角的一边对准量角器0°线，另一边指向125°，这个角是____度。", "correctAnswer": "125", "explanation": "中心对顶点、零线对一边后，另一边指向的刻度就是角度。", "points": 10 }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "r-d1-q1",
+          "type": "choice",
+          "prompt": "钝角可能是下面哪个度数？",
+          "options": ["45°", "90°", "120°", "180°"],
+          "correctAnswer": "120°",
+          "explanation": "钝角是大于90°且小于180°的角。45°是锐角，90°是直角，180°是平角，只有120°在90°和180°之间，是钝角。",
+          "points": 10
+        },
+        {
+          "id": "r-d1-q2",
+          "type": "fill-blank",
+          "prompt": "钟表上6点整，时针指6，分针指12，它们形成的角是____度。",
+          "correctAnswer": "180",
+          "explanation": "6点整时，时针和分针在一条直线上但方向相反，形成的角是平角，等于180度。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "r-d7-q1",
+          "type": "choice",
+          "prompt": "一个平角等于多少度？",
+          "options": ["180°", "90°", "360°", "270°"],
+          "correctAnswer": "180°",
+          "explanation": "平角的两条边在一条直线上，方向相反，角度正好是180°。1平角 = 2直角 = 180°。",
+          "points": 10
+        },
+        {
+          "id": "r-d7-q2",
+          "type": "fill-blank",
+          "prompt": "一个平角减去一个直角，剩下的角是____度。",
+          "correctAnswer": "90",
+          "explanation": "平角是180°，直角是90°，180° - 90° = 90°。一个平角减去一个直角还剩一个直角。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

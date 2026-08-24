@@ -58,5 +58,49 @@
       "points": 10
     },
     { "id": "q6", "type": "fill-blank", "prompt": "迁移题：把312拆成300、10和2，312×3=？", "correctAnswer": "936", "explanation": "300×3+10×3+2×3=900+30+6=936。", "points": 10 }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1-q1",
+          "type": "choice",
+          "prompt": "156 × 4 = ？",
+          "options": ["604", "624", "614"],
+          "correctAnswer": "624",
+          "explanation": "个位：6×4=24，写4进2；十位：5×4=20，加进位2=22，写2进2；百位：1×4=4，加进位2=6。所以156×4=624。",
+          "points": 10
+        },
+        {
+          "id": "d1-q2",
+          "type": "fill-blank",
+          "prompt": "305 × 4 = ____。",
+          "correctAnswer": "1220",
+          "explanation": "个位：5×4=20，写0进2；十位：0×4=0，加进位2=2；百位：3×4=12。所以305×4=1220。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7-q1",
+          "type": "choice",
+          "prompt": "38 × 5 = ？",
+          "options": ["180", "185", "190"],
+          "correctAnswer": "190",
+          "explanation": "个位：8×5=40，写0进4；十位：3×5=15，加进位4=19。所以38×5=190。",
+          "points": 10
+        },
+        {
+          "id": "d7-q2",
+          "type": "fill-blank",
+          "prompt": "250 × 4 = ____。",
+          "correctAnswer": "1000",
+          "explanation": "先算25×4=100，再在末尾添一个0，所以250×4=1000。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

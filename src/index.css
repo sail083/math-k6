@@ -952,6 +952,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, [role="button"]:focu
 .deck-review-progress > div { flex: 1; height: 7px; overflow: hidden; border-radius: 99px; background: #e9edf5; }
 .deck-review-progress span { display: block; height: 100%; border-radius: inherit; background: var(--color-success); transition: width 260ms ease-out; }
 .deck-review-progress strong { min-width: 38px; color: var(--color-success); font-size: 12px; font-variant-numeric: tabular-nums; }
+.deck-self-mark { display: flex; gap: 8px; padding: 10px 24px 0; }
+.deck-mark-btn { display: inline-flex; align-items: center; gap: 5px; min-height: 44px; padding: 8px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-control); font-size: 13px; font-weight: 700; cursor: pointer; transition: border-color var(--motion-fast) ease, background var(--motion-fast) ease; }
+.deck-mark-btn.is-recalled { color: #15803d; border-color: #bbf7d0; background: #f0fdf4; }
+.deck-mark-btn.is-recalled:hover { background: #dcfce7; border-color: #86efac; }
+.deck-mark-btn.is-review { color: #b45309; border-color: #fde68a; background: #fffbeb; }
+.deck-mark-btn.is-review:hover { background: #fef3c7; border-color: #fcd34d; }
+.deck-self-mark-feedback { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; padding: 8px 16px; min-height: 44px; }
+.deck-self-mark-feedback.is-recalled { color: #15803d; }
+.deck-self-mark-feedback.is-review { color: #b45309; }
 .deck-dots { width: 100%; min-width: 0; min-height: 44px; overflow-x: auto; padding-top: 4px; }
 .deck-dots button { display: grid; width: 40px; height: 40px; flex: 0 0 40px; place-items: center; background: transparent; }
 .deck-dots button i { display: block; width: 18px; height: 8px; border-radius: 99px; background: #cbd2df; transition: width var(--motion-fast) ease, background var(--motion-fast) ease; }
@@ -1055,6 +1064,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, [role="button"]:focu
   .evidence-counter strong { font-size: 16px; }
   .evidence-counter p { font-size: 13px; }
 }
+
+/* Prediction input in explore stage */
+.prediction-block { display: grid; gap: 6px; padding: 13px 18px; border-left: 3px solid #f59e0b; background: #fffbeb; border-radius: 12px; }
+.prediction-label { font-size: 13px; font-weight: 700; color: #8b6505; }
+.prediction-input { min-height: 44px; padding: 10px 14px; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: #fff; color: var(--color-text); font-size: 14px; outline: none; transition: border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease; }
+.prediction-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 2px rgba(79,107,255,.1); }
 
 /* DerivationPlayer keyframes */
 @keyframes derivation-step-fadein {

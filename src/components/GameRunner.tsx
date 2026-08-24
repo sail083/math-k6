@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import type { GameConfig } from '@/lib/types';
+import type { GameConfig, Question } from '@/lib/types';
 import { useProgress } from '@/context/ProgressContext';
 import ChoiceGame from '@/components/games/ChoiceGame';
 import FillBlankGame from '@/components/games/FillBlankGame';
@@ -17,13 +17,15 @@ interface GameRunnerProps {
   onReviewCourse?: () => void;
   onNextCourse?: () => void;
   nextCourseTitle?: string;
+  reviewMode?: 'd1' | 'd7' | null;
 }
 
 type GameStatus = 'playing' | 'passed' | 'failed';
 
-interface AnswerRecord {
+export interface AnswerRecord {
   selected: string | string[];
   correct: boolean;
+  firstTry: boolean;
 }
 
 export function calculateStars(correctRate: number, passThreshold: number): number {
@@ -37,9 +39,13 @@ export function masteryThreshold(configuredThreshold: number): number {
   return Math.max(0.8, configuredThreshold);
 }
 
-export function hasTransferEvidence(game: GameConfig, answers: Record<string, { correct: boolean }>): boolean {
-  const transferQuestions = game.questions.filter((question) => question.type !== 'choice' && question.type !== 'true-false');
-  return transferQuestions.length > 0 && transferQuestions.every((question) => answers[question.id]?.correct === true);
+export function hasTransferEvidence(game: GameConfig, answers: Record<string, AnswerRecord>, questionSet?: Question[]): boolean {
+  const questions = questionSet ?? game.questions;
+  const transferQuestions = questions.filter((question) => question.type !== 'choice' && question.type !== 'true-false');
+  return transferQuestions.length > 0 && transferQuestions.every((question) => {
+    const a = answers[question.id];
+    return a?.correct === true && a?.firstTry === true;
+  });
 }
 
 function StarRow({ earned, total }: { earned: number; total: number }) {
@@ -83,29 +89,42 @@ export default function GameRunner({
   onReviewCourse,
   onNextCourse,
   nextCourseTitle,
+  reviewMode = null,
 }: GameRunnerProps) {
-  const { markPassed } = useProgress();
+  const { markInitialPass, markDelayedReviewPass, markDelayedReviewFail } = useProgress();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, AnswerRecord>>({});
   const [gameStatus, setGameStatus] = useState<GameStatus>('playing');
 
+  // Freeze review mode for the lifetime of this course attempt.
+  // Captured once when the component mounts; the React key on GameRunner
+  // ensures a fresh mount for each course/attempt identity.
+  const [frozenReviewMode] = useState<'d1' | 'd7' | null>(reviewMode);
+
+  const isReview = frozenReviewMode === 'd1' || frozenReviewMode === 'd7';
+  const reviewQuestions: Question[] = isReview
+    ? game.reviewSets?.[frozenReviewMode]?.questions ?? []
+    : [];
+  const activeQuestions = isReview ? reviewQuestions : game.questions;
+  const hasReviewSets = !!(game.reviewSets?.d1 && game.reviewSets?.d7);
+
   const maxScore = useMemo(
-    () => game.questions.reduce((sum, q) => sum + q.points, 0),
-    [game.questions],
+    () => activeQuestions.reduce((sum, q) => sum + q.points, 0),
+    [activeQuestions],
   );
   const requiredRate = masteryThreshold(game.passThreshold);
 
   const score = useMemo(
     () =>
-      game.questions.reduce((sum, q) => {
+      activeQuestions.reduce((sum, q) => {
         const answer = answers[q.id];
         return sum + (answer?.correct ? q.points : 0);
       }, 0),
-    [answers, game.questions],
+    [answers, activeQuestions],
   );
 
   // 边界情况：没有题目
-  if (game.questions.length === 0) {
+  if (activeQuestions.length === 0) {
     return (
       <div className={`text-center py-12${className ? ' ' + className : ''}`}>
         <UiIcon name="spark" size={38} className="mx-auto mb-3 text-indigo-500"/>
@@ -114,16 +133,16 @@ export default function GameRunner({
     );
   }
 
-  const currentQuestion = game.questions[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === game.questions.length - 1;
+  const currentQuestion = activeQuestions[currentQuestionIndex];
+  const isLastQuestion = currentQuestionIndex === activeQuestions.length - 1;
   const isAnswered = answers[currentQuestion.id] !== undefined;
-  const progressPercent = ((currentQuestionIndex + 1) / game.questions.length) * 100;
+  const progressPercent = ((currentQuestionIndex + 1) / activeQuestions.length) * 100;
 
-  const handleAnswer = (selected: string, isCorrect: boolean) => {
+  const handleAnswer = (selected: string, isCorrect: boolean, firstTry: boolean = true) => {
     if (answers[currentQuestion.id]) return;
     setAnswers((prev) => ({
       ...prev,
-      [currentQuestion.id]: { selected, correct: isCorrect },
+      [currentQuestion.id]: { selected, correct: isCorrect, firstTry },
     }));
   };
 
@@ -132,12 +151,24 @@ export default function GameRunner({
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       const correctRate = maxScore > 0 ? score / maxScore : 0;
-      if (correctRate >= requiredRate && hasTransferEvidence(game, answers)) {
-        const stars = calculateStars(correctRate, requiredRate);
-        setGameStatus('passed');
-        markPassed(knowledgePointId, stars);
+      if (isReview) {
+        // Review pass requires: score >= threshold AND first-try transfer evidence on review questions
+        if (correctRate >= requiredRate && hasTransferEvidence(game, answers, activeQuestions)) {
+          setGameStatus('passed');
+          markDelayedReviewPass(knowledgePointId);
+        } else {
+          setGameStatus('failed');
+          markDelayedReviewFail(knowledgePointId);
+        }
       } else {
-        setGameStatus('failed');
+        // Initial challenge: pass requires correct rate + transfer evidence
+        if (correctRate >= requiredRate && hasTransferEvidence(game, answers)) {
+          const stars = calculateStars(correctRate, requiredRate);
+          setGameStatus('passed');
+          markInitialPass(knowledgePointId, stars, hasReviewSets);
+        } else {
+          setGameStatus('failed');
+        }
       }
     }
   };
@@ -213,12 +244,37 @@ export default function GameRunner({
     }
   };
 
+  // Determine result copy based on mode and outcome
+  const resultTitle = (passed: boolean): string => {
+    if (isReview) {
+      if (passed && frozenReviewMode === 'd7') return '已稳固';
+      if (passed && frozenReviewMode === 'd1') return '第一次复习通过';
+      return '待复习';
+    }
+    if (passed) return hasReviewSets ? '当堂会' : '本次通过';
+    return '最后再练一下';
+  };
+
+  const resultSubtitle = (passed: boolean): string => {
+    if (isReview) {
+      if (passed && frozenReviewMode === 'd7') return '两次复习都通过了，这个知识点已经稳固了。';
+      if (passed && frozenReviewMode === 'd1') return '第一次复习通过，六天后再来练一次就能稳固。';
+      return '这次没有通过，知识点仍在待复习状态，可以再试。';
+    }
+    if (passed) {
+      return hasReviewSets
+        ? '你当堂学会了这个办法。明天来练一次复习题，会记得更牢。'
+        : '本次练习通过。';
+    }
+    return '回到"为什么"看一眼，再来试试。';
+  };
+
   // ===== 结果界面 =====
   if (gameStatus === 'passed' || gameStatus === 'failed') {
     const correctRate = maxScore > 0 ? score / maxScore : 0;
     const passed = gameStatus === 'passed';
-    const transferPassed = hasTransferEvidence(game, answers);
-    const stars = passed ? calculateStars(correctRate, requiredRate) : 0;
+    const transferPassed = isReview ? hasTransferEvidence(game, answers, activeQuestions) : hasTransferEvidence(game, answers);
+    const stars = passed && !isReview ? calculateStars(correctRate, requiredRate) : 0;
 
     return (
       <div className={`space-y-6${className ? ' ' + className : ''}`}>
@@ -244,27 +300,29 @@ export default function GameRunner({
           {passed ? (
             <>
               <div className="result-icon is-success"><UiIcon name="spark" size={32}/></div>
-              <h2 className="text-2xl font-bold text-indigo-600 mb-2">这关通过啦</h2>
-              <p className="text-sm text-slate-500">你已经会用这个办法了。过一阵子再练一次，会记得更牢。</p>
+              <h2 className="text-2xl font-bold text-indigo-600 mb-2">{resultTitle(true)}</h2>
+              <p className="text-sm text-slate-500">{resultSubtitle(true)}</p>
             </>
           ) : (
             <>
               <div className="result-icon"><UiIcon name="progress" size={32}/></div>
-              <h2 className="text-2xl font-bold text-slate-700 mb-2">最后再练一下</h2>
-              <p className="text-sm text-slate-500">{correctRate < requiredRate && !transferPassed
+              <h2 className="text-2xl font-bold text-slate-700 mb-2">{resultTitle(false)}</h2>
+              <p className="text-sm text-slate-500">{isReview ? resultSubtitle(false) : (correctRate < requiredRate && !transferPassed
                 ? `再答对一些（需要达到 ${Math.round(requiredRate * 100)}%），同时把填空题也独立完成。`
                 : correctRate < requiredRate
                   ? `再答对一些，达到 ${Math.round(requiredRate * 100)}% 就能过关。`
                   : !transferPassed
                     ? '选择题做得不错，再把填空、拖动或排序题自己完成一次。'
-                    : '回到”为什么”看一眼，再来试试。'}</p>
+                    : resultSubtitle(false))}</p>
             </>
           )}
 
           {/* 星级 */}
-          <div className="my-6">
-            <StarRow earned={stars} total={3} />
-          </div>
+          {stars > 0 && (
+            <div className="my-6">
+              <StarRow earned={stars} total={3} />
+            </div>
+          )}
 
           {/* 得分摘要 */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100">
@@ -278,7 +336,7 @@ export default function GameRunner({
         <div className="rounded-xl bg-white border border-slate-200 p-5">
           <h3 className="text-sm font-semibold text-slate-700 mb-4">答题回顾</h3>
           <div className="space-y-4">
-            {game.questions.map((q, index) => {
+            {activeQuestions.map((q, index) => {
               const answer = answers[q.id];
               const correct = answer?.correct ?? false;
               const selectedText = answer
@@ -345,7 +403,7 @@ export default function GameRunner({
               再试一次
             </button>
           )}
-          {passed && onNextCourse ? (
+          {passed && onNextCourse && !isReview ? (
             <button
               onClick={onNextCourse}
               className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[48px] flex items-center gap-2 max-w-full"
@@ -372,7 +430,7 @@ export default function GameRunner({
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
           <span className="font-medium text-slate-600">
-            第 {currentQuestionIndex + 1} / {game.questions.length} 题
+            {isReview ? `复习（${frozenReviewMode === 'd1' ? '第一次' : '第二次'}）· ` : ''}第 {currentQuestionIndex + 1} / {activeQuestions.length} 题
           </span>
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 font-medium tabular-nums">
             得分: {score} / {maxScore}

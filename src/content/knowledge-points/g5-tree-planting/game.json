@@ -48,5 +48,49 @@
       "points": 10
     },
     { "id": "q6", "type": "fill-blank", "prompt": "一条直路分成6个间隔，两端都种树，一共种____棵。", "correctAnswer": "7", "explanation": "两端都种时，棵数比间隔数多1，所以是7棵。", "points": 10 }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1q1",
+          "type": "choice",
+          "prompt": "在一条40米长的道路一侧种树，每隔8米种一棵（两端都种），共种几棵？",
+          "options": ["5棵", "6棵", "4棵", "7棵"],
+          "correctAnswer": "6棵",
+          "explanation": "两端都种：棵数 = 间隔数 + 1。间隔数 = 40 ÷ 8 = 5，棵数 = 5 + 1 = 6（棵）。",
+          "points": 10
+        },
+        {
+          "id": "d1q2",
+          "type": "fill-blank",
+          "prompt": "在一条60米长的走廊一侧放花盆，每隔10米放一盆（两端都放），一共放____盆。",
+          "correctAnswer": "7",
+          "explanation": "两端都放：盆数 = 间隔数 + 1 = 60 ÷ 10 + 1 = 6 + 1 = 7（盆）。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7q1",
+          "type": "choice",
+          "prompt": "一个圆形池塘周围每隔6米种一棵柳树，池塘周长48米，共种几棵？",
+          "options": ["7棵", "9棵", "8棵", "6棵"],
+          "correctAnswer": "8棵",
+          "explanation": "环形植树：棵数 = 间隔数。间隔数 = 48 ÷ 6 = 8，棵数 = 8（棵）。",
+          "points": 10
+        },
+        {
+          "id": "d7q2",
+          "type": "fill-blank",
+          "prompt": "两座楼之间相距50米，每隔5米种一棵树（两端不种，因为有楼），共种____棵。",
+          "correctAnswer": "9",
+          "explanation": "两端不种：棵数 = 间隔数 − 1 = 50 ÷ 5 − 1 = 10 − 1 = 9（棵）。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

@@ -53,5 +53,49 @@
       "points": 10
     },
     { "id": "q6", "type": "fill-blank", "prompt": "把一个整体平均分成5份，取其中3份，写成分数是____。", "correctAnswer": "3/5", "explanation": "分母5表示平均分成5份，分子3表示取了3份。", "points": 10 }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1-q1",
+          "type": "choice",
+          "prompt": "把一条彩带平均分成7份，取其中2份，用分数怎么表示？",
+          "options": ["2/7", "7/2", "2/2"],
+          "correctAnswer": "2/7",
+          "explanation": "平均分成7份（分母=7），取2份（分子=2），所以是2/7，读作七分之二。",
+          "points": 10
+        },
+        {
+          "id": "d1-q2",
+          "type": "fill-blank",
+          "prompt": "把一张正方形纸平均分成6份，取其中1份，写成分数是____。",
+          "correctAnswer": "1/6",
+          "explanation": "分母6表示平均分成6份，分子1表示取了1份，所以是1/6。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7-q1",
+          "type": "choice",
+          "prompt": "分数 4/9 中，9 是什么？",
+          "options": ["分子", "分母", "分数线"],
+          "correctAnswer": "分母",
+          "explanation": "分数中下面的数叫分母，表示平均分成几份。9在下面，是分母。",
+          "points": 10
+        },
+        {
+          "id": "d7-q2",
+          "type": "fill-blank",
+          "prompt": "3/5 读作____（请写中文）。",
+          "correctAnswer": "五分之三",
+          "explanation": "读分数时先读分母再读分子。分母是5，分子是3，所以读作五分之三。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

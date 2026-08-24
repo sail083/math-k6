@@ -89,6 +89,53 @@ export function getTextbookUnit(ref?: TextbookRef): number {
   return Number(ref.chapter.match(CHAPTER_PATTERN)?.[2] ?? Number.MAX_SAFE_INTEGER);
 }
 
+/**
+ * 在同一组内按直接/传递前置依赖做拓扑排序（Kahn 算法）。
+ * 只考虑同组内的前置依赖，保持原有顺序作为平局决胜。
+ */
+function topologicalSort(courses: KnowledgePoint[]): KnowledgePoint[] {
+  if (courses.length <= 1) return courses;
+  const ids = new Set(courses.map((c) => c.meta.id));
+  const inDegree = new Map<string, number>();
+  const adj = new Map<string, string[]>();
+  for (const c of courses) {
+    inDegree.set(c.meta.id, 0);
+    adj.set(c.meta.id, []);
+  }
+  for (const c of courses) {
+    for (const prereq of c.meta.prerequisites) {
+      if (ids.has(prereq) && prereq !== c.meta.id) {
+        adj.get(prereq)!.push(c.meta.id);
+        inDegree.set(c.meta.id, (inDegree.get(c.meta.id) ?? 0) + 1);
+      }
+    }
+  }
+  // Kahn's algorithm — preserve original order for deterministic ties
+  const result: KnowledgePoint[] = [];
+  const queue: KnowledgePoint[] = courses.filter(
+    (c) => (inDegree.get(c.meta.id) ?? 0) === 0,
+  );
+  const visited = new Set<string>();
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    if (visited.has(current.meta.id)) continue;
+    visited.add(current.meta.id);
+    result.push(current);
+    for (const next of adj.get(current.meta.id) ?? []) {
+      inDegree.set(next, (inDegree.get(next) ?? 0) - 1);
+      if ((inDegree.get(next) ?? 0) === 0 && !visited.has(next)) {
+        const nextCourse = courses.find((c) => c.meta.id === next);
+        if (nextCourse) queue.push(nextCourse);
+      }
+    }
+  }
+  // Append any remaining (e.g. cycles) in original order
+  for (const c of courses) {
+    if (!visited.has(c.meta.id)) result.push(c);
+  }
+  return result;
+}
+
 /** 按教材的实际册别和单元顺序返回课程，避免为不同版本复制知识点。 */
 export function getCurriculum(
   grade: Grade,
@@ -100,14 +147,36 @@ export function getCurriculum(
         kp.meta.textbookRefs.some((ref) => ref.version === version && ref.grade === grade),
       );
 
-  return candidates
-    .sort((a, b) => {
-      if (version === '全部') return a.meta.unit - b.meta.unit;
-      const refA = getTextbookRef(a.meta, version);
-      const refB = getTextbookRef(b.meta, version);
-      const semesterOrder = (getSemester(refA) === '上册' ? 0 : 1) - (getSemester(refB) === '上册' ? 0 : 1);
-      return semesterOrder || getTextbookUnit(refA) - getTextbookUnit(refB);
-    });
+  const sorted = candidates.sort((a, b) => {
+    if (version === '全部') return a.meta.unit - b.meta.unit;
+    const refA = getTextbookRef(a.meta, version);
+    const refB = getTextbookRef(b.meta, version);
+    const semesterOrder = (getSemester(refA) === '上册' ? 0 : 1) - (getSemester(refB) === '上册' ? 0 : 1);
+    return semesterOrder || getTextbookUnit(refA) - getTextbookUnit(refB);
+  });
+
+  // Group by (semester, unit) and topologically sort within each group
+  const groupKey = (kp: KnowledgePoint): string => {
+    if (version === '全部') return `all-${kp.meta.unit}`;
+    const ref = getTextbookRef(kp.meta, version);
+    return `${getSemester(ref)}-${getTextbookUnit(ref)}`;
+  };
+
+  const result: KnowledgePoint[] = [];
+  let currentKey = '';
+  let currentGroup: KnowledgePoint[] = [];
+  for (const kp of sorted) {
+    const key = groupKey(kp);
+    if (key !== currentKey) {
+      result.push(...topologicalSort(currentGroup));
+      currentGroup = [kp];
+      currentKey = key;
+    } else {
+      currentGroup.push(kp);
+    }
+  }
+  result.push(...topologicalSort(currentGroup));
+  return result;
 }
 
 /** 获取所有支持的年级 */

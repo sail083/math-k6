@@ -55,5 +55,49 @@
       "explanation": "被除数和除数同时扩大100倍，商不变；56÷8=7。",
       "points": 10
     }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1q1",
+          "type": "choice",
+          "prompt": "把4.5千克糖平均分给5个小朋友，每人分到多少千克？",
+          "options": ["0.09千克", "0.9千克", "9千克", "0.45千克"],
+          "correctAnswer": "0.9千克",
+          "explanation": "4.5 ÷ 5 = 0.9（千克）。商的小数点与被除数的小数点对齐。",
+          "points": 10
+        },
+        {
+          "id": "d1q2",
+          "type": "fill-blank",
+          "prompt": "计算 6.3 ÷ 0.7 的结果是____。",
+          "correctAnswer": "9",
+          "explanation": "把除数和被除数的小数点同时右移1位：0.7 → 7，6.3 → 63。63 ÷ 7 = 9。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7q1",
+          "type": "choice",
+          "prompt": "一桶油有2.4升，每个小瓶能装0.3升，一共能装满几个小瓶？",
+          "options": ["7瓶", "8瓶", "72瓶", "0.8瓶"],
+          "correctAnswer": "8瓶",
+          "explanation": "2.4 ÷ 0.3，同时扩大10倍变成 24 ÷ 3 = 8（瓶）。",
+          "points": 10
+        },
+        {
+          "id": "d7q2",
+          "type": "fill-blank",
+          "prompt": "计算 3.6 ÷ 0.04 的结果是____。",
+          "correctAnswer": "90",
+          "explanation": "把除数和被除数的小数点同时右移2位：0.04 → 4，3.6 → 360。360 ÷ 4 = 90。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

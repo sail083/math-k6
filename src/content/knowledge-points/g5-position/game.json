@@ -48,5 +48,49 @@
       "points": 10
     },
     { "id": "q6", "type": "fill-blank", "prompt": "点A在第4列第2行，用数对表示为____。", "correctAnswer": "(4,2)", "explanation": "数对先写列，再写行，所以是(4,2)。", "points": 10 }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1q1",
+          "type": "choice",
+          "prompt": "数对 (2, 6) 表示的位置是？",
+          "options": ["第6列第2行", "第2列第6行", "第26行", "第6列第2排"],
+          "correctAnswer": "第2列第6行",
+          "explanation": "数对 (列, 行) 的顺序是先列后行。(2, 6) 表示第 2 列第 6 行。",
+          "points": 10
+        },
+        {
+          "id": "d1q2",
+          "type": "fill-blank",
+          "prompt": "点B在第6列第3行，用数对表示为____。",
+          "correctAnswer": "(6,3)",
+          "explanation": "数对先写列，再写行，第6列第3行就是(6,3)。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7q1",
+          "type": "choice",
+          "prompt": "小红从 (1, 1) 的位置向右走了3列，她现在的位置用数对怎么表示？",
+          "options": ["(4, 1)", "(1, 4)", "(3, 1)", "(4, 4)"],
+          "correctAnswer": "(4, 1)",
+          "explanation": "向右走列数增加，行数不变。列：1 + 3 = 4，行还是 1，所以现在的位置是 (4, 1)。",
+          "points": 10
+        },
+        {
+          "id": "d7q2",
+          "type": "fill-blank",
+          "prompt": "在方格纸上，点C在第2列第5行，点D在第2列第1行，两点之间的格数差是____格。",
+          "correctAnswer": "4",
+          "explanation": "两点在同一列（列号都是2），行号分别是5和1，行号之差 = 5 − 1 = 4（格）。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

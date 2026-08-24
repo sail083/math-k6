@@ -59,5 +59,49 @@
       "explanation": "5×4+3=23，而且余数3小于除数5，所以商和余数都正确。",
       "points": 10
     }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1-q1",
+          "type": "choice",
+          "prompt": "31 ÷ 6 = ？",
+          "options": ["5……1", "4……7", "6……1"],
+          "correctAnswer": "5……1",
+          "explanation": "6×5=30最接近31且不超过31，31−30=1，余数1<除数6，所以31÷6=5余1。",
+          "points": 10
+        },
+        {
+          "id": "d1-q2",
+          "type": "fill-blank",
+          "prompt": "25 ÷ 7 = ？（请用“商……余数”的格式填写）",
+          "correctAnswer": "3……4",
+          "explanation": "7×3=21最接近25且不超过25。25−21=4，余数4<除数7，所以25÷7=3余4。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7-q1",
+          "type": "choice",
+          "prompt": "除数是 7，余数最大可能是几？",
+          "options": ["7", "6", "8"],
+          "correctAnswer": "6",
+          "explanation": "余数一定比除数小，除数是7，余数最大是6。",
+          "points": 10
+        },
+        {
+          "id": "d7-q2",
+          "type": "fill-blank",
+          "prompt": "40 ÷ 9 = ？（请用“商……余数”的格式填写）",
+          "correctAnswer": "4……4",
+          "explanation": "9×4=36最接近40且不超过40。40−36=4，余数4<除数9，所以40÷9=4余4。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

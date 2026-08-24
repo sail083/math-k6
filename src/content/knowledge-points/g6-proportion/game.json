@@ -74,5 +74,64 @@
       "explanation": "两个比的交叉乘积都等于24，所以两个比值相等，能组成比例。",
       "points": 10
     }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1-choice",
+          "type": "choice",
+          "prompt": "下面哪组中的两个比能组成比例？",
+          "options": [
+            "15:25 和 3:5",
+            "3:6 和 6:3",
+            "1:4 和 4:1",
+            "2:7 和 7:2"
+          ],
+          "correctAnswer": "15:25 和 3:5",
+          "explanation": "15:25 = 15 ÷ 25 = 0.6，3:5 = 3 ÷ 5 = 0.6，比值相等，能组成比例。验证：15 × 5 = 75，25 × 3 = 75，外项积等于内项积。",
+          "points": 10
+        },
+        {
+          "id": "d1-fill",
+          "type": "fill-blank",
+          "prompt": "解比例：5:8 = x:40，x等于多少？",
+          "correctAnswer": [
+            "25"
+          ],
+          "explanation": "根据比例的基本性质：5 × 40 = 8 × x → 200 = 8x → x = 200 ÷ 8 = 25。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7-choice",
+          "type": "choice",
+          "prompt": "如果 x 和 y 都是正数，且 x × y = 12（一定），那么 x 和 y 成什么比例？",
+          "options": [
+            "正比例",
+            "反比例",
+            "不成比例",
+            "无法确定"
+          ],
+          "correctAnswer": "反比例",
+          "explanation": "x 与 y 都是正数，且乘积始终等于12（常数），一个增大另一个就减小，满足反比例的定义：xy = k（k为非零常数）。",
+          "points": 10
+        },
+        {
+          "id": "d7-fill",
+          "type": "fill-blank",
+          "prompt": "把 0.25 : ⅔ 化成最简整数比，结果是____。",
+          "correctAnswer": [
+            "3:8",
+            "3：8"
+          ],
+          "explanation": "0.25 = ¼，比值 = ¼ ÷ ⅔ = ¼ × 3/2 = 3/8，最简整数比为 3:8。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

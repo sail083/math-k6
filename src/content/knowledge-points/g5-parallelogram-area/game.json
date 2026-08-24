@@ -53,5 +53,49 @@
       "points": 10
     },
     { "id": "q6", "type": "fill-blank", "prompt": "平行四边形底7厘米、高4厘米，面积是____平方厘米。", "correctAnswer": "28", "explanation": "割补后底和高不变，面积=底×高=7×4=28。", "points": 10 }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1q1",
+          "type": "choice",
+          "prompt": "一个平行四边形底是7厘米，高是6厘米，面积是多少？",
+          "options": ["42平方厘米", "13平方厘米", "26平方厘米", "48平方厘米"],
+          "correctAnswer": "42平方厘米",
+          "explanation": "S = a × h = 7 × 6 = 42（平方厘米）。",
+          "points": 10
+        },
+        {
+          "id": "d1q2",
+          "type": "fill-blank",
+          "prompt": "一个平行四边形底是9分米，高是5分米，面积是____平方分米。",
+          "correctAnswer": "45",
+          "explanation": "S = a × h = 9 × 5 = 45（平方分米）。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7q1",
+          "type": "choice",
+          "prompt": "一个平行四边形面积是56平方米，底是8米，高是多少？",
+          "options": ["48米", "64米", "7米", "14米"],
+          "correctAnswer": "7米",
+          "explanation": "h = S ÷ a = 56 ÷ 8 = 7（米）。",
+          "points": 10
+        },
+        {
+          "id": "d7q2",
+          "type": "fill-blank",
+          "prompt": "一个平行四边形底是12厘米，高是8厘米，面积是____平方厘米。",
+          "correctAnswer": "96",
+          "explanation": "S = a × h = 12 × 8 = 96（平方厘米）。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

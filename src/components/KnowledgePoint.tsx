@@ -80,9 +80,10 @@ export interface KnowledgePointProps {
 interface LessonSession {
   interactionCount: number;
   discoveryComplete: boolean;
+  prediction: string;
 }
 
-const emptySession: LessonSession = { interactionCount: 0, discoveryComplete: false };
+const emptySession: LessonSession = { interactionCount: 0, discoveryComplete: false, prediction: '' };
 
 function loadSession(id: string): LessonSession {
   try {
@@ -111,17 +112,25 @@ function loadValidStage(id: string): LessonStage {
 
 export default function KnowledgePoint({ knowledgePoint: kp, onNextCourse, nextCourseTitle }: KnowledgePointProps) {
   const { meta } = kp;
-  const [activeStage, setActiveStage] = useState<LessonStage>(() => loadValidStage(meta.id));
-  const [session, setSession] = useState<LessonSession>(() => loadSession(meta.id));
-  const { getStars, isPassed } = useProgress();
+  const { getStars, isPassed, getMasteryStatus, getReviewMode, setCurrentLearning } = useProgress();
   const stars = getStars(meta.id);
   const passed = isPassed(meta.id);
+  const masteryStatus = getMasteryStatus(meta.id);
+
+  const [entryReviewMode] = useState<'d1' | 'd7' | null>(() =>
+    passed && masteryStatus === 'review_due' ? getReviewMode(meta.id) : null,
+  );
+  const isReviewSession = entryReviewMode !== null;
+
+  const [activeStage, setActiveStage] = useState<LessonStage>(() =>
+    isReviewSession ? 'challenge' : loadValidStage(meta.id),
+  );
+  const [session, setSession] = useState<LessonSession>(() => loadSession(meta.id));
   const exploreMission = getExploreMission(meta);
 
   useEffect(() => {
-    setActiveStage(loadValidStage(meta.id));
-    setSession(loadSession(meta.id));
-  }, [meta.id]);
+    setCurrentLearning(meta.id);
+  }, [meta.id, setCurrentLearning]);
 
   useEffect(() => {
     try { localStorage.setItem(`math-k6-lesson-session:${meta.id}`, JSON.stringify(session)); } catch { /* Session persistence is optional. */ }
@@ -137,6 +146,8 @@ export default function KnowledgePoint({ knowledgePoint: kp, onNextCourse, nextC
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const canDiscover = session.prediction.trim() !== '' && session.interactionCount >= 2;
+
   return (
     <div className="lesson-shell">
       <header className="lesson-header">
@@ -149,7 +160,7 @@ export default function KnowledgePoint({ knowledgePoint: kp, onNextCourse, nextC
           <div className="mastery-status">
             <span>本课记录</span>
             <strong aria-label={`${stars} 星`}>{'★'.repeat(stars)}{'☆'.repeat(3 - stars)}</strong>
-            <small>会用这个办法了</small>
+            <small>{masteryStatus === 'stable' ? '已稳固' : masteryStatus === 'review_due' ? '待复习' : masteryStatus === 'provisional' ? '当堂会' : '本次练习通过'}</small>
           </div>
         ) : null}
       </header>
@@ -163,7 +174,9 @@ export default function KnowledgePoint({ knowledgePoint: kp, onNextCourse, nextC
               ? session.discoveryComplete
               : passed;
           const current = activeStage === stage.key;
-          const reached = stageIndex === 0 || (stageIndex === 1) || (stageIndex === 2 && (session.discoveryComplete || passed));
+          const reached = stageIndex === 0
+            || (stageIndex === 1 && canDiscover)
+            || (stageIndex === 2 && (session.discoveryComplete || passed || isReviewSession));
           return (
             <button key={stage.key} type="button" onClick={() => reached && goToStage(stage.key)} disabled={!reached} aria-current={current ? 'step' : undefined} className={`${current ? 'is-current' : ''} ${reached ? 'is-reached' : ''} ${stageComplete || passed ? 'is-complete' : ''}`}>
               <i>{stageComplete || passed ? <UiIcon name="check" size={16}/> : stageIndex + 1}</i>
@@ -191,7 +204,21 @@ export default function KnowledgePoint({ knowledgePoint: kp, onNextCourse, nextC
               <strong>{session.interactionCount} 次操作</strong>
               <p>{session.interactionCount === 0 ? '拖动滑块，换一个数试试。' : session.interactionCount < 2 ? '再多试一个情况，看看规律。' : '试了两种情况，准备好了。'}</p>
             </div>
-            <button type="button" onClick={() => goToStage('discover')} className="journey-action">看看为什么 <UiIcon name="arrow-right"/></button>
+            {session.interactionCount >= 2 ? (
+              <div className="prediction-block">
+                <label htmlFor="prediction-input" className="prediction-label">不看答案，先猜一猜：这个办法为什么能行？</label>
+                <input
+                  id="prediction-input"
+                  type="text"
+                  value={session.prediction}
+                  onChange={(e) => setSession(current => ({ ...current, prediction: e.target.value }))}
+                  placeholder="写下你的猜测"
+                  autoComplete="off"
+                  className="prediction-input"
+                />
+              </div>
+            ) : null}
+            <button type="button" onClick={() => canDiscover && goToStage('discover')} disabled={!canDiscover} className="journey-action">看看为什么 <UiIcon name="arrow-right"/></button>
           </div>
         </section>
       ) : null}
@@ -203,7 +230,7 @@ export default function KnowledgePoint({ knowledgePoint: kp, onNextCourse, nextC
             <div><p>为什么</p><h2 id="discover-title">刚才两次都能用，这个办法藏着什么道理？</h2><small>跟着短短几页，把自己的发现说清楚。</small></div>
           </div>
           <div className="tool-frame derivation-frame">
-            <DiscoveryLesson meta={meta} explanation={kp.explanation} prediction={session.interactionCount >= 2 ? '数字变了，答案可能也会变' : '还不确定'} interactionCount={Math.max(session.interactionCount, 2)} onComplete={() => setSession(current => ({ ...current, discoveryComplete: true }))} onStartChallenge={() => goToStage('challenge')}/>
+            <DiscoveryLesson meta={meta} explanation={kp.explanation} prediction={session.prediction} interactionCount={session.interactionCount} onComplete={() => setSession(current => ({ ...current, discoveryComplete: true }))} onStartChallenge={() => goToStage('challenge')}/>
           </div>
           {session.discoveryComplete ? <button type="button" onClick={() => goToStage('challenge')} className="journey-action">换一道题试试 <UiIcon name="arrow-right"/></button> : <div className="lesson-lock" role="status"><UiIcon name="lock"/><div><strong>完成上一项后即可继续</strong><span>完成"不看提示想一想"</span></div></div>}
         </section>
@@ -213,10 +240,10 @@ export default function KnowledgePoint({ knowledgePoint: kp, onNextCourse, nextC
         <section className="learning-surface" aria-labelledby="challenge-title">
           <div className="mission-brief lime">
             <span className="mission-index">03 / 挑战</span>
-            <div><p>试一题</p><h2 id="challenge-title">换一道题，你也会吗？</h2><small>慢慢想，答错了会给你一个小提示。</small></div>
+            <div><p>试一题</p><h2 id="challenge-title">{isReviewSession ? '复习时间到了' : '换一道题，你也会吗？'}</h2><small>{isReviewSession ? '换一道复习题，看看还记得多少。' : '慢慢想，答错了会给你一个小提示。'}</small></div>
           </div>
           {kp.game ? (
-            <GameRunner game={kp.game} knowledgePointId={meta.id} onReviewCourse={() => goToStage('discover')} onNextCourse={onNextCourse} nextCourseTitle={nextCourseTitle} />
+            <GameRunner key={`gamerunner-${meta.id}`} game={kp.game} knowledgePointId={meta.id} onReviewCourse={() => goToStage('discover')} onNextCourse={onNextCourse} nextCourseTitle={nextCourseTitle} reviewMode={entryReviewMode} />
           ) : <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-500 space-y-4">挑战内容正在准备中。<button type="button" onClick={() => goToStage('discover')} className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[48px] flex items-center mx-auto">回看讲解</button></div>}
         </section>
       ) : null}

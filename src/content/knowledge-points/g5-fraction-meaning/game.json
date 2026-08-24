@@ -59,5 +59,49 @@
       "explanation": "分子和分母同时乘同一个非零数，分数大小不变：2/3=(2×2)/(3×2)=4/6。",
       "points": 10
     }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1q1",
+          "type": "choice",
+          "prompt": "把一条绳子平均分成7段，取了3段，用分数怎么表示？",
+          "options": ["7/3", "3/7", "1/7", "3/1"],
+          "correctAnswer": "3/7",
+          "explanation": "分母是平均分成的份数（7段），分子是取的份数（3段），所以是 3/7。",
+          "points": 10
+        },
+        {
+          "id": "d1q2",
+          "type": "fill-blank",
+          "prompt": "9/15 约成最简分数是？（请用\u201c分子/分母\u201d的格式填写）",
+          "correctAnswer": "3/5",
+          "explanation": "9和15的最大公因数是3，9÷3=3，15÷3=5，所以 9/15 = 3/5。3和5只有公因数1，是最简分数。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7q1",
+          "type": "choice",
+          "prompt": "下面哪个分数和 3/4 相等？",
+          "options": ["4/6", "3/8", "6/8", "4/3"],
+          "correctAnswer": "6/8",
+          "explanation": "分子和分母同时乘2：3/4 = (3×2)/(4×2) = 6/8，所以 3/4 和 6/8 相等。",
+          "points": 10
+        },
+        {
+          "id": "d7q2",
+          "type": "fill-blank",
+          "prompt": "2/5 = ?/20，请填入分子。",
+          "correctAnswer": "8",
+          "explanation": "5×4=20，所以分子也要乘4：2×4=8，2/5 = 8/20。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

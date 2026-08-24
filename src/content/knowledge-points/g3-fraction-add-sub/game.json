@@ -53,5 +53,49 @@
       "points": 10
     },
     { "id": "q6", "type": "fill-blank", "prompt": "2/7 + 3/7 = ____。", "correctAnswer": "5/7", "explanation": "单位分数都是1/7，合并2份和3份得到5份，分母不变。", "points": 10 }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1-q1",
+          "type": "choice",
+          "prompt": "3/8 + 4/8 = ？",
+          "options": ["7/16", "3/8", "7/8"],
+          "correctAnswer": "7/8",
+          "explanation": "同分母分数加法：分母不变，分子相加。3/8+4/8=(3+4)/8=7/8。",
+          "points": 10
+        },
+        {
+          "id": "d1-q2",
+          "type": "fill-blank",
+          "prompt": "6/7 − 2/7 = ____。",
+          "correctAnswer": "4/7",
+          "explanation": "同分母分数减法：分母不变，分子相减。6/7−2/7=(6−2)/7=4/7。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7-q1",
+          "type": "choice",
+          "prompt": "5/9 − 2/9 = ？",
+          "options": ["3/9", "7/9", "3/18"],
+          "correctAnswer": "3/9",
+          "explanation": "同分母分数减法：分母不变，分子相减。5/9−2/9=(5−2)/9=3/9。",
+          "points": 10
+        },
+        {
+          "id": "d7-q2",
+          "type": "fill-blank",
+          "prompt": "2/6 + 3/6 = ____。",
+          "correctAnswer": "5/6",
+          "explanation": "同分母分数加法：分母不变，分子相加。2/6+3/6=(2+3)/6=5/6。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

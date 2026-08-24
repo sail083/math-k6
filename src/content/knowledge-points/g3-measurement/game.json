@@ -54,5 +54,49 @@
       "explanation": "1千克=1000克，所以3千克=3000克。换单位不会改变物体实际质量。",
       "points": 10
     }
-  ]
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1-q1",
+          "type": "choice",
+          "prompt": "课桌高约7（ ），括号里填最合适的单位。",
+          "options": ["厘米", "毫米", "分米"],
+          "correctAnswer": "分米",
+          "explanation": "课桌高约7分米（70厘米）。7厘米太矮，7毫米更不合适，所以选分米。",
+          "points": 10
+        },
+        {
+          "id": "d1-q2",
+          "type": "fill-blank",
+          "prompt": "5 米 = ____ 分米（请直接填写数字）。",
+          "correctAnswer": "50",
+          "explanation": "1米=10分米，5米=5×10=50分米。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7-q1",
+          "type": "choice",
+          "prompt": "2 吨 = ？千克",
+          "options": ["2000千克", "200千克", "20千克"],
+          "correctAnswer": "2000千克",
+          "explanation": "吨和千克之间是1000进制，1吨=1000千克，2吨=2×1000=2000千克。",
+          "points": 10
+        },
+        {
+          "id": "d7-q2",
+          "type": "fill-blank",
+          "prompt": "80 毫米 = ____ 厘米（请直接填写数字）。",
+          "correctAnswer": "8",
+          "explanation": "10毫米=1厘米，80÷10=8厘米。",
+          "points": 10
+        }
+      ]
+    }
+  }
 }

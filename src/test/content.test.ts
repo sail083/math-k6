@@ -275,4 +275,203 @@ describe('content loading', () => {
       expect(getSemester(getTextbookRef(lower.meta, '人教版'))).toBe('下册');
     });
   });
+
+  describe('delayed review sets (all 47 courses)', () => {
+    it('covers all 47 courses — none missing reviewSets', async () => {
+      const kps = getAllKnowledgePoints();
+      expect(kps).toHaveLength(47);
+      for (const kp of kps) {
+        const detail = await loadKnowledgePointDetail(kp.meta.id);
+        expect(detail?.game?.reviewSets?.d1, kp.meta.id).toBeDefined();
+        expect(detail?.game?.reviewSets?.d7, kp.meta.id).toBeDefined();
+      }
+    });
+
+    it('original main challenge has at least 6 questions in every course', async () => {
+      for (const kp of getAllKnowledgePoints()) {
+        const detail = await loadKnowledgePointDetail(kp.meta.id);
+        expect(detail?.game?.questions.length, kp.meta.id).toBeGreaterThanOrEqual(6);
+      }
+    });
+
+    it('each review set has exactly 2 questions: 1 choice and 1 fill-blank', async () => {
+      for (const kp of getAllKnowledgePoints()) {
+        const id = kp.meta.id;
+        const detail = await loadKnowledgePointDetail(id);
+        for (const setKey of ['d1', 'd7'] as const) {
+          const qs = detail?.game?.reviewSets?.[setKey]?.questions ?? [];
+          expect(qs.length, `${id}.${setKey}: question count`).toBe(2);
+          const choiceCount = qs.filter((q) => q.type === 'choice').length;
+          const fillCount = qs.filter((q) => q.type === 'fill-blank').length;
+          expect(choiceCount, `${id}.${setKey}: choice count`).toBe(1);
+          expect(fillCount, `${id}.${setKey}: fill-blank count`).toBe(1);
+        }
+      }
+    });
+
+    it('every review question has nonempty id/prompt/explanation, points=10, supported type', async () => {
+      const supportedTypes = new Set(['choice', 'fill-blank']);
+      for (const kp of getAllKnowledgePoints()) {
+        const id = kp.meta.id;
+        const detail = await loadKnowledgePointDetail(id);
+        for (const setKey of ['d1', 'd7'] as const) {
+          const qs = detail?.game?.reviewSets?.[setKey]?.questions ?? [];
+          for (const q of qs) {
+            const ctx = `${id}.${setKey}.${q.id}`;
+            expect(q.id?.trim(), `${ctx}: id`).toBeTruthy();
+            expect(q.prompt?.trim(), `${ctx}: prompt`).toBeTruthy();
+            expect(q.explanation?.trim(), `${ctx}: explanation`).toBeTruthy();
+            expect(q.points, `${ctx}: points`).toBe(10);
+            expect(supportedTypes.has(q.type), `${ctx}: type=${q.type}`).toBe(true);
+          }
+        }
+      }
+    });
+
+    it('choice questions have valid options and unambiguous single correct answer', async () => {
+      for (const kp of getAllKnowledgePoints()) {
+        const id = kp.meta.id;
+        const detail = await loadKnowledgePointDetail(id);
+        for (const setKey of ['d1', 'd7'] as const) {
+          const qs = detail?.game?.reviewSets?.[setKey]?.questions ?? [];
+          for (const q of qs) {
+            if (q.type !== 'choice') continue;
+            const ctx = `${id}.${setKey}.${q.id}`;
+            const opts = q.options as string[] | undefined;
+            const ca = q.correctAnswer as string;
+            expect(Array.isArray(opts), `${ctx}: options must be array`).toBe(true);
+            expect(opts!.length, `${ctx}: at least 3 options`).toBeGreaterThanOrEqual(3);
+            expect(opts!.includes(ca), `${ctx}: correctAnswer in options`).toBe(true);
+            expect(opts!.filter((o) => o === ca).length, `${ctx}: correctAnswer appears exactly once`).toBe(1);
+            expect(new Set(opts).size, `${ctx}: no duplicate options`).toBe(opts!.length);
+          }
+        }
+      }
+    });
+
+    it('fill-blank questions have a nonempty string or nonempty string-array correctAnswer', async () => {
+      for (const kp of getAllKnowledgePoints()) {
+        const id = kp.meta.id;
+        const detail = await loadKnowledgePointDetail(id);
+        for (const setKey of ['d1', 'd7'] as const) {
+          const qs = detail?.game?.reviewSets?.[setKey]?.questions ?? [];
+          for (const q of qs) {
+            if (q.type !== 'fill-blank') continue;
+            const ctx = `${id}.${setKey}.${q.id}`;
+            const ca = q.correctAnswer;
+            if (Array.isArray(ca)) {
+              expect(ca.length, `${ctx}: non-empty array`).toBeGreaterThan(0);
+              for (const ans of ca) {
+                expect(typeof ans === 'string' && ans.trim().length > 0, `${ctx}: each answer non-empty string`).toBe(true);
+              }
+            } else {
+              expect(typeof ca === 'string' && (ca as string).trim().length > 0, `${ctx}: non-empty string`).toBe(true);
+            }
+          }
+        }
+      }
+    });
+
+    it('review prompts differ from all original prompts', async () => {
+      for (const kp of getAllKnowledgePoints()) {
+        const id = kp.meta.id;
+        const detail = await loadKnowledgePointDetail(id);
+        const originalPrompts = new Set(detail?.game?.questions.map((q) => q.prompt) ?? []);
+        for (const setKey of ['d1', 'd7'] as const) {
+          const qs = detail?.game?.reviewSets?.[setKey]?.questions ?? [];
+          for (const q of qs) {
+            expect(originalPrompts.has(q.prompt), `${id}.${setKey}.${q.id}: prompt must differ from originals`).toBe(false);
+          }
+        }
+      }
+    });
+
+    it('d1 and d7 prompts are distinct from each other', async () => {
+      for (const kp of getAllKnowledgePoints()) {
+        const id = kp.meta.id;
+        const detail = await loadKnowledgePointDetail(id);
+        const d1Prompts = new Set(detail?.game?.reviewSets?.d1?.questions.map((q) => q.prompt) ?? []);
+        const d7Qs = detail?.game?.reviewSets?.d7?.questions ?? [];
+        for (const q of d7Qs) {
+          expect(d1Prompts.has(q.prompt), `${id}: d7 prompt must differ from d1`).toBe(false);
+        }
+      }
+    });
+
+    it('all question IDs are unique within each course across original + both review sets', async () => {
+      for (const kp of getAllKnowledgePoints()) {
+        const id = kp.meta.id;
+        const detail = await loadKnowledgePointDetail(id);
+        const allIds: string[] = (detail?.game?.questions ?? []).map((q) => q.id);
+        for (const setKey of ['d1', 'd7'] as const) {
+          const qs = detail?.game?.reviewSets?.[setKey]?.questions ?? [];
+          for (const q of qs) allIds.push(q.id);
+        }
+        expect(new Set(allIds).size, `${id}: duplicate question IDs`).toBe(allIds.length);
+      }
+    });
+
+    it('review-choice correct positions cover positions A, B, and C across all 47 courses', async () => {
+      const positions = new Set<number>();
+      for (const kp of getAllKnowledgePoints()) {
+        const detail = await loadKnowledgePointDetail(kp.meta.id);
+        for (const setKey of ['d1', 'd7'] as const) {
+          const qs = detail?.game?.reviewSets?.[setKey]?.questions ?? [];
+          for (const q of qs) {
+            if (q.type === 'choice' && Array.isArray(q.options)) {
+              const pos = (q.options as string[]).indexOf(q.correctAnswer as string);
+              if (pos >= 0) positions.add(pos);
+            }
+          }
+        }
+      }
+      // Positions 0=A, 1=B, 2=C must all appear; D (3) is not required
+      expect(positions.has(0), 'position A must appear').toBe(true);
+      expect(positions.has(1), 'position B must appear').toBe(true);
+      expect(positions.has(2), 'position C must appear').toBe(true);
+    });
+  });
+
+  describe('curriculum prerequisite ordering', () => {
+    it('orders fraction intro before compare before add-sub in 人教版 grade 3', () => {
+      const curriculum = getCurriculum(3, '人教版');
+      const introIdx = curriculum.findIndex((kp) => kp.meta.id === 'g3-fraction-intro');
+      const compareIdx = curriculum.findIndex((kp) => kp.meta.id === 'g3-fraction-compare');
+      const addSubIdx = curriculum.findIndex((kp) => kp.meta.id === 'g3-fraction-add-sub');
+      expect(introIdx).toBeGreaterThanOrEqual(0);
+      expect(compareIdx).toBeGreaterThanOrEqual(0);
+      expect(addSubIdx).toBeGreaterThanOrEqual(0);
+      expect(introIdx).toBeLessThan(compareIdx);
+      expect(compareIdx).toBeLessThan(addSubIdx);
+    });
+
+    it('orders circle perimeter before area in 人教版 grade 6', () => {
+      const curriculum = getCurriculum(6, '人教版');
+      const perimIdx = curriculum.findIndex((kp) => kp.meta.id === 'g6-circle-perimeter');
+      const areaIdx = curriculum.findIndex((kp) => kp.meta.id === 'g6-circle-area');
+      expect(perimIdx).toBeGreaterThanOrEqual(0);
+      expect(areaIdx).toBeGreaterThanOrEqual(0);
+      expect(perimIdx).toBeLessThan(areaIdx);
+    });
+
+    it('orders cylinder surface before volume before cone volume in 人教版 grade 6', () => {
+      const curriculum = getCurriculum(6, '人教版');
+      const surfIdx = curriculum.findIndex((kp) => kp.meta.id === 'g6-cylinder-surface');
+      const volIdx = curriculum.findIndex((kp) => kp.meta.id === 'g6-cylinder-volume');
+      const coneIdx = curriculum.findIndex((kp) => kp.meta.id === 'g6-cone-volume');
+      expect(surfIdx).toBeGreaterThanOrEqual(0);
+      expect(volIdx).toBeGreaterThanOrEqual(0);
+      expect(coneIdx).toBeGreaterThanOrEqual(0);
+      expect(surfIdx).toBeLessThan(volIdx);
+      expect(volIdx).toBeLessThan(coneIdx);
+    });
+
+    it('has no duplicate courses in any textbook curriculum', () => {
+      for (const grade of [3, 4, 5, 6] as const) {
+        const curriculum = getCurriculum(grade, '人教版');
+        const ids = curriculum.map((kp) => kp.meta.id);
+        expect(new Set(ids).size, `grade ${grade}`).toBe(ids.length);
+      }
+    });
+  });
 });

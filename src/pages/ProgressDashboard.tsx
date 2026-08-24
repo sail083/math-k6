@@ -58,13 +58,19 @@ interface RecentAchievement {
 }
 
 export default function ProgressDashboard() {
-  const { progress, getStars, isPassed } = useProgress();
+  const { progress, getStars, isPassed, getMasteryStatus, getDueReviewIds } = useProgress();
   const allKPs = getAllKnowledgePoints();
   const grades = getGrades();
 
   const totalPassed = progress.passedKnowledgePoints.length;
   const totalKPs = allKPs.length;
   const overallPercent = totalKPs > 0 ? Math.round((totalPassed / totalKPs) * 100) : 0;
+
+  // Mastery counts
+  const stableCount = allKPs.filter((kp) => getMasteryStatus(kp.meta.id) === 'stable').length;
+  const dueCount = getDueReviewIds().length;
+  const provisionalCount = allKPs.filter((kp) => getMasteryStatus(kp.meta.id) === 'provisional').length;
+  const hasMastery = stableCount > 0 || dueCount > 0 || provisionalCount > 0;
 
   // 总星星
   const totalStarsEarned = allKPs.reduce((sum, kp) => sum + getStars(kp.meta.id), 0);
@@ -119,6 +125,27 @@ export default function ProgressDashboard() {
           ← 返回首页
         </Link>
       </div>
+
+      {/* 掌握概览 */}
+      {hasMastery && (
+        <section className="grid grid-cols-3 gap-3">
+          <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-4 text-center">
+            <div className="text-3xl font-bold text-emerald-600 tabular-nums">{stableCount}</div>
+            <div className="text-xs font-medium text-emerald-700 mt-1">已稳固</div>
+            {stableCount > 0 && <Link to="/" className="text-[10px] text-emerald-600 hover:underline mt-1 inline-block">查看全部</Link>}
+          </div>
+          <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-center">
+            <div className="text-3xl font-bold text-amber-600 tabular-nums">{dueCount}</div>
+            <div className="text-xs font-medium text-amber-700 mt-1">待复习</div>
+            {dueCount > 0 && <Link to="/" className="text-[10px] text-amber-600 hover:underline mt-1 inline-block">去复习</Link>}
+          </div>
+          <div className="rounded-xl bg-sky-50 border border-sky-200 p-4 text-center">
+            <div className="text-3xl font-bold text-sky-600 tabular-nums">{provisionalCount}</div>
+            <div className="text-xs font-medium text-sky-700 mt-1">当堂会</div>
+            <span className="text-[10px] text-sky-400 mt-1 inline-block">等待复习</span>
+          </div>
+        </section>
+      )}
 
       {/* 总体进度卡片 */}
       <section className="rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 px-6 py-8 text-white shadow-lg">
@@ -240,17 +267,17 @@ export default function ProgressDashboard() {
       <section className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xl">🔬</span>
-          <h2 className="text-lg font-semibold text-amber-900">公式推导进度</h2>
+          <h2 className="text-lg font-semibold text-amber-900">公式/课程接触</h2>
           <span className="ml-auto rounded-full bg-amber-200 px-2.5 py-0.5 text-xs font-medium text-amber-800">
             核心内容
           </span>
         </div>
         <p className="text-sm text-amber-700 mb-4">
-          公式怎么来的 — 理解公式原理是本课程的核心价值。
+          公式怎么来的 — 理解公式原理是本课程的核心价值。此指标仅反映课程接触情况，不代表稳固掌握。
         </p>
         <div className="flex items-baseline justify-between mb-2">
           <span className="text-sm text-amber-800">
-            已掌握{' '}
+            已接触{' '}
             <span className="font-bold text-amber-900 tabular-nums">{derivationPassed}</span> /{' '}
             {derivationTotal} 个公式
           </span>
