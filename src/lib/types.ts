@@ -213,7 +213,21 @@ export interface ProgressData {
   currentLearning?: string | null;          // 当前学习中课程 ID（用于恢复）
   // ===== 知识图谱技能证据（向后兼容可选字段）=====
   skillEvidence?: Record<string, SkillEvidenceRecord>;
+  // ===== v0.2：学习目标与补修会话 =====
+  learningGoal?: {
+    skillId: string;
+    updatedAt: number;
+  };
+  repairSession?: {
+    skillId: string;
+    targetSkillId: string;
+    status: 'active' | 'completed';
+    updatedAt: number;
+  };
 }
+
+/** 技能证据模式 */
+export type SkillEvidenceMode = 'initial' | 'd1' | 'd7' | 'repair';
 
 /** 单个微技能的题目证据 */
 export interface SkillEvidenceRecord {
@@ -225,7 +239,7 @@ export interface SkillEvidenceRecord {
   transfer: number;              // transfer 类型正确次数
   retention: number;             // retention 类型正确次数（D7 首次正确）
   lastAttemptAt: number;         // 最后一次提交时间戳
-  lastMode: 'initial' | 'd1' | 'd7'; // 最后一次提交的模式
+  lastMode: SkillEvidenceMode;   // 最后一次提交的模式
 }
 
 // ===== 组合知识点（从内容文件加载）=====
@@ -234,4 +248,33 @@ export interface KnowledgePoint {
   explanation: string;           // 来自 explain.md 的 Markdown 文本
   derivation?: Derivation;        // 可选（并非所有知识点都有公式推导）
   game?: GameConfig;              // 可选（并非所有知识点都有游戏）
+}
+
+// ===== v0.2：微补修单元 =====
+
+export interface RepairLesson {
+  /** 一句儿童可懂的核心解释 */
+  coreExplanation: string;
+  /** 2-4 个短步骤 */
+  steps: string[];
+  /** 与诊断/验证题数字不同的 worked example */
+  workedExample: {
+    question: string;
+    steps: string[];
+    answer: string;
+  };
+  /** 典型误区和纠正说明 */
+  misconception: {
+    mistake: string;
+    correction: string;
+  };
+}
+
+export interface RepairUnit {
+  skillId: string;
+  estimatedMinutes: number;           // 3-5
+  courseId: string;
+  diagnosticQuestions: Question[];    // 恰好 2 道
+  lesson: RepairLesson;
+  checkQuestions: Question[];         // 恰好 2 道，evidenceType=transfer
 }

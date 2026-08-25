@@ -10,6 +10,7 @@ const GradePage = lazy(() => import('@/pages/GradePage'));
 const KnowledgePointPage = lazy(() => import('@/pages/KnowledgePointPage'));
 const ProgressDashboard = lazy(() => import('@/pages/ProgressDashboard'));
 const KnowledgeMapPage = lazy(() => import('@/pages/KnowledgeMapPage'));
+const SkillRepairPage = lazy(() => import('@/pages/SkillRepairPage'));
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const RegisterPage = lazy(() => import('@/pages/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage'));
@@ -33,6 +34,7 @@ export default function App() {
                 <Route path="/kp/:id" element={<ProtectedRoute><KnowledgePointPage /></ProtectedRoute>} />
                 <Route path="/dashboard" element={<ProtectedRoute><ProgressDashboard /></ProtectedRoute>} />
                 <Route path="/map" element={<ProtectedRoute><KnowledgeMapPage /></ProtectedRoute>} />
+                <Route path="/repair/:skillId" element={<ProtectedRoute><SkillRepairPage /></ProtectedRoute>} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />

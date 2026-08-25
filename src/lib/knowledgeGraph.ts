@@ -240,6 +240,26 @@ export function getHardPrerequisitePath(
   return topoResult.filter((id) => !stableSkillIds.has(id));
 }
 
+// ===== 路径下一步 =====
+
+/**
+ * 返回目标技能路径（硬前置 + 目标自身）中第一个尚未准备好的技能 ID。
+ * 如果全部已准备好，返回 null。
+ *
+ * @param targetSkillId 目标技能 ID
+ * @param isReady 接受技能 ID 并返回是否已准备好的纯函数（由调用方从 isSkillReadyForPath 构造）
+ * @param g 知识图谱数据（默认使用全局 graph）
+ */
+export function getNextActionableSkill(
+  targetSkillId: string,
+  isReady: (skillId: string) => boolean,
+  g: KnowledgeGraph = graph,
+): string | null {
+  const prereqs = getHardPrerequisitePath(targetSkillId, new Set(), g);
+  const fullPath = [...prereqs, targetSkillId];
+  return fullPath.find((id) => !isReady(id)) ?? null;
+}
+
 // ===== 局部上下文 =====
 
 export interface SkillContext {

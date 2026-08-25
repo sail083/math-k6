@@ -1,16 +1,21 @@
-import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   graph,
   getSkillById,
   getSkillContext,
   getHardPrerequisitePath,
   getRemediationSuggestion,
+  getNextActionableSkill,
   type SkillNode,
 } from '@/lib/knowledgeGraph';
 import { getKnowledgePointById } from '@/lib/content';
 import { useProgress } from '@/context/ProgressContext';
 import type { SkillDisplayStatus } from '@/lib/progress';
+import { repairUnits } from '@/lib/repairContent';
+
+const repairUnitMap = new Map(repairUnits.map((u) => [u.skillId, u]));
+
 
 // ===== 状态颜色与标签 =====
 
@@ -27,6 +32,12 @@ const statusConfig: Record<SkillDisplayStatus, { label: string; bg: string; bord
 
 function getCourseTitle(courseId: string): string | undefined {
   return getKnowledgePointById(courseId)?.meta.title;
+}
+
+/** Check if a skill ID corresponds to a published node in the graph */
+function isValidPublishedTarget(id: string): boolean {
+  const node = getSkillById(id);
+  return !!node && node.status === 'published';
 }
 
 function getStepReason(skillId: string, laterIds: string[]): string {
@@ -277,7 +288,12 @@ function TargetPathSection({
   targetSkillId: string;
   onSelectTarget: (id: string) => void;
 }) {
-  const { getSkillDisplayStatus } = useProgress();
+  const { getSkillDisplayStatus, isSkillReadyForPath } = useProgress();
+
+  const isReady = useCallback(
+    (id: string) => isSkillReadyForPath(id),
+    [isSkillReadyForPath],
+  );
 
   const targetPath = useMemo<PathStep[]>(() => {
     const stableIds = new Set<string>();
@@ -299,9 +315,19 @@ function TargetPathSection({
     });
   }, [targetSkillId, getSkillDisplayStatus]);
 
-  // 第一个未稳固步骤 = "下一小步"
-  const nextStep = targetPath.find((s) => s.status !== 'stable');
+  // 使用 isSkillReadyForPath 找下一步（替代仅看 stable 的旧逻辑）
+  const nextActionableSkillId = useMemo(
+    () => getNextActionableSkill(targetSkillId, isReady),
+    [targetSkillId, isReady],
+  );
+
+  const nextStep = nextActionableSkillId
+    ? targetPath.find((s) => s.skillId === nextActionableSkillId) ?? null
+    : null;
+
   const targetNode = getSkillById(targetSkillId);
+
+  const nextRepairUnit = nextStep ? repairUnitMap.get(nextStep.skillId) : null;
 
   return (
     <section className="rounded-xl border border-indigo-200 bg-indigo-50/40 p-4 space-y-4" aria-label="目标路径">
@@ -367,23 +393,50 @@ function TargetPathSection({
       {nextStep ? (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
           <p className="text-xs font-semibold text-amber-700">下一小步</p>
-          <div className="flex items-center justify-between gap-2 mt-1">
+          <div className="mt-2 space-y-2">
             <div>
-              <p className="text-sm text-slate-700">
+              <p className="text-sm text-slate-700 font-medium">
                 {nextStep.node?.name ?? nextStep.skillId}
               </p>
               <p className="text-xs text-slate-500">状态：{statusConfig[nextStep.status].label}</p>
             </div>
-            {nextStep.courseId && nextStep.courseTitle ? (
-              <Link
-                to={`/kp/${nextStep.courseId}`}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs bg-amber-600 text-white hover:bg-amber-700 transition-colors min-h-[44px]"
-              >
-                前往课程：{nextStep.courseTitle} →
-              </Link>
-            ) : (
-              <span className="text-xs text-slate-400">该技能暂无关联课程</span>
-            )}
+            <div className="flex gap-2 flex-wrap">
+              {nextRepairUnit ? (
+                <>
+                  <Link
+                    to={`/repair/${nextStep.skillId}?target=${targetSkillId}`}
+                    className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs bg-violet-600 text-white hover:bg-violet-700 transition-colors min-h-[44px] font-medium"
+                  >
+                    ⚡ 2分钟诊断
+                  </Link>
+                  {nextStep.courseId && nextStep.courseTitle && (
+                    <Link
+                      to={`/kp/${nextStep.courseId}`}
+                      className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs border border-amber-300 text-amber-700 bg-white hover:bg-amber-50 transition-colors min-h-[44px]"
+                    >
+                      📚 完整课程
+                    </Link>
+                  )}
+                </>
+              ) : (
+                <>
+                  <span className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs border border-slate-200 text-slate-400 bg-slate-50 min-h-[44px]">
+                    微补修准备中
+                  </span>
+                  {nextStep.courseId && nextStep.courseTitle && (
+                    <Link
+                      to={`/kp/${nextStep.courseId}`}
+                      className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs bg-amber-600 text-white hover:bg-amber-700 transition-colors min-h-[44px]"
+                    >
+                      前往课程：{nextStep.courseTitle} →
+                    </Link>
+                  )}
+                  {!nextStep.courseId && (
+                    <span className="text-xs text-slate-400">该技能暂无关联课程</span>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       ) : (
@@ -447,10 +500,59 @@ const groupDefs = [
 // ===== 主页面 =====
 
 export default function KnowledgeMapPage() {
-  const { getSkillDisplayStatus } = useProgress();
+  const { getSkillDisplayStatus, setGoal, progress } = useProgress();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedNode, setSelectedNode] = useState<SkillNode | null>(null);
   const [filterStatus, setFilterStatus] = useState<SkillDisplayStatus | 'all'>('all');
-  const [targetSkillId, setTargetSkillId] = useState('frac.divide_transform');
+  const [repairedSkillId, setRepairedSkillId] = useState<string | null>(null);
+
+  // R2: Derive validated target from URL param, learningGoal, or default
+  const rawUrlTarget = searchParams.get('target');
+  const validUrlTarget = rawUrlTarget && isValidPublishedTarget(rawUrlTarget) ? rawUrlTarget : null;
+  const validGoalTarget = progress.learningGoal?.skillId && isValidPublishedTarget(progress.learningGoal.skillId)
+    ? progress.learningGoal.skillId
+    : null;
+  const DEFAULT_TARGET = 'frac.divide_transform';
+  const targetSkillId = useMemo(
+    () => validUrlTarget ?? validGoalTarget ?? DEFAULT_TARGET,
+    [validUrlTarget, validGoalTarget],
+  );
+
+  // R2: Clean invalid URL target via replace (no technical IDs in URL)
+  useEffect(() => {
+    if (rawUrlTarget && !isValidPublishedTarget(rawUrlTarget)) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('target');
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [rawUrlTarget, searchParams, setSearchParams]);
+
+  // R2: Persist valid URL target as learningGoal (only when actually different)
+  useEffect(() => {
+    if (validUrlTarget && validUrlTarget !== progress.learningGoal?.skillId) {
+      setGoal(validUrlTarget);
+    }
+  }, [validUrlTarget, progress.learningGoal?.skillId, setGoal]);
+
+  // Handle ?repaired=<skillId> one-time toast (no auto-dismiss, user must close)
+  useEffect(() => {
+    const repaired = searchParams.get('repaired');
+    if (repaired) {
+      // Validate repaired param is a known graph node
+      const repairNode = getSkillById(repaired);
+      setRepairedSkillId(repairNode ? repaired : null);
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('repaired');
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  const handleSelectTarget = (id: string) => {
+    setGoal(id);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('target', id);
+    setSearchParams(newParams, { replace: true });
+  };
 
   // 统计
   const statusCounts = useMemo(() => {
@@ -480,10 +582,27 @@ export default function KnowledgeMapPage() {
         <p className="text-indigo-100 text-sm">当前覆盖小学 G3-G6 分数领域，共 {graph.nodes.length} 个微技能节点。</p>
       </section>
 
+      {/* 补修成功提示 */}
+      {repairedSkillId && (
+        <div className="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 flex items-center justify-between gap-3" role="status">
+          <p className="text-sm text-emerald-700 font-medium">
+            ✅ 已完成 <strong>{getSkillById(repairedSkillId)?.name ?? repairedSkillId}</strong> 的微补修！继续向目标推进。
+          </p>
+          <button
+            type="button"
+            onClick={() => setRepairedSkillId(null)}
+            className="text-emerald-500 hover:text-emerald-700 text-lg leading-none min-h-[44px] min-w-[44px] flex items-center justify-center"
+            aria-label="关闭提示"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {/* 目标路径区 */}
       <TargetPathSection
         targetSkillId={targetSkillId}
-        onSelectTarget={setTargetSkillId}
+        onSelectTarget={handleSelectTarget}
       />
 
       {/* 状态图例 + 过滤 */}

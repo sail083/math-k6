@@ -1,4 +1,4 @@
-import type { ProgressData, MasteryStatus, MasteryRecord, SkillEvidenceRecord, EvidenceType } from './types';
+import type { ProgressData, MasteryStatus, MasteryRecord, SkillEvidenceRecord, EvidenceType, SkillEvidenceMode } from './types';
 
 const STORAGE_KEY = 'math-k6-progress';
 const DAY_MS = 86_400_000;
@@ -53,7 +53,13 @@ export function loadProgress(): ProgressData {
     // Validate skillEvidence via unified parser (no duplicate field logic)
     const skillEvidence = parseSkillEvidence(parsed.skillEvidence);
 
-    return { passedKnowledgePoints, stars, mastery, currentLearning, skillEvidence };
+    // Validate learningGoal (optional v0.2 field)
+    const learningGoal = parseLearningGoal(parsed.learningGoal);
+
+    // Validate repairSession (optional v0.2 field)
+    const repairSession = parseRepairSession(parsed.repairSession);
+
+    return { passedKnowledgePoints, stars, mastery, currentLearning, skillEvidence, learningGoal, repairSession };
   } catch {
     return { ...defaultProgress };
   }
@@ -271,7 +277,7 @@ export function pickBetterMastery(
 
 // ===== 技能证据 =====
 
-const VALID_MODES = new Set<string>(['initial', 'd1', 'd7']);
+const VALID_MODES = new Set<string>(['initial', 'd1', 'd7', 'repair']);
 const VALID_EVIDENCE_TYPES = new Set<string>(['conceptual', 'procedural', 'transfer', 'retention']);
 
 /**
@@ -343,7 +349,7 @@ export function recordSkillEvidence(
   isCorrect: boolean,
   isFirstTry: boolean,
   evidenceType: EvidenceType,
-  mode: 'initial' | 'd1' | 'd7',
+  mode: SkillEvidenceMode,
   now: number,
 ): ProgressData {
   const existing = progress.skillEvidence?.[skillId];
@@ -415,15 +421,20 @@ export function getSkillDisplayStatus(
   // 需补修：多次尝试但正确率低
   if (ev.attempts >= 3 && ev.correct / ev.attempts < 0.4) return 'needs_remediation';
 
-  // 已稳固：transfer 与 retention 均有首次正确直接证据
-  // （两者本身即代表该类型首次正确，不需额外检查 firstTryCorrect）
-  if (ev.transfer > 0 && ev.retention > 0) return 'stable';
-
   // 无任何正确
   if (ev.correct === 0) return 'in_progress';
 
   // 时间语义：根据最后证据的模式判断 provisional / review_due
   const elapsed = now - ev.lastAttemptAt;
+  if (ev.lastMode === 'repair') {
+    // 补修通过证据：1 天内 provisional，1 天后 review_due；不得直接 stable
+    return elapsed < DAY_MS ? 'provisional' : 'review_due';
+  }
+
+  // 已稳固：transfer 与 retention 均有首次正确直接证据
+  // 仅在非 repair 模式下可达 stable，避免 repair 通过后直接绕过 review
+  if (ev.transfer > 0 && ev.retention > 0) return 'stable';
+
   if (ev.lastMode === 'initial') {
     // 初始正确证据：1 天内 provisional，1 天后 review_due
     return elapsed < DAY_MS ? 'provisional' : 'review_due';
@@ -487,12 +498,135 @@ export function parseSkillEvidence(
 
 export { VALID_EVIDENCE_TYPES };
 
+// ===== 路径准备度 =====
+
+/**
+ * 判断某个技能在路径上是否"已准备好"。
+ * - stable → ready
+ * - provisional + 有直接 firstTry transfer 证据 → ready
+ * - 其他状态（review_due, needs_remediation, in_progress, not_started）→ not ready
+ */
+export function isSkillReadyForPath(
+  progress: ProgressData,
+  skillId: string,
+  now: number = Date.now(),
+): boolean {
+  const status = getSkillDisplayStatus(progress, skillId, now);
+  if (status === 'stable') return true;
+  if (status === 'provisional') {
+    const ev = progress.skillEvidence?.[skillId];
+    if (ev && ev.transfer > 0) return true;
+  }
+  return false;
+}
+
+// ===== 学习目标与补修会话 =====
+
+/** 设置学习目标（忽略更早的更新） */
+export function setLearningGoal(progress: ProgressData, skillId: string, now: number): ProgressData {
+  const existing = progress.learningGoal;
+  if (existing && existing.updatedAt > now) return progress;
+  return { ...progress, learningGoal: { skillId, updatedAt: now } };
+}
+
+/** 开始补修会话（同时保留/更新目标） */
+export function startRepairSession(
+  progress: ProgressData,
+  skillId: string,
+  targetSkillId: string,
+  now: number,
+): ProgressData {
+  const updated = setLearningGoal(progress, targetSkillId, now);
+  return {
+    ...updated,
+    repairSession: { skillId, targetSkillId, status: 'active', updatedAt: now },
+  };
+}
+
+/** 结束补修会话（completed tombstone） */
+export function finishRepairSession(progress: ProgressData, skillId: string, now: number): ProgressData {
+  const existing = progress.repairSession;
+  if (!existing || existing.skillId !== skillId) return progress;
+  return {
+    ...progress,
+    repairSession: { ...existing, status: 'completed', updatedAt: now },
+  };
+}
+
 // ===== 有意义进度判断 =====
+
+/**
+ * 解析并校验 learningGoal 字段（不信任外部数据）。
+ * 返回合法对象或 undefined。
+ */
+export function parseLearningGoal(raw: unknown): ProgressData['learningGoal'] {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = raw as Record<string, unknown>;
+  if (typeof r.skillId !== 'string' || r.skillId.trim() === '') return undefined;
+  if (typeof r.updatedAt !== 'number' || !Number.isFinite(r.updatedAt) || r.updatedAt < 0) return undefined;
+  return { skillId: r.skillId, updatedAt: r.updatedAt };
+}
+
+/**
+ * 解析并校验 repairSession 字段（不信任外部数据）。
+ * 返回合法对象或 undefined。
+ */
+export function parseRepairSession(raw: unknown): ProgressData['repairSession'] {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = raw as Record<string, unknown>;
+  if (typeof r.skillId !== 'string' || r.skillId.trim() === '') return undefined;
+  if (typeof r.targetSkillId !== 'string' || r.targetSkillId.trim() === '') return undefined;
+  if (r.status !== 'active' && r.status !== 'completed') return undefined;
+  if (typeof r.updatedAt !== 'number' || !Number.isFinite(r.updatedAt) || r.updatedAt < 0) return undefined;
+  return {
+    skillId: r.skillId,
+    targetSkillId: r.targetSkillId,
+    status: r.status,
+    updatedAt: r.updatedAt,
+  };
+}
+
+/**
+ * 合并两个 learningGoal 记录（确定性，可测试）。
+ * 更新时间更新的记录胜；相同时间两者相同。
+ */
+export function mergeLearningGoal(
+  a: ProgressData['learningGoal'],
+  b: ProgressData['learningGoal'],
+): ProgressData['learningGoal'] {
+  if (!a && !b) return undefined;
+  if (!a) return b;
+  if (!b) return a;
+  return a.updatedAt >= b.updatedAt ? a : b;
+}
+
+/**
+ * 合并两个 repairSession 记录（确定性，可测试）。
+ *
+ * 规则：
+ * 1. 比较 updatedAt，更新记录胜。
+ * 2. 相同 updatedAt 时，completed 胜（防止同一旧 active 复活）。
+ */
+export function mergeRepairSession(
+  a: ProgressData['repairSession'],
+  b: ProgressData['repairSession'],
+): ProgressData['repairSession'] {
+  if (!a && !b) return undefined;
+  if (!a) return b;
+  if (!b) return a;
+  if (a.updatedAt === b.updatedAt) {
+    // Tie-break: completed wins to prevent old active from reviving
+    return (a.status === 'completed' || b.status === 'completed')
+      ? (a.status === 'completed' ? a : b)
+      : a;
+  }
+  return a.updatedAt > b.updatedAt ? a : b;
+}
 
 /**
  * 判断进度数据是否包含有意义的学习内容。
  * 用于登录同步：不再只看 passedKnowledgePoints.length，
- * 而是综合判断 passed / stars / mastery / currentLearning / skillEvidence。
+ * 而是综合判断 passed / stars / mastery / currentLearning / skillEvidence / goal / repair。
  */
 export function hasMeaningfulProgress(progress: ProgressData): boolean {
   if (progress.passedKnowledgePoints?.length > 0) return true;
@@ -505,5 +639,7 @@ export function hasMeaningfulProgress(progress: ProgressData): boolean {
   for (const ev of Object.values(skillEvidence)) {
     if (ev.attempts > 0) return true;
   }
+  if (progress.learningGoal) return true;
+  if (progress.repairSession?.status === 'active') return true;
   return false;
 }

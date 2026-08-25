@@ -51,6 +51,29 @@ export default function HomePage() {
         urgent: true,
       };
     }
+  } else if (progress.repairSession?.status === 'active') {
+    // Priority 2: active repair session
+    const { skillId, targetSkillId } = progress.repairSession;
+    const skillNode = getSkillById(skillId);
+    const targetNode = getSkillById(targetSkillId);
+    recommended = {
+      link: `/repair/${skillId}?target=${targetSkillId}`,
+      reason: '微补修进行中',
+      title: skillNode?.name ?? skillId,
+      description: `目标：${targetNode?.name ?? targetSkillId} · 继续你的微补修`,
+      urgent: false,
+    };
+  } else if (progress.learningGoal) {
+    // Priority 3: learning goal
+    const { skillId } = progress.learningGoal;
+    const goalNode = getSkillById(skillId);
+    recommended = {
+      link: `/map?target=${skillId}`,
+      reason: '学习目标',
+      title: goalNode?.name ?? skillId,
+      description: `前往知识地图，查看通往"${goalNode?.name ?? skillId}"的下一步`,
+      urgent: false,
+    };
   } else if (progress.currentLearning) {
     const kp = getKnowledgePointById(progress.currentLearning);
     if (kp && !isPassed(kp.meta.id)) {

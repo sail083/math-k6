@@ -1,0 +1,760 @@
+[
+  {
+    "skillId": "frac.whole",
+    "estimatedMinutes": 3,
+    "courseId": "g3-fraction-intro",
+    "diagnosticQuestions": [
+      {
+        "id": "rep-whole-d1",
+        "type": "choice",
+        "prompt": "老师把一个苹果分给4位同学，问：题目中的单位“1”是什么？",
+        "options": [
+          "4位同学",
+          "每位同学的苹果",
+          "一个苹果",
+          "4份苹果"
+        ],
+        "correctAnswer": "一个苹果",
+        "explanation": "单位“1”是被分的整体。这道题把一个苹果平均分给4人，所以整体是一个苹果。",
+        "points": 10,
+        "primarySkillId": "frac.whole",
+        "evidenceType": "conceptual"
+      },
+      {
+        "id": "rep-whole-d2",
+        "type": "choice",
+        "prompt": "一筐梨有12个，小明拿走了5个。题目中的单位“1”指的是哪一个？",
+        "options": [
+          "12个梨",
+          "5个梨",
+          "小明",
+          "7个梨"
+        ],
+        "correctAnswer": "12个梨",
+        "explanation": "单位“1”是被分的整体，这道题整体是一筐梨（即12个），不是拿走的部分。",
+        "points": 10,
+        "primarySkillId": "frac.whole",
+        "evidenceType": "procedural"
+      }
+    ],
+    "lesson": {
+      "coreExplanation": "单位“1”就是题目里被分成若干份的那个整体——它可以是一个物体，也可以是一群东西。",
+      "steps": [
+        "先找题目在说“把什么分开”或“把什么看作整体”。",
+        "被分的那个东西（不管大小）就是单位“1”。",
+        "确认单位“1”之后才能谈分成几份和取了几份。"
+      ],
+      "workedExample": {
+        "question": "一块蛋糕被切成8块，妹妹吃了3块。单位“1”是什么？",
+        "steps": [
+          "题目说“一块蛋糕被切成8块”——被切的是“一块蛋糕”。",
+          "所以单位“1”就是“一块蛋糕”。"
+        ],
+        "answer": "一块蛋糕"
+      },
+      "misconception": {
+        "mistake": "认为单位“1”就是数字1，或者认为分子就是整体。",
+        "correction": "单位“1”是题目中被平均分的整体对象，不是某个数字。分子只是取了几份，整体是被分的那个东西。"
+      }
+    },
+    "checkQuestions": [
+      {
+        "id": "rep-whole-c1",
+        "type": "choice",
+        "prompt": "把一根绳子剪成6段，问：在这道题里，单位“1”指的是？（迁移：请在新情境中判断）",
+        "options": [
+          "6段绳子",
+          "一根绳子",
+          "每段绳子",
+          "绳子的长度"
+        ],
+        "correctAnswer": "一根绳子",
+        "explanation": "被剪的整体是“一根绳子”，所以单位“1”是“一根绳子”。",
+        "points": 10,
+        "primarySkillId": "frac.whole",
+        "evidenceType": "transfer"
+      },
+      {
+        "id": "rep-whole-c2",
+        "type": "choice",
+        "prompt": "一个班有30名学生，其中有18名女生。题目中的单位“1”是哪个？（迁移）",
+        "options": [
+          "18名女生",
+          "12名男生",
+          "30名学生",
+          "1名学生"
+        ],
+        "correctAnswer": "30名学生",
+        "explanation": "整体是“一个班的全体同学，即30名”，被分成男女两部分，单位“1”是“30名学生”。",
+        "points": 10,
+        "primarySkillId": "frac.whole",
+        "evidenceType": "transfer"
+      }
+    ]
+  },
+  {
+    "skillId": "frac.equal_partition",
+    "estimatedMinutes": 3,
+    "courseId": "g3-fraction-intro",
+    "diagnosticQuestions": [
+      {
+        "id": "rep-eqpart-d1",
+        "type": "choice",
+        "prompt": "下面哪种切法是“平均分”？",
+        "options": [
+          "把一个西瓜切成一大块和一小块",
+          "把8颗糖分成4份，每份2颗",
+          "把一张纸随便撕成3片",
+          "把一根胡萝卜切成长短不等的两段"
+        ],
+        "correctAnswer": "把8颗糖分成4份，每份2颗",
+        "explanation": "平均分要求每份大小相同。只有“4份每份2颗”做到了每份相等。",
+        "points": 10,
+        "primarySkillId": "frac.equal_partition",
+        "evidenceType": "conceptual"
+      },
+      {
+        "id": "rep-eqpart-d2",
+        "type": "choice",
+        "prompt": "把12个橘子分给3个小朋友，平均每人得到几个？",
+        "options": [
+          "3个",
+          "4个",
+          "6个",
+          "12个"
+        ],
+        "correctAnswer": "4个",
+        "explanation": "12÷3=4，平均分即每份相同，每人4个。",
+        "points": 10,
+        "primarySkillId": "frac.equal_partition",
+        "evidenceType": "procedural"
+      }
+    ],
+    "lesson": {
+      "coreExplanation": "平均分就是把整体分成若干份，每一份的大小完全相同——不多不少，一样大。",
+      "steps": [
+        "分成几份？数数份数。",
+        "检查每份是否一样大（一样多）。",
+        "每份都相同 → 平均分；有大有小 → 不是平均分。"
+      ],
+      "workedExample": {
+        "question": "把10块饼干分成5份，是平均分吗？每份几块？",
+        "steps": [
+          "10÷5=2，每份2块。",
+          "每份都是2块，大小相同 → 是平均分。"
+        ],
+        "answer": "是平均分，每份2块"
+      },
+      "misconception": {
+        "mistake": "只看“分了几份”，不看每份是否一样大。",
+        "correction": "平均分必须每份相等。把10个苹果分成“3、3、4”就不是平均分，因为最后一份多了1个。"
+      }
+    },
+    "checkQuestions": [
+      {
+        "id": "rep-eqpart-c1",
+        "type": "choice",
+        "prompt": "把一个圆形纸片折成4份，只有哪种方式是平均分？（迁移）",
+        "options": [
+          "随意折4折",
+          "对折两次，得4个大小相等的扇形",
+          "撕成4片，大小不等",
+          "剪掉一小角变成4块"
+        ],
+        "correctAnswer": "对折两次，得4个大小相等的扇形",
+        "explanation": "对折两次每份面积相同，是平均分。其他方式每份大小不一样。",
+        "points": 10,
+        "primarySkillId": "frac.equal_partition",
+        "evidenceType": "transfer"
+      },
+      {
+        "id": "rep-eqpart-c2",
+        "type": "choice",
+        "prompt": "15本书平均分给5个小组，每组得几本？（迁移）",
+        "options": [
+          "2本",
+          "3本",
+          "5本",
+          "15本"
+        ],
+        "correctAnswer": "3本",
+        "explanation": "15÷5=3，平均分每组3本。",
+        "points": 10,
+        "primarySkillId": "frac.equal_partition",
+        "evidenceType": "transfer"
+      }
+    ]
+  },
+  {
+    "skillId": "frac.notation",
+    "estimatedMinutes": 3,
+    "courseId": "g3-fraction-intro",
+    "diagnosticQuestions": [
+      {
+        "id": "rep-notation-d1",
+        "type": "choice",
+        "prompt": "分数 3/5 中，分母5表示的是什么？",
+        "options": [
+          "取了3份",
+          "平均分成5份",
+          "整体是5",
+          "3比5小"
+        ],
+        "correctAnswer": "平均分成5份",
+        "explanation": "分母表示把整体平均分成的份数。3/5的分母5表示整体被平均分成了5份。",
+        "points": 10,
+        "primarySkillId": "frac.notation",
+        "evidenceType": "conceptual"
+      },
+      {
+        "id": "rep-notation-d2",
+        "type": "choice",
+        "prompt": "把一个圆平均分成8份，取其中3份。这个分数怎么写？",
+        "options": [
+          "8/3",
+          "3/8",
+          "3/5",
+          "5/8"
+        ],
+        "correctAnswer": "3/8",
+        "explanation": "分母=分成的份数=8，分子=取的份数=3，所以是3/8。",
+        "points": 10,
+        "primarySkillId": "frac.notation",
+        "evidenceType": "procedural"
+      }
+    ],
+    "lesson": {
+      "coreExplanation": "分数线表示平均分，分母写“分成几份”，分子写“取了几份”。",
+      "steps": [
+        "画一条横线（分数线），表示“平均分”。",
+        "横线下面（分母）写整体被分成的份数。",
+        "横线上面（分子）写取出的份数。"
+      ],
+      "workedExample": {
+        "question": "把一块蛋糕平均分成6份，吃了2份，怎么写这个分数？",
+        "steps": [
+          "分母=6（分成6份）。",
+          "分子=2（取了2份）。",
+          "写成 2/6。"
+        ],
+        "answer": "2/6"
+      },
+      "misconception": {
+        "mistake": "把分子写在下面，分母写在上面（上下颠倒）。",
+        "correction": "记住：分数线下面是“份数”（分母），上面是“取了多少份”（分子）。分数线下面写“分了几份”，上面写“拿了几份”。"
+      }
+    },
+    "checkQuestions": [
+      {
+        "id": "rep-notation-c1",
+        "type": "choice",
+        "prompt": "分数 5/9 的分子是几？它表示什么？（迁移）",
+        "options": [
+          "9，表示分成9份",
+          "5，表示取了5份",
+          "5，表示分成5份",
+          "9，表示取了9份"
+        ],
+        "correctAnswer": "5，表示取了5份",
+        "explanation": "分子在分数线上方，5/9的分子是5，表示从平均分成9份中取了5份。",
+        "points": 10,
+        "primarySkillId": "frac.notation",
+        "evidenceType": "transfer"
+      },
+      {
+        "id": "rep-notation-c2",
+        "type": "fill-blank",
+        "prompt": "把一条线段平均分成7份，取其中4份，写出这个分数（用a/b格式，如3/5）：",
+        "correctAnswer": "4/7",
+        "explanation": "分母=7（分成7份），分子=4（取4份），所以是4/7。",
+        "points": 10,
+        "primarySkillId": "frac.notation",
+        "evidenceType": "transfer"
+      }
+    ]
+  },
+  {
+    "skillId": "frac.of_quantity",
+    "estimatedMinutes": 4,
+    "courseId": "g6-fraction-mult",
+    "diagnosticQuestions": [
+      {
+        "id": "rep-ofqty-d1",
+        "type": "choice",
+        "prompt": "求一根20米长绳子的3/4，应该用什么方法？",
+        "options": [
+          "20 ÷ 3/4",
+          "20 × 3/4",
+          "20 + 3/4",
+          "3/4 ÷ 20"
+        ],
+        "correctAnswer": "20 × 3/4",
+        "explanation": "求一个量的几分之几用乘法：整体 × 分数。",
+        "points": 10,
+        "primarySkillId": "frac.of_quantity",
+        "evidenceType": "conceptual"
+      },
+      {
+        "id": "rep-ofqty-d2",
+        "type": "fill-blank",
+        "prompt": "一箱苹果有24个，小红吃了这箱苹果的1/6。小红吃了几个？（填数字）",
+        "correctAnswer": "4",
+        "explanation": "24 × 1/6 = 4个。",
+        "points": 10,
+        "primarySkillId": "frac.of_quantity",
+        "evidenceType": "procedural"
+      }
+    ],
+    "lesson": {
+      "coreExplanation": "求“一个量的几分之几”就是乘法：整体 × 分数 = 结果。",
+      "steps": [
+        "找到题目里的整体（单位“1”），记为“整体”。",
+        "找到分数（几分之几）。",
+        "列式：整体 × 分数。",
+        "计算结果。"
+      ],
+      "workedExample": {
+        "question": "一段路全长30千米，已走完了2/5，走了多少千米？",
+        "steps": [
+          "整体 = 30千米（全长）。",
+          "分数 = 2/5（已走完的部分）。",
+          "30 × 2/5 = 60/5 = 12千米。"
+        ],
+        "answer": "12千米"
+      },
+      "misconception": {
+        "mistake": "把“求几分之几”误用成除法（整体 ÷ 分数）。",
+        "correction": "求几分之几是乘法。除法是知道部分求整体，或者知道倍数关系求个数。“求3/4”就是乘3/4。"
+      }
+    },
+    "checkQuestions": [
+      {
+        "id": "rep-ofqty-c1",
+        "type": "fill-blank",
+        "prompt": "一个水箱容积40升，现在装了水箱容积的3/8。水箱里有多少升水？（填数字）（迁移）",
+        "correctAnswer": "15",
+        "explanation": "40 × 3/8 = 120/8 = 15升。",
+        "points": 10,
+        "primarySkillId": "frac.of_quantity",
+        "evidenceType": "transfer"
+      },
+      {
+        "id": "rep-ofqty-c2",
+        "type": "choice",
+        "prompt": "一本书共50页，已经读了全书的4/5。下面哪个算式能求出已读了多少页？（迁移）",
+        "options": [
+          "50 ÷ 4/5",
+          "50 × 4/5",
+          "50 - 4/5",
+          "50 × 5/4"
+        ],
+        "correctAnswer": "50 × 4/5",
+        "explanation": "求一本书的4/5（几分之几）用乘法：50 × 4/5 = 40页。",
+        "points": 10,
+        "primarySkillId": "frac.of_quantity",
+        "evidenceType": "transfer"
+      }
+    ]
+  },
+  {
+    "skillId": "frac.multiply_fraction",
+    "estimatedMinutes": 4,
+    "courseId": "g6-fraction-mult",
+    "diagnosticQuestions": [
+      {
+        "id": "rep-multfrac-d1",
+        "type": "fill-blank",
+        "prompt": "计算 2/3 × 3/5（用a/b格式填写最简结果）：",
+        "correctAnswer": "2/5",
+        "explanation": "分子×分子=2×3=6，分母×分母=3×5=15，结果6/15，约分得2/5。",
+        "points": 10,
+        "primarySkillId": "frac.multiply_fraction",
+        "evidenceType": "procedural"
+      },
+      {
+        "id": "rep-multfrac-d2",
+        "type": "choice",
+        "prompt": "分数乘分数的法则是什么？",
+        "options": [
+          "分子加分子，分母加分母",
+          "分子乘分子做分子，分母乘分母做分母",
+          "分子与分母交叉相乘",
+          "只乘分子，分母不变"
+        ],
+        "correctAnswer": "分子乘分子做分子，分母乘分母做分母",
+        "explanation": "分数乘分数：(a/b)×(c/d) = (a×c)/(b×d)。",
+        "points": 10,
+        "primarySkillId": "frac.multiply_fraction",
+        "evidenceType": "conceptual"
+      }
+    ],
+    "lesson": {
+      "coreExplanation": "两个分数相乘：分子乘分子、分母乘分母，结果化最简。",
+      "steps": [
+        "写出两个分数：a/b × c/d。",
+        "分子相乘：a × c = 新分子。",
+        "分母相乘：b × d = 新分母。",
+        "结果化为最简分数。"
+      ],
+      "workedExample": {
+        "question": "计算 3/4 × 2/9",
+        "steps": [
+          "分子：3 × 2 = 6。",
+          "分母：4 × 9 = 36。",
+          "结果：6/36，约分得 1/6。"
+        ],
+        "answer": "1/6"
+      },
+      "misconception": {
+        "mistake": "分子与分母交叉相乘（如3/4×2/9误算成3×9=27，4×2=8，得27/8）。",
+        "correction": "乘法是“同位相乘”：上面（分子）×上面，下面（分母）×下面。交叉相乘是错误的。"
+      }
+    },
+    "checkQuestions": [
+      {
+        "id": "rep-multfrac-c1",
+        "type": "fill-blank",
+        "prompt": "计算 4/5 × 5/8，结果化最简（用a/b格式）：（迁移）",
+        "correctAnswer": "1/2",
+        "explanation": "4×5=20，5×8=40，20/40=1/2。",
+        "points": 10,
+        "primarySkillId": "frac.multiply_fraction",
+        "evidenceType": "transfer"
+      },
+      {
+        "id": "rep-multfrac-c2",
+        "type": "fill-blank",
+        "prompt": "计算 7/12 × 4/7，结果化最简（用a/b格式）：（迁移）",
+        "correctAnswer": "1/3",
+        "explanation": "7×4=28，12×7=84，28/84=1/3。",
+        "points": 10,
+        "primarySkillId": "frac.multiply_fraction",
+        "evidenceType": "transfer"
+      }
+    ]
+  },
+  {
+    "skillId": "frac.reciprocal",
+    "estimatedMinutes": 3,
+    "courseId": "g6-fraction-div",
+    "diagnosticQuestions": [
+      {
+        "id": "rep-recip-d1",
+        "type": "fill-blank",
+        "prompt": "3/7 的倒数是多少？（用a/b格式）",
+        "correctAnswer": "7/3",
+        "explanation": "倒数就是分子和分母互换：3/7的倒数是7/3，因为3/7 × 7/3 = 21/21 = 1。",
+        "points": 10,
+        "primarySkillId": "frac.reciprocal",
+        "evidenceType": "procedural"
+      },
+      {
+        "id": "rep-recip-d2",
+        "type": "choice",
+        "prompt": "两个数互为倒数，它们的积是多少？",
+        "options": [
+          "0",
+          "本身",
+          "1",
+          "2"
+        ],
+        "correctAnswer": "1",
+        "explanation": "互为倒数的两个数乘积为1，这是倒数的定义。",
+        "points": 10,
+        "primarySkillId": "frac.reciprocal",
+        "evidenceType": "conceptual"
+      }
+    ],
+    "lesson": {
+      "coreExplanation": "倒数：把一个分数的分子和分母互换，两数相乘等于1。",
+      "steps": [
+        "找到原分数 a/b。",
+        "把分子分母互换，得到 b/a。",
+        "验证：a/b × b/a = ab/ab = 1，确认是倒数。",
+        "特殊情况：1的倒数是1；0没有倒数（0×任何数≠1）。"
+      ],
+      "workedExample": {
+        "question": "5/6 的倒数是多少？验证一下。",
+        "steps": [
+          "把5/6分子分母互换，得6/5。",
+          "验证：5/6 × 6/5 = 30/30 = 1 ✓。"
+        ],
+        "answer": "6/5"
+      },
+      "misconception": {
+        "mistake": "认为整数没有倒数（如认为4没有倒数）。",
+        "correction": "整数4可以写成4/1，倒数是1/4。因为4 × 1/4 = 1，满足倒数定义。"
+      }
+    },
+    "checkQuestions": [
+      {
+        "id": "rep-recip-c1",
+        "type": "fill-blank",
+        "prompt": "整数6的倒数是多少？（用a/b格式）（迁移）",
+        "correctAnswer": "1/6",
+        "explanation": "6=6/1，倒数是1/6，因为6 × 1/6 = 1。",
+        "points": 10,
+        "primarySkillId": "frac.reciprocal",
+        "evidenceType": "transfer"
+      },
+      {
+        "id": "rep-recip-c2",
+        "type": "choice",
+        "prompt": "下面哪个说法是正确的？（迁移）",
+        "options": [
+          "0的倒数是0",
+          "1的倒数是自身（1）",
+          "负数没有倒数",
+          "分母越大倒数越大"
+        ],
+        "correctAnswer": "1的倒数是自身（1）",
+        "explanation": "1 × 1 = 1，所以1的倒数是1。0没有倒数（0乘任何数都不等于1）。",
+        "points": 10,
+        "primarySkillId": "frac.reciprocal",
+        "evidenceType": "transfer"
+      }
+    ]
+  },
+  {
+    "skillId": "frac.division_grouping",
+    "estimatedMinutes": 4,
+    "courseId": "g6-fraction-div",
+    "diagnosticQuestions": [
+      {
+        "id": "rep-divgrp-d1",
+        "type": "choice",
+        "prompt": "算式 3/4 ÷ 1/8 表示的意思是？（包含除）",
+        "options": [
+          "3/4 平均分成1/8份，每份是多少",
+          "3/4 里面有几个 1/8",
+          "1/8 里面有几个 3/4",
+          "3/4 和 1/8 合起来是多少"
+        ],
+        "correctAnswer": "3/4 里面有几个 1/8",
+        "explanation": "包含除 a÷b 问“a里面有几个b”。3/4÷1/8就是问3/4里面有几个1/8。",
+        "points": 10,
+        "primarySkillId": "frac.division_grouping",
+        "evidenceType": "conceptual"
+      },
+      {
+        "id": "rep-divgrp-d2",
+        "type": "fill-blank",
+        "prompt": "一段彩带长2/3米，每1/6米剪一段，能剪成几段？（计算 2/3 ÷ 1/6，填数字）",
+        "correctAnswer": "4",
+        "explanation": "2/3 ÷ 1/6 = 2/3 × 6/1 = 12/3 = 4段。",
+        "points": 10,
+        "primarySkillId": "frac.division_grouping",
+        "evidenceType": "procedural"
+      }
+    ],
+    "lesson": {
+      "coreExplanation": "包含除问“里面有几个”：a ÷ b 就是问 a 里面包含多少个 b。",
+      "steps": [
+        "认清情境：问的是“X里面有几个Y”。",
+        "列出算式：X ÷ Y。",
+        "转化：X ÷ Y = X × Y 的倒数。",
+        "计算结果，即“包含了几个”。"
+      ],
+      "workedExample": {
+        "question": "1/2升果汁，每杯装1/8升，可以装几杯？",
+        "steps": [
+          "问“1/2里面有几个1/8” → 1/2 ÷ 1/8。",
+          "1/2 × 8/1 = 8/2 = 4。"
+        ],
+        "answer": "4杯"
+      },
+      "misconception": {
+        "mistake": "把“里面有几个”（包含除）和“平均分成几份每份多少”（平均分）混淆。",
+        "correction": "包含除的关键词是“里面有几个”或“能装几次/段”。平均分的关键词是“平均分成……份，每份多少”。"
+      }
+    },
+    "checkQuestions": [
+      {
+        "id": "rep-divgrp-c1",
+        "type": "choice",
+        "prompt": "5/6 米的布，每件衣服用1/6米，能做几件衣服？下面哪个算式正确？（迁移，包含除）",
+        "options": [
+          "5/6 × 1/6",
+          "5/6 ÷ 1/6",
+          "1/6 ÷ 5/6",
+          "5/6 + 1/6"
+        ],
+        "correctAnswer": "5/6 ÷ 1/6",
+        "explanation": "问5/6里面有几个1/6 → 5/6 ÷ 1/6 = 5/6 × 6 = 5件。",
+        "points": 10,
+        "primarySkillId": "frac.division_grouping",
+        "evidenceType": "transfer"
+      },
+      {
+        "id": "rep-divgrp-c2",
+        "type": "fill-blank",
+        "prompt": "3/4升果汁，每瓶装1/4升，能装满几瓶？（计算 3/4 ÷ 1/4，填数字）（迁移）",
+        "correctAnswer": "3",
+        "explanation": "3/4 ÷ 1/4 = 3/4 × 4 = 3瓶。",
+        "points": 10,
+        "primarySkillId": "frac.division_grouping",
+        "evidenceType": "transfer"
+      }
+    ]
+  },
+  {
+    "skillId": "frac.division_sharing",
+    "estimatedMinutes": 4,
+    "courseId": "g6-fraction-div",
+    "diagnosticQuestions": [
+      {
+        "id": "rep-divsha-d1",
+        "type": "choice",
+        "prompt": "算式 3/4 ÷ 3 表示的意思是？（平均分）",
+        "options": [
+          "3/4 里面有几个3",
+          "把3/4平均分成3份，每份是多少",
+          "3 平均分成3/4份",
+          "3 里面有几个3/4"
+        ],
+        "correctAnswer": "把3/4平均分成3份，每份是多少",
+        "explanation": "平均分的除法 a÷b 问“a平均分成b份，每份多少”。3/4÷3是把3/4平均分成3份。",
+        "points": 10,
+        "primarySkillId": "frac.division_sharing",
+        "evidenceType": "conceptual"
+      },
+      {
+        "id": "rep-divsha-d2",
+        "type": "fill-blank",
+        "prompt": "2/5 升果汁平均分给2个小朋友，每人得多少升？（计算 2/5 ÷ 2，用a/b格式）",
+        "correctAnswer": "1/5",
+        "explanation": "2/5 ÷ 2 = 2/5 × 1/2 = 2/10 = 1/5升。",
+        "points": 10,
+        "primarySkillId": "frac.division_sharing",
+        "evidenceType": "procedural"
+      }
+    ],
+    "lesson": {
+      "coreExplanation": "平均分除法问“每份多少”：a ÷ b 就是把 a 平均分成 b 份，求每份的大小。",
+      "steps": [
+        "认清情境：问的是“平均分成几份，每份多少”。",
+        "列出算式：总量 ÷ 份数。",
+        "转化：总量 × (份数的倒数)。",
+        "计算结果即每份大小。"
+      ],
+      "workedExample": {
+        "question": "4/9 千克糖果平均分给4个小朋友，每人得多少千克？",
+        "steps": [
+          "总量=4/9，份数=4。",
+          "4/9 ÷ 4 = 4/9 × 1/4 = 4/36 = 1/9千克。"
+        ],
+        "answer": "1/9千克"
+      },
+      "misconception": {
+        "mistake": "把平均分（每份多少）和包含除（里面有几个）混淆。",
+        "correction": "平均分关键词：“分成……份，每份多少”，答案单位和被分的东西相同。包含除关键词：“里面有几个”，答案是个数/次数。"
+      }
+    },
+    "checkQuestions": [
+      {
+        "id": "rep-divsha-c1",
+        "type": "choice",
+        "prompt": "5/6 升牛奶平均倒入5个杯子，每杯多少升？下面哪个算式正确？（迁移，平均分）",
+        "options": [
+          "5/6 × 5",
+          "5 ÷ 5/6",
+          "5/6 ÷ 5",
+          "5/6 × 6/5"
+        ],
+        "correctAnswer": "5/6 ÷ 5",
+        "explanation": "平均分成5份，每份= 5/6 ÷ 5 = 5/6 × 1/5 = 5/30 = 1/6升。",
+        "points": 10,
+        "primarySkillId": "frac.division_sharing",
+        "evidenceType": "transfer"
+      },
+      {
+        "id": "rep-divsha-c2",
+        "type": "fill-blank",
+        "prompt": "3/8 千克面粉平均装入3个袋子，每袋多少千克？（计算 3/8 ÷ 3，用a/b格式）（迁移）",
+        "correctAnswer": "1/8",
+        "explanation": "3/8 ÷ 3 = 3/8 × 1/3 = 3/24 = 1/8千克。",
+        "points": 10,
+        "primarySkillId": "frac.division_sharing",
+        "evidenceType": "transfer"
+      }
+    ]
+  },
+  {
+    "skillId": "frac.divide_transform",
+    "estimatedMinutes": 5,
+    "courseId": "g6-fraction-div",
+    "diagnosticQuestions": [
+      {
+        "id": "rep-divtrans-d1",
+        "type": "fill-blank",
+        "prompt": "计算 2/3 ÷ 4/5（转化为乘倒数后计算，用a/b格式填最简结果）：",
+        "correctAnswer": "5/6",
+        "explanation": "2/3 ÷ 4/5 = 2/3 × 5/4 = 10/12 = 5/6。",
+        "points": 10,
+        "primarySkillId": "frac.divide_transform",
+        "evidenceType": "procedural"
+      },
+      {
+        "id": "rep-divtrans-d2",
+        "type": "choice",
+        "prompt": "除以一个不为0的分数，等于？",
+        "options": [
+          "乘以该分数本身",
+          "乘以该分数的倒数",
+          "除以该分数的分子",
+          "加上该分数的倒数"
+        ],
+        "correctAnswer": "乘以该分数的倒数",
+        "explanation": "a ÷ b/c = a × c/b，除以分数等于乘以它的倒数。",
+        "points": 10,
+        "primarySkillId": "frac.divide_transform",
+        "evidenceType": "conceptual"
+      }
+    ],
+    "lesson": {
+      "coreExplanation": "除以一个分数，等于乘以它的倒数。a ÷ (b/c) = a × (c/b)。",
+      "steps": [
+        "找到被除数和除数（除数是分数）。",
+        "把除号改为乘号。",
+        "把除数（分数）写成它的倒数（分子分母互换）。",
+        "按分数乘法计算，结果化最简。"
+      ],
+      "workedExample": {
+        "question": "计算 3/5 ÷ 6/7",
+        "steps": [
+          "除数是6/7，倒数是7/6。",
+          "3/5 ÷ 6/7 = 3/5 × 7/6。",
+          "分子：3×7=21，分母：5×6=30。",
+          "21/30 化简 = 7/10。"
+        ],
+        "answer": "7/10"
+      },
+      "misconception": {
+        "mistake": "只背口诀“除以分数乘倒数”，但不会正确找倒数（如把2/3的倒数写成3/2以外的数）。",
+        "correction": "倒数=分子分母互换。计算时必须把除数写成倒数再乘，被除数不变。"
+      }
+    },
+    "checkQuestions": [
+      {
+        "id": "rep-divtrans-c1",
+        "type": "fill-blank",
+        "prompt": "计算 5/8 ÷ 5/4，结果化最简（用a/b格式）：（迁移）",
+        "correctAnswer": "1/2",
+        "explanation": "5/8 ÷ 5/4 = 5/8 × 4/5 = 20/40 = 1/2。",
+        "points": 10,
+        "primarySkillId": "frac.divide_transform",
+        "evidenceType": "transfer"
+      },
+      {
+        "id": "rep-divtrans-c2",
+        "type": "fill-blank",
+        "prompt": "计算 7/9 ÷ 7/3，结果化最简（用a/b格式）：（迁移）",
+        "correctAnswer": "1/3",
+        "explanation": "7/9 ÷ 7/3 = 7/9 × 3/7 = 21/63 = 1/3。",
+        "points": 10,
+        "primarySkillId": "frac.divide_transform",
+        "evidenceType": "transfer"
+      }
+    ]
+  }
+]

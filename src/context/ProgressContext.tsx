@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, type ReactNode } from 'react';
-import type { ProgressData, MasteryStatus, EvidenceType } from '@/lib/types';
+import type { ProgressData, MasteryStatus, EvidenceType, SkillEvidenceMode } from '@/lib/types';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import {
@@ -21,6 +21,14 @@ import {
   mergeSkillEvidence,
   hasMeaningfulProgress,
   parseSkillEvidence,
+  parseLearningGoal,
+  parseRepairSession,
+  mergeLearningGoal,
+  mergeRepairSession,
+  isSkillReadyForPath as isSkillReadyForPathUtil,
+  setLearningGoal as setLearningGoalUtil,
+  startRepairSession as startRepairSessionUtil,
+  finishRepairSession as finishRepairSessionUtil,
   type SkillDisplayStatus,
 } from '@/lib/progress';
 
@@ -38,9 +46,14 @@ interface ProgressContextValue {
   getReviewMode: (kpId: string) => 'd1' | 'd7' | null;
   setCurrentLearning: (kpId: string) => void;
   // ===== 技能证据 =====
-  recordSkillEvidence: (skillId: string, isCorrect: boolean, isFirstTry: boolean, evidenceType: EvidenceType, mode: 'initial' | 'd1' | 'd7') => void;
+  recordSkillEvidence: (skillId: string, isCorrect: boolean, isFirstTry: boolean, evidenceType: EvidenceType, mode: SkillEvidenceMode) => void;
   getSkillDisplayStatus: (skillId: string) => SkillDisplayStatus;
   hasDirectSkillEvidence: (skillId: string) => boolean;
+  isSkillReadyForPath: (skillId: string) => boolean;
+  // ===== v0.2：目标与补修 =====
+  setGoal: (skillId: string) => void;
+  startRepair: (skillId: string, targetSkillId: string) => void;
+  finishRepair: (skillId: string) => void;
 }
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -91,7 +104,17 @@ function mergeProgress(local: ProgressData, remote: ProgressData): ProgressData 
     }
   }
   const currentLearning = local.currentLearning ?? remote.currentLearning ?? null;
-  return { passedKnowledgePoints: Array.from(passedSet), stars, mastery, currentLearning, skillEvidence };
+  // Merge learningGoal: use the deterministic merge function with parsed values
+  const learningGoal = mergeLearningGoal(
+    parseLearningGoal(local.learningGoal),
+    parseLearningGoal(remote.learningGoal),
+  );
+  // Merge repairSession: updatedAt-based merge with completed tombstone tie-break
+  const repairSession = mergeRepairSession(
+    parseRepairSession(local.repairSession),
+    parseRepairSession(remote.repairSession),
+  );
+  return { passedKnowledgePoints: Array.from(passedSet), stars, mastery, currentLearning, skillEvidence, learningGoal, repairSession };
 }
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
@@ -227,7 +250,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     isCorrect: boolean,
     isFirstTry: boolean,
     evidenceType: EvidenceType,
-    mode: 'initial' | 'd1' | 'd7',
+    mode: SkillEvidenceMode,
   ) => {
     setProgress((prev) => recordSkillEvidenceUtil(prev, skillId, isCorrect, isFirstTry, evidenceType, mode, Date.now()));
   }, []);
@@ -241,6 +264,23 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     (skillId: string) => hasDirectSkillEvidenceUtil(progress, skillId),
     [progress],
   );
+
+  const isSkillReadyForPath = useCallback(
+    (skillId: string) => isSkillReadyForPathUtil(progress, skillId, Date.now()),
+    [progress],
+  );
+
+  const setGoal = useCallback((skillId: string) => {
+    setProgress((prev) => setLearningGoalUtil(prev, skillId, Date.now()));
+  }, []);
+
+  const startRepair = useCallback((skillId: string, targetSkillId: string) => {
+    setProgress((prev) => startRepairSessionUtil(prev, skillId, targetSkillId, Date.now()));
+  }, []);
+
+  const finishRepair = useCallback((skillId: string) => {
+    setProgress((prev) => finishRepairSessionUtil(prev, skillId, Date.now()));
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -259,6 +299,10 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       recordSkillEvidence,
       getSkillDisplayStatus,
       hasDirectSkillEvidence,
+      isSkillReadyForPath,
+      setGoal,
+      startRepair,
+      finishRepair,
     }),
     [
       progress,
@@ -276,6 +320,10 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       recordSkillEvidence,
       getSkillDisplayStatus,
       hasDirectSkillEvidence,
+      isSkillReadyForPath,
+      setGoal,
+      startRepair,
+      finishRepair,
     ],
   );
 

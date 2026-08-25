@@ -16,12 +16,16 @@ import type { SkillDisplayStatus } from '@/lib/progress';
 // --- Mock ProgressContext ---
 const mockGetSkillDisplayStatus = vi.fn<(skillId: string) => SkillDisplayStatus>(() => 'not_started');
 const mockHasDirectSkillEvidence = vi.fn(() => false);
+const mockSetGoal = vi.fn();
+const mockIsSkillReadyForPath = vi.fn(() => false);
 
 vi.mock('@/context/ProgressContext', () => ({
   useProgress: () => ({
     progress: { passedKnowledgePoints: [], stars: {} },
     getSkillDisplayStatus: mockGetSkillDisplayStatus,
     hasDirectSkillEvidence: mockHasDirectSkillEvidence,
+    setGoal: mockSetGoal,
+    isSkillReadyForPath: mockIsSkillReadyForPath,
   }),
 }));
 
@@ -29,8 +33,11 @@ describe('KnowledgeMapPage', () => {
   beforeEach(() => {
     mockGetSkillDisplayStatus.mockReset();
     mockHasDirectSkillEvidence.mockReset();
+    mockSetGoal.mockReset();
+    mockIsSkillReadyForPath.mockReset();
     mockGetSkillDisplayStatus.mockReturnValue('not_started');
     mockHasDirectSkillEvidence.mockReturnValue(false);
+    mockIsSkillReadyForPath.mockReturnValue(false);
   });
 
   it('renders with default target path (frac.divide_transform)', () => {
