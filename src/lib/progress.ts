@@ -1,4 +1,4 @@
-import type { ProgressData, MasteryStatus, MasteryRecord } from './types';
+import type { ProgressData, MasteryStatus, MasteryRecord, SkillEvidenceRecord, EvidenceType } from './types';
 
 const STORAGE_KEY = 'math-k6-progress';
 const DAY_MS = 86_400_000;
@@ -50,7 +50,10 @@ export function loadProgress(): ProgressData {
     // Validate currentLearning (optional resume target)
     const currentLearning = typeof parsed.currentLearning === 'string' ? parsed.currentLearning : null;
 
-    return { passedKnowledgePoints, stars, mastery, currentLearning };
+    // Validate skillEvidence via unified parser (no duplicate field logic)
+    const skillEvidence = parseSkillEvidence(parsed.skillEvidence);
+
+    return { passedKnowledgePoints, stars, mastery, currentLearning, skillEvidence };
   } catch {
     return { ...defaultProgress };
   }
@@ -264,4 +267,243 @@ export function pickBetterMastery(
     return a.delayedReviewCount > b.delayedReviewCount ? a : b;
   }
   return a.lastAttemptAt >= b.lastAttemptAt ? a : b;
+}
+
+// ===== 技能证据 =====
+
+const VALID_MODES = new Set<string>(['initial', 'd1', 'd7']);
+const VALID_EVIDENCE_TYPES = new Set<string>(['conceptual', 'procedural', 'transfer', 'retention']);
+
+/**
+ * 规范化计数不变量：
+ * - correct <= attempts
+ * - firstTryCorrect <= correct
+ * - conceptual <= correct, procedural <= correct
+ * - transfer <= firstTryCorrect, retention <= firstTryCorrect
+ *   (transfer/retention 只累计"正确且首次无提示正确"的直接证据)
+ */
+function normalizeInvariants(r: SkillEvidenceRecord): SkillEvidenceRecord {
+  const attempts = Math.max(0, Math.floor(r.attempts));
+  const correct = Math.max(0, Math.min(Math.floor(r.correct), attempts));
+  const firstTryCorrect = Math.max(0, Math.min(Math.floor(r.firstTryCorrect), correct));
+  const conceptual = Math.max(0, Math.min(Math.floor(r.conceptual), correct));
+  const procedural = Math.max(0, Math.min(Math.floor(r.procedural), correct));
+  const transfer = Math.max(0, Math.min(Math.floor(r.transfer), firstTryCorrect));
+  const retention = Math.max(0, Math.min(Math.floor(r.retention), firstTryCorrect));
+  return {
+    attempts,
+    correct,
+    firstTryCorrect,
+    conceptual,
+    procedural,
+    transfer,
+    retention,
+    lastAttemptAt: Math.max(0, Math.floor(r.lastAttemptAt)),
+    lastMode: r.lastMode,
+  };
+}
+
+/**
+ * 校验并规范化单个技能证据记录（不信任外部数据源）。
+ */
+export function validateSkillEvidence(raw: unknown): SkillEvidenceRecord | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const r = raw as Record<string, unknown>;
+  const num = (v: unknown, fallback = 0): number =>
+    typeof v === 'number' && Number.isFinite(v) && v >= 0 ? Math.floor(v) : fallback;
+  const mode = VALID_MODES.has(r.lastMode as string) ? (r.lastMode as SkillEvidenceRecord['lastMode']) : 'initial';
+  return normalizeInvariants({
+    attempts: num(r.attempts),
+    correct: num(r.correct),
+    firstTryCorrect: num(r.firstTryCorrect),
+    conceptual: num(r.conceptual),
+    procedural: num(r.procedural),
+    transfer: num(r.transfer),
+    retention: num(r.retention),
+    lastAttemptAt: num(r.lastAttemptAt),
+    lastMode: mode,
+  });
+}
+
+/**
+ * 记录一次技能证据（题目首次提交时调用，重渲染不重复调用由调用方保证）。
+ * 不保存学生原始答案。
+ *
+ * @param progress 当前进度
+ * @param skillId 主技能 ID
+ * @param isCorrect 是否正确
+ * @param isFirstTry 是否首次无提示正确
+ * @param evidenceType 证据类型
+ * @param mode 当前模式（initial/d1/d7）
+ * @param now 当前时间戳
+ */
+export function recordSkillEvidence(
+  progress: ProgressData,
+  skillId: string,
+  isCorrect: boolean,
+  isFirstTry: boolean,
+  evidenceType: EvidenceType,
+  mode: 'initial' | 'd1' | 'd7',
+  now: number,
+): ProgressData {
+  const existing = progress.skillEvidence?.[skillId];
+  const prev: SkillEvidenceRecord = existing ?? {
+    attempts: 0,
+    correct: 0,
+    firstTryCorrect: 0,
+    conceptual: 0,
+    procedural: 0,
+    transfer: 0,
+    retention: 0,
+    lastAttemptAt: 0,
+    lastMode: 'initial',
+  };
+
+  const typeKey = evidenceType as 'conceptual' | 'procedural' | 'transfer' | 'retention';
+  const updated: SkillEvidenceRecord = {
+    attempts: prev.attempts + 1,
+    correct: prev.correct + (isCorrect ? 1 : 0),
+    firstTryCorrect: prev.firstTryCorrect + (isCorrect && isFirstTry ? 1 : 0),
+    conceptual: prev.conceptual + (isCorrect && typeKey === 'conceptual' ? 1 : 0),
+    procedural: prev.procedural + (isCorrect && typeKey === 'procedural' ? 1 : 0),
+    // transfer/retention 只累计"正确且首次无提示正确"的直接证据
+    transfer: prev.transfer + (isCorrect && isFirstTry && typeKey === 'transfer' ? 1 : 0),
+    retention: prev.retention + (isCorrect && isFirstTry && typeKey === 'retention' ? 1 : 0),
+    lastAttemptAt: now,
+    lastMode: mode,
+  };
+
+  return {
+    ...progress,
+    skillEvidence: {
+      ...(progress.skillEvidence ?? {}),
+      [skillId]: updated,
+    },
+  };
+}
+
+/**
+ * 技能显示状态派生——由直接题目证据推导，不由下游课程完成自动点亮。
+ *
+ * 状态：
+ * - 'not_started'  无任何证据
+ * - 'in_progress'  有尝试但无正确
+ * - 'provisional'  初始学习中正确过（当堂会），时间窗口内
+ * - 'review_due'   provisional 过期或 D7 未满足 stable
+ * - 'stable'       transfer 首次正确 + retention 首次正确
+ * - 'needs_remediation' 连续/累计失败（attempts >= 3 且正确率 < 40%）
+ */
+export type SkillDisplayStatus =
+  | 'not_started'
+  | 'in_progress'
+  | 'provisional'
+  | 'review_due'
+  | 'stable'
+  | 'needs_remediation';
+
+/**
+ * @param now 当前时间戳（可注入用于测试），默认 Date.now()
+ */
+export function getSkillDisplayStatus(
+  progress: ProgressData,
+  skillId: string,
+  now: number = Date.now(),
+): SkillDisplayStatus {
+  const ev = progress.skillEvidence?.[skillId];
+  if (!ev || ev.attempts === 0) return 'not_started';
+
+  // 需补修：多次尝试但正确率低
+  if (ev.attempts >= 3 && ev.correct / ev.attempts < 0.4) return 'needs_remediation';
+
+  // 已稳固：transfer 与 retention 均有首次正确直接证据
+  // （两者本身即代表该类型首次正确，不需额外检查 firstTryCorrect）
+  if (ev.transfer > 0 && ev.retention > 0) return 'stable';
+
+  // 无任何正确
+  if (ev.correct === 0) return 'in_progress';
+
+  // 时间语义：根据最后证据的模式判断 provisional / review_due
+  const elapsed = now - ev.lastAttemptAt;
+  if (ev.lastMode === 'initial') {
+    // 初始正确证据：1 天内 provisional，1 天后 review_due
+    return elapsed < DAY_MS ? 'provisional' : 'review_due';
+  }
+  if (ev.lastMode === 'd1') {
+    // D1 正确证据：6 天内 provisional，6 天后 review_due
+    return elapsed < 6 * DAY_MS ? 'provisional' : 'review_due';
+  }
+  // lastMode === 'd7' 且未达到 stable
+  return 'review_due';
+}
+
+/**
+ * 是否有直接技能证据（至少一次正确答题）。
+ */
+export function hasDirectSkillEvidence(progress: ProgressData, skillId: string): boolean {
+  const ev = progress.skillEvidence?.[skillId];
+  return !!ev && ev.correct > 0;
+}
+
+/**
+ * 确定性合并两个 SkillEvidenceRecord（幂等）。
+ *
+ * 在没有事件 ID 的 P0 里，本地与远端通常是同一累计快照，
+ * 各单调累计计数使用 Math.max 合并避免翻倍；
+ * lastAttemptAt 取较新，lastMode 取较新记录的 mode。
+ */
+export function mergeSkillEvidence(
+  a: SkillEvidenceRecord,
+  b: SkillEvidenceRecord,
+): SkillEvidenceRecord {
+  const merged: SkillEvidenceRecord = {
+    attempts: Math.max(a.attempts, b.attempts),
+    correct: Math.max(a.correct, b.correct),
+    firstTryCorrect: Math.max(a.firstTryCorrect, b.firstTryCorrect),
+    conceptual: Math.max(a.conceptual, b.conceptual),
+    procedural: Math.max(a.procedural, b.procedural),
+    transfer: Math.max(a.transfer, b.transfer),
+    retention: Math.max(a.retention, b.retention),
+    lastAttemptAt: Math.max(a.lastAttemptAt, b.lastAttemptAt),
+    lastMode: a.lastAttemptAt >= b.lastAttemptAt ? a.lastMode : b.lastMode,
+  };
+  return normalizeInvariants(merged);
+}
+
+/**
+ * 校验并解析 skillEvidence 字段（不信任外部数据）。
+ */
+export function parseSkillEvidence(
+  raw: unknown,
+): Record<string, SkillEvidenceRecord> {
+  if (!raw || typeof raw !== 'object') return {};
+  const result: Record<string, SkillEvidenceRecord> = {};
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof k !== 'string') continue;
+    const validated = validateSkillEvidence(v);
+    if (validated) result[k] = validated;
+  }
+  return result;
+}
+
+export { VALID_EVIDENCE_TYPES };
+
+// ===== 有意义进度判断 =====
+
+/**
+ * 判断进度数据是否包含有意义的学习内容。
+ * 用于登录同步：不再只看 passedKnowledgePoints.length，
+ * 而是综合判断 passed / stars / mastery / currentLearning / skillEvidence。
+ */
+export function hasMeaningfulProgress(progress: ProgressData): boolean {
+  if (progress.passedKnowledgePoints?.length > 0) return true;
+  const stars = progress.stars ?? {};
+  if (Object.values(stars).some((v) => v > 0)) return true;
+  const mastery = progress.mastery ?? {};
+  if (Object.keys(mastery).length > 0) return true;
+  if (progress.currentLearning) return true;
+  const skillEvidence = progress.skillEvidence ?? {};
+  for (const ev of Object.values(skillEvidence)) {
+    if (ev.attempts > 0) return true;
+  }
+  return false;
 }

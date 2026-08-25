@@ -9,7 +9,9 @@
       "options": ["1/4", "4/1", "1/3", "3/4"],
       "correctAnswer": "1/4",
       "explanation": "平均分成4份（分母=4），取1份（分子=1），所以是1/4，读作四分之一。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.equal_partition",
+      "evidenceType": "conceptual"
     },
     {
       "id": "q2",
@@ -18,7 +20,9 @@
       "options": ["分子", "分母", "分数线", "整数"],
       "correctAnswer": "分母",
       "explanation": "分数中下面的数叫分母，表示平均分成几份。5在下面，是分母，表示平均分成5份。上面的3是分子，表示取了3份。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.notation",
+      "evidenceType": "conceptual"
     },
     {
       "id": "q3",
@@ -27,7 +31,9 @@
       "options": ["三分之四", "四分之三", "三四", "三除以四"],
       "correctAnswer": "四分之三",
       "explanation": "读分数时先读分母再读分子。分母是4，分子是3，所以读作四分之三。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.notation",
+      "evidenceType": "procedural"
     },
     {
       "id": "q4",
@@ -41,7 +47,10 @@
       ],
       "correctAnswer": "把一个西瓜平均切成两块，取其中一块",
       "explanation": "分数必须是平均分的结果。只有平均分成2份，取1份，才是1/2。随便切不是平均分，切成3块也不是2份。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.whole",
+      "secondarySkillIds": ["frac.equal_partition"],
+      "evidenceType": "conceptual"
     },
     {
       "id": "q5",
@@ -50,9 +59,22 @@
       "options": ["5/6", "6/5", "1/6", "5/1"],
       "correctAnswer": "5/6",
       "explanation": "平均分成6份（分母=6），取5份（分子=5），所以是5/6，读作六分之五。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.multiple_units",
+      "secondarySkillIds": ["frac.notation"],
+      "evidenceType": "procedural"
     },
-    { "id": "q6", "type": "fill-blank", "prompt": "把一个整体平均分成5份，取其中3份，写成分数是____。", "correctAnswer": "3/5", "explanation": "分母5表示平均分成5份，分子3表示取了3份。", "points": 10 }
+    {
+      "id": "q6",
+      "type": "fill-blank",
+      "prompt": "把一个整体平均分成5份，取其中3份，写成分数是____。",
+      "correctAnswer": "3/5",
+      "explanation": "分母5表示平均分成5份，分子3表示取了3份。",
+      "points": 10,
+      "primarySkillId": "frac.multiple_units",
+      "secondarySkillIds": ["frac.notation"],
+      "evidenceType": "transfer"
+    }
   ],
   "reviewSets": {
     "d1": {
@@ -64,7 +86,9 @@
           "options": ["2/7", "7/2", "2/2"],
           "correctAnswer": "2/7",
           "explanation": "平均分成7份（分母=7），取2份（分子=2），所以是2/7，读作七分之二。",
-          "points": 10
+          "points": 10,
+          "primarySkillId": "frac.notation",
+          "evidenceType": "transfer"
         },
         {
           "id": "d1-q2",
@@ -72,7 +96,9 @@
           "prompt": "把一张正方形纸平均分成6份，取其中1份，写成分数是____。",
           "correctAnswer": "1/6",
           "explanation": "分母6表示平均分成6份，分子1表示取了1份，所以是1/6。",
-          "points": 10
+          "points": 10,
+          "primarySkillId": "frac.unit_fraction",
+          "evidenceType": "transfer"
         }
       ]
     },
@@ -85,7 +111,9 @@
           "options": ["分子", "分母", "分数线"],
           "correctAnswer": "分母",
           "explanation": "分数中下面的数叫分母，表示平均分成几份。9在下面，是分母。",
-          "points": 10
+          "points": 10,
+          "primarySkillId": "frac.notation",
+          "evidenceType": "retention"
         },
         {
           "id": "d7-q2",
@@ -93,7 +121,10 @@
           "prompt": "3/5 读作____（请写中文）。",
           "correctAnswer": "五分之三",
           "explanation": "读分数时先读分母再读分子。分母是5，分子是3，所以读作五分之三。",
-          "points": 10
+          "points": 10,
+          "primarySkillId": "frac.notation",
+          "secondarySkillIds": ["frac.multiple_units"],
+          "evidenceType": "retention"
         }
       ]
     }

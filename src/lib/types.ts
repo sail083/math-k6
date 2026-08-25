@@ -161,6 +161,8 @@ export interface DragItemSpec {
   order?: number;                // 拖拽拼装 / 排序题的顺序
 }
 
+export type EvidenceType = 'conceptual' | 'procedural' | 'transfer' | 'retention';
+
 export interface Question {
   id: string;
   type: GameType;
@@ -171,6 +173,10 @@ export interface Question {
   dragItems?: DragItemSpec[];    // 拖拽匹配 / 拖拽拼装用
   timeLimit?: number;            // 限时挑战（秒）
   points: number;
+  // ===== 知识图谱技能映射（向后兼容可选字段）=====
+  primarySkillId?: string;       // 主技能 ID（如 'frac.notation'）
+  secondarySkillIds?: string[];  // 次技能 ID（最多 2 个）
+  evidenceType?: EvidenceType;   // 证据类型
 }
 
 export interface ReviewSet {
@@ -205,6 +211,21 @@ export interface ProgressData {
   stars: Record<string, number>; // 知识点 ID -> 1-3 星
   mastery?: Record<string, MasteryRecord>; // 知识点 ID -> 掌握记录（仅含复习题集的课程）
   currentLearning?: string | null;          // 当前学习中课程 ID（用于恢复）
+  // ===== 知识图谱技能证据（向后兼容可选字段）=====
+  skillEvidence?: Record<string, SkillEvidenceRecord>;
+}
+
+/** 单个微技能的题目证据 */
+export interface SkillEvidenceRecord {
+  attempts: number;              // 总提交次数
+  correct: number;               // 正确次数
+  firstTryCorrect: number;       // 首次无提示正确次数
+  conceptual: number;            // conceptual 类型正确次数
+  procedural: number;            // procedural 类型正确次数
+  transfer: number;              // transfer 类型正确次数
+  retention: number;             // retention 类型正确次数（D7 首次正确）
+  lastAttemptAt: number;         // 最后一次提交时间戳
+  lastMode: 'initial' | 'd1' | 'd7'; // 最后一次提交的模式
 }
 
 // ===== 组合知识点（从内容文件加载）=====

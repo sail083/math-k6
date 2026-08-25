@@ -9,7 +9,9 @@
       "options": ["3", "1/3", "3/3", "0"],
       "correctAnswer": "3",
       "explanation": "把 1/3 的分子分母颠倒，得到 3/1 = 3。1/3 的倒数是 3。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.reciprocal",
+      "evidenceType": "conceptual"
     },
     {
       "id": "q2",
@@ -18,7 +20,9 @@
       "options": ["1/3", "3", "3/1", "1"],
       "correctAnswer": "3",
       "explanation": "1 里面有3个 1/3，所以 1 ÷ 1/3 = 3。也可以用法则：1 ÷ 1/3 = 1 × 3 = 3。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.division_grouping",
+      "evidenceType": "conceptual"
     },
     {
       "id": "q3",
@@ -27,7 +31,9 @@
       "options": ["8/15", "5/6", "10/12", "6/5"],
       "correctAnswer": "5/6",
       "explanation": "2/3 ÷ 4/5 = 2/3 × 5/4 = 10/12 = 5/6。除号变乘号，4/5 变倒数 5/4，再按乘法算。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.divide_transform",
+      "evidenceType": "procedural"
     },
     {
       "id": "q4",
@@ -41,16 +47,20 @@
       ],
       "correctAnswer": "除以一个数等于乘这个数的倒数",
       "explanation": "分数除法法则：除以一个数（不为0）等于乘这个数的倒数。即 a/b ÷ c/d = a/b × d/c。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.divide_transform",
+      "evidenceType": "conceptual"
     },
     {
       "id": "q5",
       "type": "choice",
-      "prompt": "3/4 ÷ 1/8 的结果是多少？",
-      "options": ["3/32", "6", "8/3", "3/8"],
-      "correctAnswer": "6",
-      "explanation": "3/4 ÷ 1/8 = 3/4 × 8 = 24/4 = 6。1/8 的倒数是 8，3/4 × 8 = 24/4 = 6。",
-      "points": 10
+      "prompt": "把 3/4 米长的绳子平均分成 3 份，每份是多少米？",
+      "options": ["1/4", "1/3", "3/4", "3"],
+      "correctAnswer": "1/4",
+      "explanation": "3/4 米平均分成 3 份，每份是 3/4 ÷ 3 = 3/4 × 1/3 = 1/4 米。这是平均分除法（每份多少）。",
+      "points": 10,
+      "primarySkillId": "frac.division_sharing",
+      "evidenceType": "procedural"
     },
     {
       "id": "q6",
@@ -58,7 +68,9 @@
       "prompt": "迁移题：把3/4改写成6/8，其中包含几个1/8？",
       "correctAnswer": "6",
       "explanation": "3/4=6/8，所以3/4里面正好包含6个1/8，即3/4÷1/8=6。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.division_grouping",
+      "evidenceType": "transfer"
     }
   ],
   "reviewSets": {
@@ -71,7 +83,9 @@
           "options": ["5", "1/5", "5/5", "0"],
           "correctAnswer": "5",
           "explanation": "把 1/5 的分子分母颠倒，得到 5/1 = 5。1/5 的倒数是 5。",
-          "points": 10
+          "points": 10,
+          "primarySkillId": "frac.reciprocal",
+          "evidenceType": "procedural"
         },
         {
           "id": "d1q2",
@@ -79,7 +93,9 @@
           "prompt": "计算 3/5 ÷ 1/2 = ？请填写最简分数。",
           "correctAnswer": "6/5",
           "explanation": "3/5 ÷ 1/2 = 3/5 × 2 = 6/5。1/2 的倒数是 2，3/5 × 2 = 6/5。6和5互质，已经是最简分数。",
-          "points": 10
+          "points": 10,
+          "primarySkillId": "frac.divide_transform",
+          "evidenceType": "transfer"
         }
       ]
     },
@@ -92,15 +108,19 @@
           "options": ["2/21", "6/7", "6/21", "7/6"],
           "correctAnswer": "6/7",
           "explanation": "2/7 ÷ 1/3 = 2/7 × 3 = 6/7。1/3 的倒数是 3，2/7 × 3 = 6/7。6和7互质，已经是最简分数。",
-          "points": 10
+          "points": 10,
+          "primarySkillId": "frac.divide_transform",
+          "evidenceType": "retention"
         },
         {
           "id": "d7q2",
           "type": "fill-blank",
-          "prompt": "计算 1/2 ÷ 3/4 = ？请填写最简分数。",
-          "correctAnswer": "2/3",
-          "explanation": "1/2 ÷ 3/4 = 1/2 × 4/3 = 4/6 = 2/3。3/4 的倒数是 4/3，1/2 × 4/3 = 4/6，约分后是 2/3。",
-          "points": 10
+          "prompt": "把 1/2 米平均分成 2 份，每份是多少米？请填写最简分数。",
+          "correctAnswer": "1/4",
+          "explanation": "1/2 米平均分成 2 份，每份是 1/2 ÷ 2 = 1/2 × 1/2 = 1/4 米。这是平均分除法（每份多少）。",
+          "points": 10,
+          "primarySkillId": "frac.division_sharing",
+          "evidenceType": "retention"
         }
       ]
     }

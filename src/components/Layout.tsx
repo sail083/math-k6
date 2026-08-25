@@ -77,6 +77,14 @@ export default function Layout({ children }: { children: ReactNode }) {
                   />
                 </div>
               </NavLink>
+              <NavLink
+                to="/map"
+                className={({ isActive }) =>
+                  `grade-nav__item ${isActive ? 'is-active' : ''}`
+                }
+              >
+                🗺 知识地图
+              </NavLink>
 
               {/* 用户状态 */}
               {user ? (
@@ -156,8 +164,8 @@ export default function Layout({ children }: { children: ReactNode }) {
             </div>
           </div>
 
-          {/* 移动端：五个主入口始终完整可见 */}
-          <nav className="md:hidden grid grid-cols-5 gap-1 pb-2 text-center text-xs" aria-label="主导航">
+          {/* 移动端：六个主入口始终完整可见 */}
+          <nav className="md:hidden grid grid-cols-6 gap-1 pb-2 text-center text-xs" aria-label="主导航">
             {grades.map((g) => (
               <NavLink
                 key={g}
@@ -170,6 +178,7 @@ export default function Layout({ children }: { children: ReactNode }) {
               </NavLink>
             ))}
             <NavLink to="/dashboard" className={({ isActive }) => `mobile-grade-link ${isActive ? 'is-active' : ''}`}>📊 进度</NavLink>
+            <NavLink to="/map" className={({ isActive }) => `mobile-grade-link ${isActive ? 'is-active' : ''}`}>🗺 地图</NavLink>
           </nav>
         </div>
       </header>

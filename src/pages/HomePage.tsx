@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getGrades, getKnowledgePointsByGrade, getAllKnowledgePoints, getKnowledgePointById } from '@/lib/content';
+import { getCourseMapping, getSkillById } from '@/lib/knowledgeGraph';
 import { useProgress } from '@/context/ProgressContext';
 import type { TextbookFilter } from '@/lib/types';
 
@@ -82,6 +83,13 @@ export default function HomePage() {
     }
   }
 
+  // 计算推荐课程的路径语境
+  const recommendedKpId = recommended?.link?.replace('/kp/', '');
+  const recommendedMapping = recommendedKpId ? getCourseMapping(recommendedKpId) : null;
+  const recommendedPath = recommendedMapping && recommendedMapping.coreSkills.length > 0
+    ? `数字与运算 › 分数 › ${getSkillById(recommendedMapping.coreSkills[0])?.name ?? ''}`
+    : null;
+
   // Compute stable/provisional/due counts
   const stableCount = allKPs.filter((kp) => getMasteryStatus(kp.meta.id) === 'stable').length;
   const dueCount = dueReviews.length;
@@ -129,6 +137,9 @@ export default function HomePage() {
                 </span>
                 <h2 className="text-lg font-bold text-slate-800 mt-1 truncate">{recommended.title}</h2>
                 <p className="text-sm text-slate-500 mt-0.5">{recommended.description}</p>
+                {recommendedPath && (
+                  <p className="text-xs text-indigo-500 mt-1">📍 {recommendedPath}</p>
+                )}
               </div>
               <span className={`shrink-0 text-2xl ${recommended.urgent ? 'text-amber-400' : 'text-indigo-400'}`}>→</span>
             </div>
@@ -153,6 +164,21 @@ export default function HomePage() {
           </div>
         </section>
       )}
+
+      {/* 知识地图入口 */}
+      <section>
+        <Link
+          to="/map"
+          className="flex items-center justify-between gap-4 rounded-xl border border-violet-200 bg-violet-50/60 p-4 transition-all hover:shadow-md hover:border-violet-400"
+        >
+          <div>
+            <p className="text-xs font-semibold text-violet-500">分数知识图谱</p>
+            <p className="text-base font-bold text-slate-800 mt-0.5">查看我的知识地图</p>
+            <p className="text-xs text-slate-500 mt-0.5">G3-G6 分数领域 · 34 个微技能 · 可视化掌握进度</p>
+          </div>
+          <span className="shrink-0 text-violet-400 text-xl">🗺</span>
+        </Link>
+      </section>
 
       {/* 教材版本过滤 */}
       <section>

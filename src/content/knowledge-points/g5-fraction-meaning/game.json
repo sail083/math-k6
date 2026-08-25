@@ -9,7 +9,10 @@
       "options": ["5/6", "6/5", "1/6", "5/1"],
       "correctAnswer": "5/6",
       "explanation": "分母是平均分成的份数（6份），分子是取的份数（5份），所以是 5/6。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.multiple_units",
+      "secondarySkillIds": ["frac.whole", "frac.notation"],
+      "evidenceType": "conceptual"
     },
     {
       "id": "q2",
@@ -23,15 +26,20 @@
       ],
       "correctAnswer": "分子和分母同时乘或除以同一个不为0的数，分数大小不变",
       "explanation": "分数的分子和分母同时乘（或除以）同一个不为0的数，分数的大小不变。例如 1/2 = 2/4 = 3/6。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.basic_property",
+      "evidenceType": "conceptual"
     },
     {
       "id": "q3",
       "type": "fill-blank",
-      "prompt": "8/12 约成最简分数是？（请用“分子/分母”的格式填写）",
+      "prompt": "8/12 约成最简分数是？（请用「分子/分母」的格式填写）",
       "correctAnswer": "2/3",
       "explanation": "8和12的最大公因数是4，8÷4=2，12÷4=3，所以 8/12 = 2/3。2和3只有公因数1，是最简分数。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.reduction",
+      "secondarySkillIds": ["frac.common_factor"],
+      "evidenceType": "procedural"
     },
     {
       "id": "q4",
@@ -40,7 +48,10 @@
       "options": ["2/6 和 2/8", "4/12 和 3/12", "3/12 和 4/12", "1/12 和 1/12"],
       "correctAnswer": "4/12 和 3/12",
       "explanation": "3和4的最小公倍数是12。1/3 = 4/12（分子分母同乘4），1/4 = 3/12（分子分母同乘3）。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.common_denominator",
+      "secondarySkillIds": ["frac.common_multiple"],
+      "evidenceType": "procedural"
     },
     {
       "id": "q5",
@@ -49,7 +60,9 @@
       "options": ["5/3", "4/4", "3/5", "7/2"],
       "correctAnswer": "3/5",
       "explanation": "真分数的分子小于分母。3/5 中分子3 < 分母5，是真分数。其余分子≥分母，是假分数。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.number_types",
+      "evidenceType": "conceptual"
     },
     {
       "id": "q6",
@@ -57,7 +70,10 @@
       "prompt": "2/3和4/6大小相等，因为分子、分母同时乘了2。",
       "correctAnswer": "对",
       "explanation": "分子和分母同时乘同一个非零数，分数大小不变：2/3=(2×2)/(3×2)=4/6。",
-      "points": 10
+      "points": 10,
+      "primarySkillId": "frac.equivalence",
+      "secondarySkillIds": ["frac.basic_property"],
+      "evidenceType": "transfer"
     }
   ],
   "reviewSets": {
@@ -70,15 +86,19 @@
           "options": ["7/3", "3/7", "1/7", "3/1"],
           "correctAnswer": "3/7",
           "explanation": "分母是平均分成的份数（7段），分子是取的份数（3段），所以是 3/7。",
-          "points": 10
+          "points": 10,
+          "primarySkillId": "frac.notation",
+          "evidenceType": "procedural"
         },
         {
           "id": "d1q2",
           "type": "fill-blank",
-          "prompt": "9/15 约成最简分数是？（请用\u201c分子/分母\u201d的格式填写）",
+          "prompt": "9/15 约成最简分数是？（请用「分子/分母」的格式填写）",
           "correctAnswer": "3/5",
           "explanation": "9和15的最大公因数是3，9÷3=3，15÷3=5，所以 9/15 = 3/5。3和5只有公因数1，是最简分数。",
-          "points": 10
+          "points": 10,
+          "primarySkillId": "frac.reduction",
+          "evidenceType": "transfer"
         }
       ]
     },
@@ -91,7 +111,9 @@
           "options": ["4/6", "3/8", "6/8", "4/3"],
           "correctAnswer": "6/8",
           "explanation": "分子和分母同时乘2：3/4 = (3×2)/(4×2) = 6/8，所以 3/4 和 6/8 相等。",
-          "points": 10
+          "points": 10,
+          "primarySkillId": "frac.equivalence",
+          "evidenceType": "retention"
         },
         {
           "id": "d7q2",
@@ -99,7 +121,9 @@
           "prompt": "2/5 = ?/20，请填入分子。",
           "correctAnswer": "8",
           "explanation": "5×4=20，所以分子也要乘4：2×4=8，2/5 = 8/20。",
-          "points": 10
+          "points": 10,
+          "primarySkillId": "frac.basic_property",
+          "evidenceType": "retention"
         }
       ]
     }

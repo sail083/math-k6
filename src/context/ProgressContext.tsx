@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, type ReactNode } from 'react';
-import type { ProgressData, MasteryStatus } from '@/lib/types';
+import type { ProgressData, MasteryStatus, EvidenceType } from '@/lib/types';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import {
@@ -15,6 +15,13 @@ import {
   setCurrentLearning as setCurrentLearningUtil,
   pickBetterMastery,
   saveProgress,
+  recordSkillEvidence as recordSkillEvidenceUtil,
+  getSkillDisplayStatus as getSkillDisplayStatusUtil,
+  hasDirectSkillEvidence as hasDirectSkillEvidenceUtil,
+  mergeSkillEvidence,
+  hasMeaningfulProgress,
+  parseSkillEvidence,
+  type SkillDisplayStatus,
 } from '@/lib/progress';
 
 interface ProgressContextValue {
@@ -30,18 +37,26 @@ interface ProgressContextValue {
   getDueReviewIds: () => string[];
   getReviewMode: (kpId: string) => 'd1' | 'd7' | null;
   setCurrentLearning: (kpId: string) => void;
+  // ===== 技能证据 =====
+  recordSkillEvidence: (skillId: string, isCorrect: boolean, isFirstTry: boolean, evidenceType: EvidenceType, mode: 'initial' | 'd1' | 'd7') => void;
+  getSkillDisplayStatus: (skillId: string) => SkillDisplayStatus;
+  hasDirectSkillEvidence: (skillId: string) => boolean;
 }
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
 
 /** Merge remote + local: union of passedKnowledgePoints, keep highest stars, merge mastery. */
 function mergeProgress(local: ProgressData, remote: ProgressData): ProgressData {
-  const passedSet = new Set([...local.passedKnowledgePoints, ...remote.passedKnowledgePoints]);
+  // Null-protect passedKnowledgePoints
+  const localPassed = local.passedKnowledgePoints ?? [];
+  const remotePassed = remote.passedKnowledgePoints ?? [];
+  const passedSet = new Set([...localPassed, ...remotePassed]);
+  // Null-protect stars
+  const localStars = local.stars ?? {};
+  const remoteStars = remote.stars ?? {};
   const stars: Record<string, number> = {};
   for (const kpId of passedSet) {
-    const localStars = local.stars[kpId] ?? 0;
-    const remoteStars = remote.stars[kpId] ?? 0;
-    stars[kpId] = Math.max(localStars, remoteStars);
+    stars[kpId] = Math.max(localStars[kpId] ?? 0, remoteStars[kpId] ?? 0);
   }
   // Merge mastery: prefer the record with higher delayedReviewCount (or stable)
   const mastery: Record<string, import('@/lib/types').MasteryRecord> = {};
@@ -58,8 +73,25 @@ function mergeProgress(local: ProgressData, remote: ProgressData): ProgressData 
       mastery[id] = l ?? r!;
     }
   }
+  // Parse skillEvidence from both sides to ensure safe objects before merging
+  const localEvidence = parseSkillEvidence(local.skillEvidence);
+  const remoteEvidence = parseSkillEvidence(remote.skillEvidence);
+  const skillEvidence: Record<string, import('@/lib/types').SkillEvidenceRecord> = {};
+  const allEvidenceIds = new Set([
+    ...Object.keys(localEvidence),
+    ...Object.keys(remoteEvidence),
+  ]);
+  for (const id of allEvidenceIds) {
+    const l = localEvidence[id];
+    const r = remoteEvidence[id];
+    if (l && r) {
+      skillEvidence[id] = mergeSkillEvidence(l, r);
+    } else {
+      skillEvidence[id] = l ?? r!;
+    }
+  }
   const currentLearning = local.currentLearning ?? remote.currentLearning ?? null;
-  return { passedKnowledgePoints: Array.from(passedSet), stars, mastery, currentLearning };
+  return { passedKnowledgePoints: Array.from(passedSet), stars, mastery, currentLearning, skillEvidence };
 }
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
@@ -93,7 +125,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
         const remoteProgress = (profile?.progress as ProgressData | null) ?? null;
 
-        if (remoteProgress && remoteProgress.passedKnowledgePoints?.length > 0) {
+        if (remoteProgress && hasMeaningfulProgress(remoteProgress)) {
           // Merge local and remote, then save merged result everywhere
           const localProgress = loadProgress();
           const merged = mergeProgress(localProgress, remoteProgress);
@@ -105,9 +137,9 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
             .update({ progress: merged })
             .eq('id', user.id);
         } else {
-          // No remote progress yet -- push local progress to Supabase
+          // No meaningful remote progress yet -- push local progress to Supabase
           const localProgress = loadProgress();
-          if (localProgress.passedKnowledgePoints.length > 0) {
+          if (hasMeaningfulProgress(localProgress)) {
             await supabase
               .from('profiles')
               .update({ progress: localProgress })
@@ -190,6 +222,26 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     setProgress((prev) => setCurrentLearningUtil(prev, kpId));
   }, []);
 
+  const recordSkillEvidence = useCallback((
+    skillId: string,
+    isCorrect: boolean,
+    isFirstTry: boolean,
+    evidenceType: EvidenceType,
+    mode: 'initial' | 'd1' | 'd7',
+  ) => {
+    setProgress((prev) => recordSkillEvidenceUtil(prev, skillId, isCorrect, isFirstTry, evidenceType, mode, Date.now()));
+  }, []);
+
+  const getSkillDisplayStatus = useCallback(
+    (skillId: string) => getSkillDisplayStatusUtil(progress, skillId),
+    [progress],
+  );
+
+  const hasDirectSkillEvidence = useCallback(
+    (skillId: string) => hasDirectSkillEvidenceUtil(progress, skillId),
+    [progress],
+  );
+
   const value = useMemo(
     () => ({
       progress,
@@ -204,6 +256,9 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       getDueReviewIds,
       getReviewMode,
       setCurrentLearning,
+      recordSkillEvidence,
+      getSkillDisplayStatus,
+      hasDirectSkillEvidence,
     }),
     [
       progress,
@@ -218,6 +273,9 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       getDueReviewIds,
       getReviewMode,
       setCurrentLearning,
+      recordSkillEvidence,
+      getSkillDisplayStatus,
+      hasDirectSkillEvidence,
     ],
   );
 

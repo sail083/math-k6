@@ -18,6 +18,7 @@ const progressMocks = {
   markInitialPass: vi.fn(),
   markDelayedReviewPass: vi.fn(),
   markDelayedReviewFail: vi.fn(),
+  recordSkillEvidence: vi.fn(),
 };
 
 vi.mock('@/context/ProgressContext', () => ({
@@ -31,6 +32,8 @@ vi.mock('@/context/ProgressContext', () => ({
     getDueReviewIds: vi.fn(() => []),
     getReviewMode: vi.fn(() => null),
     setCurrentLearning: vi.fn(),
+    getSkillDisplayStatus: vi.fn(() => 'not_started' as const),
+    hasDirectSkillEvidence: vi.fn(() => false),
     ...progressMocks,
   }),
 }));
@@ -252,5 +255,141 @@ describe('GameRunner rendered regression', () => {
     // No prior result from D1 review
     expect(screen.queryByText('第一次复习通过')).not.toBeInTheDocument();
     expect(screen.queryByText('答题回顾')).not.toBeInTheDocument();
+  });
+});
+
+// ==========================================
+// T8: GameRunner rendered skill evidence dedup
+// ==========================================
+
+describe('T8: GameRunner skill evidence dedup (rendered)', () => {
+  function makeSkillQuestion(
+    id: string,
+    type: 'choice' | 'fill-blank',
+    prompt: string,
+    opts: { primarySkillId: string; evidenceType: string; answer?: string; options?: string[] },
+  ): Question {
+    if (type === 'choice') {
+      return {
+        id, type, prompt,
+        options: opts.options ?? ['A', 'B'],
+        correctAnswer: opts.answer ?? 'A',
+        explanation: '', points: 10,
+        primarySkillId: opts.primarySkillId,
+        evidenceType: opts.evidenceType as Question['evidenceType'],
+      };
+    }
+    return {
+      id, type, prompt,
+      correctAnswer: opts.answer ?? '42',
+      explanation: '', points: 10,
+      primarySkillId: opts.primarySkillId,
+      evidenceType: opts.evidenceType as Question['evidenceType'],
+    };
+  }
+
+  const skillGame: GameConfig = {
+    knowledgePointId: 'g3-fraction-intro',
+    passThreshold: 0.8,
+    questions: [
+      makeSkillQuestion('s-init-1', 'choice', '初始题1', {
+        primarySkillId: 'frac.notation',
+        evidenceType: 'conceptual',
+        answer: 'A', options: ['A', 'B'],
+      }),
+    ],
+    reviewSets: {
+      d1: {
+        questions: [
+          makeSkillQuestion('s-d1-1', 'choice', 'D1复习题', {
+            primarySkillId: 'frac.notation',
+            evidenceType: 'procedural',
+            answer: 'A', options: ['A', 'B'],
+          }),
+        ],
+      },
+      d7: {
+        questions: [
+          makeSkillQuestion('s-d7-1', 'choice', 'D7复习题', {
+            primarySkillId: 'frac.notation',
+            evidenceType: 'retention',
+            answer: 'A', options: ['A', 'B'],
+          }),
+        ],
+      },
+    },
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('initial mode: recordSkillEvidence called once per question, mode=initial', () => {
+    const { rerender } = render(
+      <GameRunner
+        game={skillGame}
+        knowledgePointId="g3-fraction-intro"
+        reviewMode={null}
+      />,
+    );
+
+    // Answer question
+    fireEvent.click(screen.getByText('A'));
+
+    expect(progressMocks.recordSkillEvidence).toHaveBeenCalledTimes(1);
+    expect(progressMocks.recordSkillEvidence).toHaveBeenCalledWith(
+      'frac.notation', true, true, 'conceptual', 'initial',
+    );
+
+    // Click same answer again → no additional call (guard prevents)
+    fireEvent.click(screen.getByText('A'));
+    expect(progressMocks.recordSkillEvidence).toHaveBeenCalledTimes(1);
+
+    // Re-render → no additional call
+    rerender(
+      <GameRunner
+        game={skillGame}
+        knowledgePointId="g3-fraction-intro"
+        reviewMode={null}
+      />,
+    );
+    expect(progressMocks.recordSkillEvidence).toHaveBeenCalledTimes(1);
+
+    // Click "查看结果" → no additional recordSkillEvidence call
+    fireEvent.click(screen.getByText('查看结果'));
+    expect(progressMocks.recordSkillEvidence).toHaveBeenCalledTimes(1);
+  });
+
+  it('D1 mode: recordSkillEvidence called with mode=d1', () => {
+    render(
+      <GameRunner
+        game={skillGame}
+        knowledgePointId="g3-fraction-intro"
+        reviewMode="d1"
+      />,
+    );
+
+    fireEvent.click(screen.getByText('A'));
+    expect(progressMocks.recordSkillEvidence).toHaveBeenCalledTimes(1);
+    expect(progressMocks.recordSkillEvidence).toHaveBeenCalledWith(
+      'frac.notation', true, true, 'procedural', 'd1',
+    );
+  });
+
+  it('D7 mode: recordSkillEvidence called with mode=d7, evidenceType from question (not rewritten)', () => {
+    render(
+      <GameRunner
+        game={skillGame}
+        knowledgePointId="g3-fraction-intro"
+        reviewMode="d7"
+      />,
+    );
+
+    fireEvent.click(screen.getByText('A'));
+    expect(progressMocks.recordSkillEvidence).toHaveBeenCalledTimes(1);
+    // F2: evidenceType comes from question field, not rewritten from procedural to retention
+    expect(progressMocks.recordSkillEvidence).toHaveBeenCalledWith(
+      'frac.notation', true, true, 'retention', 'd7',
+    );
   });
 });

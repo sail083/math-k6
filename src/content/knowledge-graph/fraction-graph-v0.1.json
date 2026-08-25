@@ -1,0 +1,880 @@
+{
+  "version": "0.1",
+  "status": "published",
+  "publishedAt": "2026-08-25",
+  "reviewedBy": "教研团队",
+  "scope": "G3-G6 分数领域",
+  "nodes": [
+    {
+      "id": "frac.whole",
+      "name": "确定单位“1”",
+      "definition": "将某个对象或一组对象看作整体，即单位“1”。",
+      "boundary": "能指出题目中被看作整体的对象；单位“1”不固定，依题意确定。",
+      "gradeRange": [3, 5],
+      "schoolStage": "primary",
+      "misconceptions": ["把分子或整数误认为整体", "单位”1”只能是一个物体"],
+      "status": "published"
+    },
+    {
+      "id": "frac.equal_partition",
+      "name": "理解平均分",
+      "definition": "把整体分成相等的若干份，每份大小相同。",
+      "boundary": "能区分平均分与任意切分；分成几份就是等分。",
+      "gradeRange": [3, 3],
+      "schoolStage": "primary",
+      "misconceptions": ["只数块数而不看是否等份"],
+      "status": "published"
+    },
+    {
+      "id": "frac.need",
+      "name": "理解分数产生的需要",
+      "definition": "当整数不足以表示等分后的一份时，需要引入分数。",
+      "boundary": "能说明整数不足以表示剩余部分的情境。",
+      "gradeRange": [3, 3],
+      "schoolStage": "primary",
+      "misconceptions": [],
+      "status": "published"
+    },
+    {
+      "id": "frac.notation",
+      "name": "分子、分母、分数线",
+      "definition": "分数线表示平均分，分母表示平均分成的份数，分子表示取的份数。",
+      "boundary": "能解释各部分含义，不只是认识名称。",
+      "gradeRange": [3, 3],
+      "schoolStage": "primary",
+      "misconceptions": ["把分子当整体", "分子分母顺序混淆"],
+      "status": "published"
+    },
+    {
+      "id": "frac.unit_fraction",
+      "name": "单位分数",
+      "definition": "分子为1的分数，如1/3，表示将整体平均分成3份后的其中1份。",
+      "boundary": "能识别若干份中的一份。",
+      "gradeRange": [3, 3],
+      "schoolStage": "primary",
+      "misconceptions": [],
+      "status": "published"
+    },
+    {
+      "id": "frac.multiple_units",
+      "name": "若干个单位分数",
+      "definition": "分子大于1的分数可理解为若干个单位分数之和，如3/5 = 3个1/5。",
+      "boundary": "能将 3/5 解释为 3 个 1/5；理解分子表示取的份数。",
+      "gradeRange": [3, 3],
+      "schoolStage": "primary",
+      "misconceptions": ["误以为分子与分母无关"],
+      "status": "published"
+    },
+    {
+      "id": "frac.representations",
+      "name": "面积、集合、数轴表征",
+      "definition": "分数可以用面积模型（涂色方块）、集合模型（圈出部分）、数轴三种表征表示。",
+      "boundary": "能在不同表征间识别同一分数。",
+      "gradeRange": [3, 5],
+      "schoolStage": "primary",
+      "misconceptions": [],
+      "status": "published"
+    },
+    {
+      "id": "frac.same_whole",
+      "name": "比较和运算中的同整体条件",
+      "definition": "分数比较和加减必须在同一个单位“1”下进行，不同整体的份数不能直接比较。",
+      "boundary": "能拒绝直接比较不同单位“1”的份数。",
+      "gradeRange": [3, 5],
+      "schoolStage": "primary",
+      "misconceptions": ["忽略单位”1”不同，直接比较分子"],
+      "status": "published"
+    },
+    {
+      "id": "frac.compare_same_denominator",
+      "name": "同分母比较",
+      "definition": "同分母分数，分子大的分数大，因为分数单位相同，取的份数多则大。",
+      "boundary": "能解释分数单位相同时比较份数。",
+      "gradeRange": [3, 3],
+      "schoolStage": "primary",
+      "misconceptions": ["误认为分母大则分数大"],
+      "status": "published"
+    },
+    {
+      "id": "frac.compare_same_numerator",
+      "name": "同分子比较",
+      "definition": "同分子分数，分母小的分数大，因为份数相同时，每份越大分数越大。",
+      "boundary": "能解释份数相同时每份越大分数越大。",
+      "gradeRange": [3, 3],
+      "schoolStage": "primary",
+      "misconceptions": ["误认为分母大则分数大"],
+      "status": "published"
+    },
+    {
+      "id": "frac.add_sub_same_denominator",
+      "name": "同分母分数加减",
+      "definition": "同分母分数加减时，分母不变，分子相加减，因为每份大小（分数单位）相同。",
+      "boundary": "能按相同分数单位合并或移除份数。",
+      "gradeRange": [3, 5],
+      "schoolStage": "primary",
+      "misconceptions": ["分母也相加减", "分子不变只变分母"],
+      "status": "published"
+    },
+    {
+      "id": "frac.one_boundary",
+      "name": "和整体“1”的关系",
+      "definition": "能判断分数运算结果与1的大小关系：结果小于、等于或大于1。",
+      "boundary": "能判断结果小于、等于或大于整体1。",
+      "gradeRange": [3, 5],
+      "schoolStage": "primary",
+      "misconceptions": [],
+      "status": "published"
+    },
+    {
+      "id": "frac.as_quotient",
+      "name": "分数表示除法结果",
+      "definition": "a÷b（b≠0）的结果可以用分数a/b表示，分数线等同于除号。",
+      "boundary": "能在 a÷b 与 a/b 间转换。",
+      "gradeRange": [5, 5],
+      "schoolStage": "primary",
+      "misconceptions": ["混淆分数与整除"],
+      "status": "published"
+    },
+    {
+      "id": "frac.equivalence",
+      "name": "识别等值分数",
+      "definition": "大小相等但表示形式不同的分数，如 1/2 = 2/4 = 3/6。",
+      "boundary": "能用表征证明两个分数相等。",
+      "gradeRange": [5, 5],
+      "schoolStage": "primary",
+      "misconceptions": ["分子分母不同则必不相等"],
+      "status": "published"
+    },
+    {
+      "id": "frac.basic_property",
+      "name": "分数基本性质",
+      "definition": "分子和分母同时乘以或除以同一个不为0的数，分数大小不变。",
+      "boundary": "能说明分子分母同时乘除同一非零数大小不变。",
+      "gradeRange": [5, 5],
+      "schoolStage": "primary",
+      "misconceptions": ["分子分母同时加减也不变大小"],
+      "status": "published"
+    },
+    {
+      "id": "frac.common_factor",
+      "name": "公因数基础",
+      "definition": "两个自然数的公因数是能整除这两个数的公共因数，最大公因数（GCD）用于约分。",
+      "boundary": "能找到分子分母的公因数。",
+      "gradeRange": [5, 5],
+      "schoolStage": "primary",
+      "misconceptions": ["公因数只有1"],
+      "status": "published"
+    },
+    {
+      "id": "frac.reduction",
+      "name": "约分",
+      "definition": "利用分数基本性质，将分子分母同除以公因数，化为等值的更简分数。",
+      "boundary": "能用基本性质将分数化简。",
+      "gradeRange": [5, 5],
+      "schoolStage": "primary",
+      "misconceptions": ["约分时只除分子或只除分母"],
+      "status": "published"
+    },
+    {
+      "id": "frac.simplest_form",
+      "name": "最简分数",
+      "definition": "分子和分母互质（最大公因数为1）的分数为最简分数。",
+      "boundary": "能判断分子分母是否互质。",
+      "gradeRange": [5, 5],
+      "schoolStage": "primary",
+      "misconceptions": ["整数1不是最简分数"],
+      "status": "published"
+    },
+    {
+      "id": "frac.common_multiple",
+      "name": "公倍数基础",
+      "definition": "两个自然数的公倍数，最小公倍数（LCM）用于通分。",
+      "boundary": "能找到分母的公倍数和最小公倍数。",
+      "gradeRange": [5, 5],
+      "schoolStage": "primary",
+      "misconceptions": ["公倍数只有两数之积"],
+      "status": "published"
+    },
+    {
+      "id": "frac.common_denominator",
+      "name": "通分",
+      "definition": "利用分数基本性质，将异分母分数转化为同分母等值分数，公分母取最小公倍数。",
+      "boundary": "能把异分母分数转成同分母等值分数。",
+      "gradeRange": [5, 5],
+      "schoolStage": "primary",
+      "misconceptions": ["通分时分子不变", "公分母取两数之积而不化简"],
+      "status": "published"
+    },
+    {
+      "id": "frac.add_sub_unlike_denominator",
+      "name": "异分母分数加减",
+      "definition": "异分母分数加减先通分统一分数单位，再按同分母方法运算，结果化最简。",
+      "boundary": "能先统一分数单位再运算。",
+      "gradeRange": [5, 5],
+      "schoolStage": "primary",
+      "misconceptions": ["分子加分子，分母加分母"],
+      "status": "published"
+    },
+    {
+      "id": "frac.number_types",
+      "name": "真分数、假分数、带分数",
+      "definition": "真分数分子小于分母；假分数分子大于等于分母；带分数由整数和真分数组成。",
+      "boundary": "能分类并解释与整体“1”的关系。",
+      "gradeRange": [5, 5],
+      "schoolStage": "primary",
+      "misconceptions": ["假分数不合法"],
+      "status": "published"
+    },
+    {
+      "id": "frac.multiply_integer",
+      "name": "分数乘整数",
+      "definition": "分数乘整数，分子乘整数、分母不变，可联系重复相加理解算理。",
+      "boundary": "能联系重复相加解释算理。",
+      "gradeRange": [6, 6],
+      "schoolStage": "primary",
+      "misconceptions": ["分母也要乘整数"],
+      "status": "published"
+    },
+    {
+      "id": "frac.of_quantity",
+      "name": "求一个量的几分之几",
+      "definition": "求一个量的几分之几，对应乘法：整体×分数。如一米的3/4 = 1×3/4 = 3/4米。",
+      "boundary": "能识别乘法语义并建立数量关系。",
+      "gradeRange": [6, 6],
+      "schoolStage": "primary",
+      "misconceptions": ["求几分之几误用除法"],
+      "status": "published"
+    },
+    {
+      "id": "frac.multiply_fraction",
+      "name": "分数乘分数",
+      "definition": "分数乘分数：分子乘分子做分子，分母乘分母做分母，可用面积或集合交叠解释。",
+      "boundary": "能用面积或集合交叠解释乘法。",
+      "gradeRange": [6, 6],
+      "schoolStage": "primary",
+      "misconceptions": ["分子与分母交叉相乘"],
+      "status": "published"
+    },
+    {
+      "id": "frac.reduce_before_multiply",
+      "name": "先约分再乘",
+      "definition": "乘法运算前，分子与分母间可先交叉约分，简化计算，结果不变。",
+      "boundary": "能在保持等值的前提下交叉约分。",
+      "gradeRange": [6, 6],
+      "schoolStage": "primary",
+      "misconceptions": ["约分后结果不等于直接乘再约分"],
+      "status": "published"
+    },
+    {
+      "id": "frac.reciprocal",
+      "name": "倒数与乘积为1",
+      "definition": "两数互为倒数，则乘积为1。分数a/b（a,b≠0）的倒数为b/a；1的倒数是1，0没有倒数。",
+      "boundary": "能说明倒数条件并处理整数形式。",
+      "gradeRange": [6, 6],
+      "schoolStage": "primary",
+      "misconceptions": ["0有倒数", "整数没有倒数"],
+      "status": "published"
+    },
+    {
+      "id": "frac.division_grouping",
+      "name": "包含除：里面有几个",
+      "definition": "a÷b问“a里面有几个b”，如3/4÷1/8问3/4里面有几个1/8。",
+      "boundary": "能用等值细分解释分数除法。",
+      "gradeRange": [6, 6],
+      "schoolStage": "primary",
+      "misconceptions": ["包含除与平均分混淆"],
+      "status": "published"
+    },
+    {
+      "id": "frac.division_sharing",
+      "name": "平均分：每份多少",
+      "definition": "a÷b问“a平均分成b份，每份多少”，如3/4÷3问3/4平均分成3份每份是多少。",
+      "boundary": "能区分包含除和平均分。",
+      "gradeRange": [6, 6],
+      "schoolStage": "primary",
+      "misconceptions": ["平均分误用包含除逻辑"],
+      "status": "published"
+    },
+    {
+      "id": "frac.divide_transform",
+      "name": "除以分数转化为乘倒数",
+      "definition": "除以一个不为0的数，等于乘这个数的倒数。a/b÷c/d = a/b×d/c，能用倒数和乘法验证。",
+      "boundary": "能用倒数和乘法验证转化，不只背口诀。",
+      "gradeRange": [6, 6],
+      "schoolStage": "primary",
+      "misconceptions": ["只背口诀，不理解为何可以转化"],
+      "status": "published"
+    },
+    {
+      "id": "bridge.fraction_decimal",
+      "name": "分数与小数互化",
+      "definition": "分数可化为小数（分子除以分母），小数也可以化为分数（如0.3=3/10）。",
+      "boundary": "能在分数和小数之间互化。",
+      "gradeRange": [5, 6],
+      "schoolStage": "primary",
+      "misconceptions": [],
+      "status": "published"
+    },
+    {
+      "id": "bridge.fraction_percent",
+      "name": "分数与百分数互化",
+      "definition": "百分数是分母为100的分数，分数可通过通分或化小数再乘100%转化为百分数。",
+      "boundary": "能在分数和百分数之间互化。",
+      "gradeRange": [6, 6],
+      "schoolStage": "primary",
+      "misconceptions": ["增长百分比与占整体百分比混淆"],
+      "status": "published"
+    },
+    {
+      "id": "bridge.fraction_ratio",
+      "name": "分数、除法与比",
+      "definition": "比a:b可以写成a/b（a÷b），联系分数与除法的本质是同一运算。",
+      "boundary": "能说明分数、除法与比三者的联系。",
+      "gradeRange": [6, 6],
+      "schoolStage": "primary",
+      "misconceptions": [],
+      "status": "published"
+    },
+    {
+      "id": "bridge.ratio_proportion",
+      "name": "等值比与比例",
+      "definition": "两个相等的比构成比例，等值比是比例的基础，与等值分数本质相同。",
+      "boundary": "能联系等值比和比例。",
+      "gradeRange": [6, 6],
+      "schoolStage": "primary",
+      "misconceptions": [],
+      "status": "published"
+    }
+  ],
+  "edges": [
+    {
+      "from": "frac.whole",
+      "to": "frac.equal_partition",
+      "type": "REQUIRES_HARD",
+      "reason": "平均分必须以确定整体为前提",
+      "failurePoint": "缺少单位“1”时，学生无法判断“分成几份”是对什么操作",
+      "evidence": "人教版三年级上册第五单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.equal_partition",
+      "to": "frac.notation",
+      "type": "REQUIRES_HARD",
+      "reason": "分数符号的分母直接对应平均分的份数",
+      "failurePoint": "缺少平均分时，学生不理解分母的含义",
+      "evidence": "人教版三年级上册第五单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.notation",
+      "to": "frac.unit_fraction",
+      "type": "REQUIRES_HARD",
+      "reason": "单位分数是分子为1的特殊分数，需要先理解分数符号",
+      "failurePoint": "缺少分数符号认识时，学生无法理解“分子为1”的特殊意义",
+      "evidence": "人教版三年级上册第五单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.unit_fraction",
+      "to": "frac.multiple_units",
+      "type": "REQUIRES_HARD",
+      "reason": "若干个单位分数是对单位分数的重复叠加",
+      "failurePoint": "缺少单位分数时，学生不理解分子的计数意义",
+      "evidence": "人教版三年级上册第五单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.whole",
+      "to": "frac.same_whole",
+      "type": "REQUIRES_HARD",
+      "reason": "同整体条件直接来自对单位“1”的理解",
+      "failurePoint": "缺少单位“1”概念时，学生无法识别比较和运算需要同一整体",
+      "evidence": "人教版三年级上册第五单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.multiple_units",
+      "to": "frac.compare_same_denominator",
+      "type": "REQUIRES_HARD",
+      "reason": "同分母比较依赖理解分子表示取的份数",
+      "failurePoint": "不理解分子的计数意义时，无法解释为何分子大则分数大",
+      "evidence": "人教版三年级上册第五单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.same_whole",
+      "to": "frac.compare_same_denominator",
+      "type": "REQUIRES_HARD",
+      "reason": "同分母比较的前提是两个分数基于同一整体",
+      "failurePoint": "不同整体时，分子大未必分数大",
+      "evidence": "人教版三年级上册第五单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.unit_fraction",
+      "to": "frac.compare_same_numerator",
+      "type": "REQUIRES_HARD",
+      "reason": "同分子比较依赖理解单位分数大小与分母的关系",
+      "failurePoint": "不理解单位分数时，无法解释为何分母大则每份小",
+      "evidence": "人教版三年级上册第五单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.same_whole",
+      "to": "frac.compare_same_numerator",
+      "type": "REQUIRES_HARD",
+      "reason": "同分子比较同样需要同一整体前提",
+      "failurePoint": "不同整体时，比较无意义",
+      "evidence": "人教版三年级上册第五单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.multiple_units",
+      "to": "frac.add_sub_same_denominator",
+      "type": "REQUIRES_HARD",
+      "reason": "同分母加减是对同种分数单位的合并或移除，需要理解分子的计数意义",
+      "failurePoint": "不理解分子表示份数时，学生会错误地将分母也相加",
+      "evidence": "人教版三年级上册第五单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.same_whole",
+      "to": "frac.add_sub_same_denominator",
+      "type": "REQUIRES_HARD",
+      "reason": "加减运算必须在同一整体下进行",
+      "failurePoint": "不同整体的份数合并无意义",
+      "evidence": "人教版三年级上册第五单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.notation",
+      "to": "frac.as_quotient",
+      "type": "REQUIRES_HARD",
+      "reason": "理解分数表示除法需要先理解分数线和分子分母",
+      "failurePoint": "不理解分数符号时，a÷b=a/b的联系无从建立",
+      "evidence": "人教版五年级上册第四单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.notation",
+      "to": "frac.equivalence",
+      "type": "REQUIRES_HARD",
+      "reason": "等值分数的识别需要理解分数的基本表示",
+      "failurePoint": "不理解分数符号时，无法判断两个不同写法是否等值",
+      "evidence": "人教版五年级上册第四单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.equivalence",
+      "to": "frac.basic_property",
+      "type": "REQUIRES_HARD",
+      "reason": "分数基本性质是对等值分数规律的形式化总结",
+      "failurePoint": "缺少等值分数感知时，学生难以理解为何同乘同除大小不变",
+      "evidence": "人教版五年级上册第四单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.common_factor",
+      "to": "frac.reduction",
+      "type": "REQUIRES_HARD",
+      "reason": "约分需要找到分子分母的公因数",
+      "failurePoint": "不会求公因数时，无法确定约分用哪个数",
+      "evidence": "人教版五年级上册第四单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.basic_property",
+      "to": "frac.reduction",
+      "type": "REQUIRES_HARD",
+      "reason": "约分依赖分数基本性质，除以公因数后大小不变",
+      "failurePoint": "不理解基本性质时，学生认为约分改变了分数大小",
+      "evidence": "人教版五年级上册第四单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.reduction",
+      "to": "frac.simplest_form",
+      "type": "REQUIRES_HARD",
+      "reason": "最简分数是约分到无法再约的状态",
+      "failurePoint": "不理解约分时，无法判断何时已经是最简形式",
+      "evidence": "人教版五年级上册第四单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.common_multiple",
+      "to": "frac.common_denominator",
+      "type": "REQUIRES_HARD",
+      "reason": "通分需要找分母的最小公倍数作为公分母",
+      "failurePoint": "不会求最小公倍数时，无法确定通分目标分母",
+      "evidence": "人教版五年级上册第四单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.basic_property",
+      "to": "frac.common_denominator",
+      "type": "REQUIRES_HARD",
+      "reason": "通分是利用基本性质将分数转化为等值同分母分数",
+      "failurePoint": "不理解基本性质时，学生不知道通分为何保持等值",
+      "evidence": "人教版五年级上册第四单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.common_denominator",
+      "to": "frac.add_sub_unlike_denominator",
+      "type": "REQUIRES_HARD",
+      "reason": "异分母加减必须先通分统一分数单位",
+      "failurePoint": "不会通分时，无法将异分母转为同分母",
+      "evidence": "人教版五年级上册第四单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.add_sub_same_denominator",
+      "to": "frac.add_sub_unlike_denominator",
+      "type": "REQUIRES_HARD",
+      "reason": "异分母加减通分后按同分母方法运算",
+      "failurePoint": "不会同分母加减时，通分后仍不知如何计算",
+      "evidence": "人教版五年级上册第四单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.of_quantity",
+      "to": "frac.multiply_fraction",
+      "type": "REQUIRES_HARD",
+      "reason": "分数乘分数是“一个分数的另一个分数”，是求某量几分之几的推广",
+      "failurePoint": "不理解“求几分之几”的乘法语义时，无法建立分数乘分数的模型",
+      "evidence": "人教版六年级上册第一单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.reduction",
+      "to": "frac.reduce_before_multiply",
+      "type": "REQUIRES_HARD",
+      "reason": "先约分再乘是约分技能在乘法中的交叉应用",
+      "failurePoint": "不理解约分时，无法在乘法中正确交叉约分",
+      "evidence": "人教版六年级上册第一单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.multiply_fraction",
+      "to": "frac.reduce_before_multiply",
+      "type": "REQUIRES_HARD",
+      "reason": "先约分再乘是分数乘法的优化技巧",
+      "failurePoint": "不理解分数乘法时，无法理解约分与乘法的关系",
+      "evidence": "人教版六年级上册第一单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.notation",
+      "to": "frac.reciprocal",
+      "type": "REQUIRES_HARD",
+      "reason": "倒数是分子分母颠倒，需要理解分数符号",
+      "failurePoint": "不理解分数表示时，无法操作倒数",
+      "evidence": "人教版六年级上册第二单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.multiply_fraction",
+      "to": "frac.reciprocal",
+      "type": "REQUIRES_HARD",
+      "reason": "倒数的定义通过乘积为1来验证，需要分数乘法",
+      "failurePoint": "不理解分数乘法时，无法验证a/b × b/a = 1",
+      "evidence": "人教版六年级上册第二单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.reciprocal",
+      "to": "frac.divide_transform",
+      "type": "REQUIRES_HARD",
+      "reason": "除以分数转化为乘倒数，核心操作依赖倒数概念",
+      "failurePoint": "不理解倒数时，转化法则无法被验证，只能死记",
+      "evidence": "人教版六年级上册第二单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.multiply_fraction",
+      "to": "frac.divide_transform",
+      "type": "REQUIRES_HARD",
+      "reason": "转化后的乘法运算需要分数乘分数的能力",
+      "failurePoint": "不会分数乘法时，转化后仍无法完成计算",
+      "evidence": "人教版六年级上册第二单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.division_grouping",
+      "to": "frac.divide_transform",
+      "type": "REQUIRES_HARD",
+      "reason": "包含除意义是分数除法转化合理性的重要支撑",
+      "failurePoint": "不理解包含除时，学生无法用具体情境验证转化法则",
+      "evidence": "人教版六年级上册第二单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.division_sharing",
+      "to": "frac.divide_transform",
+      "type": "REQUIRES_HARD",
+      "reason": "平均分意义使转化在另一类分数除法情境中也成立",
+      "failurePoint": "只理解包含除而不理解平均分时，遇到平均分情境无法应用",
+      "evidence": "人教版六年级上册第二单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.representations",
+      "to": "frac.compare_same_denominator",
+      "type": "REQUIRES_HELPFUL",
+      "reason": "表征有助于直观理解分子大则分数大",
+      "evidence": "人教版三年级上册第五单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.compare_same_denominator",
+      "to": "frac.add_sub_same_denominator",
+      "type": "REQUIRES_HELPFUL",
+      "reason": "同分母比较的经验有助于理解同分母加减的算理",
+      "evidence": "人教版三年级上册第五单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.compare_same_denominator",
+      "to": "frac.common_denominator",
+      "type": "REQUIRES_HELPFUL",
+      "reason": "通分经验建立在同分母比较的理解之上",
+      "evidence": "人教版五年级上册第四单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.multiple_units",
+      "to": "frac.multiply_integer",
+      "type": "REQUIRES_HELPFUL",
+      "reason": "分数乘整数可联系重复相加，与若干个单位分数有联系",
+      "evidence": "人教版六年级上册第一单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.multiply_integer",
+      "to": "frac.of_quantity",
+      "type": "REQUIRES_HELPFUL",
+      "reason": "分数乘整数是求一个量几分之几的乘法基础",
+      "evidence": "人教版六年级上册第一单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.basic_property",
+      "to": "frac.reciprocal",
+      "type": "REQUIRES_HELPFUL",
+      "reason": "基本性质有助于理解倒数与等值变换的联系",
+      "evidence": "人教版六年级上册第二单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.equivalence",
+      "to": "frac.division_grouping",
+      "type": "REQUIRES_HELPFUL",
+      "reason": "等值分数的认识有助于理解包含除中的等值细分",
+      "evidence": "人教版六年级上册第二单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.equal_partition",
+      "to": "frac.division_sharing",
+      "type": "REQUIRES_HELPFUL",
+      "reason": "平均分是平均分除法（division_sharing）的直接原型",
+      "evidence": "人教版六年级上册第二单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.add_sub_unlike_denominator",
+      "to": "frac.multiply_fraction",
+      "type": "REQUIRES_HELPFUL",
+      "reason": "异分母加减的通分经验对理解分数乘法有辅助作用",
+      "evidence": "人教版六年级上册第一单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.add_sub_same_denominator",
+      "to": "frac.add_sub_unlike_denominator",
+      "type": "GENERALIZES_TO",
+      "reason": "异分母加减是同分母加减从特殊到一般的推广",
+      "evidence": "人教版五年级上册第四单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.multiply_integer",
+      "to": "frac.multiply_fraction",
+      "type": "GENERALIZES_TO",
+      "reason": "分数乘分数是分数乘整数的推广",
+      "evidence": "人教版六年级上册第一单元",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.as_quotient",
+      "to": "bridge.fraction_ratio",
+      "type": "GENERALIZES_TO",
+      "reason": "比是除法关系的推广形式",
+      "evidence": "人教版六年级上册",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "bridge.fraction_ratio",
+      "to": "bridge.ratio_proportion",
+      "type": "GENERALIZES_TO",
+      "reason": "比例是等值比的推广",
+      "evidence": "人教版六年级下册",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.equivalence",
+      "to": "bridge.fraction_decimal",
+      "type": "GENERALIZES_TO",
+      "reason": "等值分数的认识推广到分数与小数互化",
+      "evidence": "人教版五年级上册",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "bridge.fraction_decimal",
+      "to": "bridge.fraction_percent",
+      "type": "GENERALIZES_TO",
+      "reason": "分数与小数互化推广到分数与百分数互化",
+      "evidence": "人教版六年级上册",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.compare_same_denominator",
+      "to": "frac.compare_same_numerator",
+      "type": "CONTRASTS_WITH",
+      "reason": "同分母比分子，同分子比分母（方向相反），易混淆",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.reduction",
+      "to": "frac.common_denominator",
+      "type": "CONTRASTS_WITH",
+      "reason": "约分化小，通分换形（不同方向的分数变换，操作容易混淆）",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.multiply_integer",
+      "to": "frac.of_quantity",
+      "type": "CONTRASTS_WITH",
+      "reason": "分数乘整数和求量的几分之几在表达上相似，但情境和理解角度不同",
+      "version": "0.1",
+      "status": "published"
+    },
+    {
+      "from": "frac.division_grouping",
+      "to": "frac.division_sharing",
+      "type": "CONTRASTS_WITH",
+      "reason": "包含除（里面有几个）和平均分除（每份多少）是两种不同的除法意义",
+      "version": "0.1",
+      "status": "published"
+    }
+  ],
+  "courseMappings": [
+    {
+      "courseId": "g3-fraction-intro",
+      "coreSkills": ["frac.whole", "frac.equal_partition", "frac.notation", "frac.unit_fraction", "frac.multiple_units"],
+      "reviewSkills": ["frac.need"],
+      "transferSkills": ["frac.representations", "frac.same_whole"]
+    },
+    {
+      "courseId": "g3-fraction-compare",
+      "coreSkills": ["frac.compare_same_denominator", "frac.compare_same_numerator"],
+      "reviewSkills": ["frac.whole", "frac.unit_fraction", "frac.same_whole"],
+      "transferSkills": ["frac.one_boundary"]
+    },
+    {
+      "courseId": "g3-fraction-add-sub",
+      "coreSkills": ["frac.add_sub_same_denominator"],
+      "reviewSkills": ["frac.multiple_units", "frac.same_whole"],
+      "transferSkills": ["frac.one_boundary"]
+    },
+    {
+      "courseId": "g5-fraction-meaning",
+      "coreSkills": ["frac.as_quotient", "frac.equivalence", "frac.basic_property", "frac.reduction", "frac.simplest_form", "frac.common_denominator", "frac.number_types"],
+      "reviewSkills": ["frac.whole", "frac.notation", "frac.common_factor", "frac.common_multiple"],
+      "transferSkills": ["bridge.fraction_decimal", "bridge.fraction_ratio"]
+    },
+    {
+      "courseId": "g5-fraction-add-sub",
+      "coreSkills": ["frac.add_sub_unlike_denominator"],
+      "reviewSkills": ["frac.add_sub_same_denominator", "frac.common_denominator", "frac.reduction"],
+      "transferSkills": ["frac.simplest_form", "frac.one_boundary"]
+    },
+    {
+      "courseId": "g6-fraction-mult",
+      "coreSkills": ["frac.multiply_integer", "frac.of_quantity", "frac.multiply_fraction", "frac.reduce_before_multiply"],
+      "reviewSkills": ["frac.equivalence", "frac.reduction"],
+      "transferSkills": ["frac.one_boundary"]
+    },
+    {
+      "courseId": "g6-fraction-div",
+      "coreSkills": ["frac.reciprocal", "frac.division_grouping", "frac.division_sharing", "frac.divide_transform"],
+      "reviewSkills": ["frac.multiply_fraction", "frac.equivalence"],
+      "transferSkills": ["frac.one_boundary"]
+    },
+    {
+      "courseId": "g6-ratio",
+      "coreSkills": ["bridge.fraction_ratio"],
+      "reviewSkills": ["frac.as_quotient", "frac.basic_property"],
+      "transferSkills": ["bridge.ratio_proportion"]
+    },
+    {
+      "courseId": "g6-percentage",
+      "coreSkills": ["bridge.fraction_decimal", "bridge.fraction_percent"],
+      "reviewSkills": ["frac.equivalence"],
+      "transferSkills": ["frac.one_boundary"]
+    },
+    {
+      "courseId": "g6-proportion",
+      "coreSkills": ["bridge.ratio_proportion"],
+      "reviewSkills": ["bridge.fraction_ratio", "frac.basic_property"],
+      "transferSkills": []
+    }
+  ]
+}

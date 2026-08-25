@@ -91,7 +91,7 @@ export default function GameRunner({
   nextCourseTitle,
   reviewMode = null,
 }: GameRunnerProps) {
-  const { markInitialPass, markDelayedReviewPass, markDelayedReviewFail } = useProgress();
+  const { markInitialPass, markDelayedReviewPass, markDelayedReviewFail, recordSkillEvidence } = useProgress();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, AnswerRecord>>({});
   const [gameStatus, setGameStatus] = useState<GameStatus>('playing');
@@ -144,6 +144,19 @@ export default function GameRunner({
       ...prev,
       [currentQuestion.id]: { selected, correct: isCorrect, firstTry },
     }));
+    // Record skill evidence once per question submission (guard above ensures no re-recording)
+    if (currentQuestion.primarySkillId && currentQuestion.evidenceType) {
+      const mode: 'initial' | 'd1' | 'd7' =
+        frozenReviewMode === 'd1' ? 'd1' :
+        frozenReviewMode === 'd7' ? 'd7' : 'initial';
+      recordSkillEvidence(
+        currentQuestion.primarySkillId,
+        isCorrect,
+        firstTry,
+        currentQuestion.evidenceType,
+        mode,
+      );
+    }
   };
 
   const handleNext = () => {

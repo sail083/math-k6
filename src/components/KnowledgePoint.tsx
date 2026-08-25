@@ -9,6 +9,7 @@ import { isCourseModelType, isConceptModelType, isAdvancedModelType } from '@/li
 import DiscoveryLesson from '@/components/DiscoveryLesson';
 import KnowledgeDeck from '@/components/KnowledgeDeck';
 import UiIcon from '@/components/UiIcon';
+import KnowledgeContextStrip from '@/components/KnowledgeContextStrip';
 
 type LessonStage = 'explore' | 'discover' | 'challenge';
 
@@ -164,6 +165,8 @@ export default function KnowledgePoint({ knowledgePoint: kp, onNextCourse, nextC
           </div>
         ) : null}
       </header>
+
+      <KnowledgeContextStrip courseId={meta.id} />
 
       <nav className="lesson-rail-mobile" aria-label="三阶段学习进度">
         {stages.map((stage) => {
