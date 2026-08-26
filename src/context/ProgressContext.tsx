@@ -1,12 +1,11 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, type ReactNode } from 'react';
-import type { ProgressData, MasteryStatus, EvidenceType, SkillEvidenceMode } from '@/lib/types';
+import type { ProgressData, MasteryStatus, EvidenceType, SkillEvidenceMode, SkillReviewSchedule, ExperimentAssignment, LearningEventName } from '@/lib/types';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/lib/supabase';
+import { supabase, logLearningEvent } from '@/lib/supabase';
 import {
   isUnlocked as isUnlockedUtil,
   loadProgress,
   markPassed as markPassedUtil,
-  markInitialPass as markInitialPassUtil,
   markDelayedReviewPass as markDelayedReviewPassUtil,
   markDelayedReviewFail as markDelayedReviewFailUtil,
   getMasteryStatus as getMasteryStatusUtil,
@@ -29,7 +28,27 @@ import {
   setLearningGoal as setLearningGoalUtil,
   startRepairSession as startRepairSessionUtil,
   finishRepairSession as finishRepairSessionUtil,
+  // v0.3
+  scheduleSkillReview as scheduleSkillReviewUtil,
+  getDueSkillReviews as getDueSkillReviewsUtil,
+  getSkillReviewSchedule as getSkillReviewScheduleUtil,
+  parseSkillReviews,
+  mergeSkillReviewSchedule,
+  setExperimentAssignment as setExperimentAssignmentUtil,
+  getEffectiveAssignment as getEffectiveAssignmentUtil,
+  mergeExperimentAssignments,
+  getHomeTasks as getHomeTasksUtil,
+  type HomeTask,
   type SkillDisplayStatus,
+  type TransitionEvent,
+  DAY_MS,
+  // v0.3 atomic transitions
+  resolveSkillReviewTransition,
+  markInitialPassTransition,
+  // v0.3 course intervention
+  parseCourseIntervention,
+  mergeCourseIntervention,
+  startCourseIntervention as startCourseInterventionUtil,
 } from '@/lib/progress';
 
 interface ProgressContextValue {
@@ -54,6 +73,25 @@ interface ProgressContextValue {
   setGoal: (skillId: string) => void;
   startRepair: (skillId: string, targetSkillId: string) => void;
   finishRepair: (skillId: string) => void;
+  // ===== v0.3：技能复习 =====
+  scheduleSkillReview: (skillId: string, targetSkillId: string, stage: 'd1' | 'd7') => void;
+  getDueSkillReviews: () => SkillReviewSchedule[];
+  resolveSkillReview: (skillId: string, passed: boolean) => void;
+  getSkillReviewSchedule: (skillId: string) => SkillReviewSchedule | undefined;
+  // ===== v0.3：实验分组 =====
+  setExperimentAssignment: (skillId: string, assignment: ExperimentAssignment) => void;
+  getEffectiveAssignment: (skillId: string) => ExperimentAssignment;
+  // ===== v0.3：课程干预 =====
+  startCourseIntervention: (
+    skillId: string,
+    targetSkillId: string,
+    courseId: string,
+    options?: { reviewStage?: 'd1' | 'd7'; nextForm?: 'a' | 'b'; origin?: 'diagnostic' | 'review' },
+  ) => void;
+  // ===== v0.3：首页任务 =====
+  getHomeTasks: () => HomeTask[];
+  // ===== v0.3：学习事件 =====
+  emitEvent: (params: { clientEventId: string; eventName: LearningEventName; skillId?: string; courseId?: string; mode?: string; variant?: string; passed?: boolean; firstTry?: boolean; durationMs?: number; dueAt?: string; properties?: Record<string, unknown> }) => void;
 }
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -114,7 +152,42 @@ function mergeProgress(local: ProgressData, remote: ProgressData): ProgressData 
     parseRepairSession(local.repairSession),
     parseRepairSession(remote.repairSession),
   );
-  return { passedKnowledgePoints: Array.from(passedSet), stars, mastery, currentLearning, skillEvidence, learningGoal, repairSession };
+  // Merge skillReviews: per-skill deterministic merge
+  const localReviews = parseSkillReviews(local.skillReviews);
+  const remoteReviews = parseSkillReviews(remote.skillReviews);
+  const skillReviews: Record<string, SkillReviewSchedule> = {};
+  const allReviewIds = new Set([...Object.keys(localReviews), ...Object.keys(remoteReviews)]);
+  for (const id of allReviewIds) {
+    const l = localReviews[id];
+    const r = remoteReviews[id];
+    if (l && r) {
+      skillReviews[id] = mergeSkillReviewSchedule(l, r);
+    } else {
+      skillReviews[id] = l ?? r!;
+    }
+  }
+  // Merge experiment assignments
+  const experimentAssignments = mergeExperimentAssignments(
+    local.experimentAssignments,
+    remote.experimentAssignments,
+  );
+  // Merge course intervention
+  const courseIntervention = mergeCourseIntervention(
+    parseCourseIntervention(local.courseIntervention),
+    parseCourseIntervention(remote.courseIntervention),
+  );
+  return {
+    passedKnowledgePoints: Array.from(passedSet),
+    stars,
+    mastery,
+    currentLearning,
+    skillEvidence,
+    learningGoal,
+    repairSession,
+    skillReviews: Object.keys(skillReviews).length > 0 ? skillReviews : undefined,
+    experimentAssignments,
+    courseIntervention,
+  };
 }
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
@@ -198,13 +271,24 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(saveTimer.current);
   }, [progress, user]);
 
+  // Internal event emitter — stable reference, auth-gated. Used by transition methods.
+  const emitEventInternal = useCallback((evt: TransitionEvent) => {
+    if (!user) return;
+    logLearningEvent({ userId: user.id, ...evt });
+  }, [user]);
+
   const markPassed = useCallback((kpId: string, stars: number) => {
     setProgress((prev) => markPassedUtil(prev, kpId, stars));
   }, []);
 
   const markInitialPass = useCallback((kpId: string, stars: number, hasReviewSets: boolean) => {
-    setProgress((prev) => markInitialPassUtil(prev, kpId, stars, Date.now(), hasReviewSets));
-  }, []);
+    const now = Date.now();
+    const result = markInitialPassTransition(progress, kpId, stars, now, hasReviewSets);
+    setProgress(result.progress);
+    for (const evt of result.events) {
+      emitEventInternal(evt);
+    }
+  }, [progress, emitEventInternal]);
 
   const markDelayedReviewPass = useCallback((kpId: string) => {
     setProgress((prev) => markDelayedReviewPassUtil(prev, kpId, Date.now()));
@@ -282,6 +366,92 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     setProgress((prev) => finishRepairSessionUtil(prev, skillId, Date.now()));
   }, []);
 
+  // ===== v0.3 =====
+
+  const scheduleSkillReview = useCallback((skillId: string, targetSkillId: string, stage: 'd1' | 'd7') => {
+    const now = Date.now();
+    setProgress((prev) => scheduleSkillReviewUtil(prev, skillId, targetSkillId, stage, now));
+    // Emit skill_review_scheduled with the same timestamp used for the schedule
+    const dueAt = stage === 'd1' ? now + DAY_MS : now + 6 * DAY_MS;
+    emitEventInternal({
+      clientEventId: `srs:${skillId}:${stage}:${now}`,
+      eventName: 'skill_review_scheduled',
+      skillId,
+      mode: stage,
+      dueAt: new Date(dueAt).toISOString(),
+      properties: {
+        reviewCycleId: `rc:${skillId}:${stage}:a:${now}`,
+        attemptNo: 1,
+        firstExposure: true,
+        evidenceEligible: true,
+        formId: 'a',
+      },
+    });
+  }, [emitEventInternal]);
+
+  const getDueSkillReviews = useCallback(
+    () => getDueSkillReviewsUtil(progress, Date.now()),
+    [progress],
+  );
+
+  const resolveSkillReview = useCallback((skillId: string, passed: boolean) => {
+    const now = Date.now();
+    const result = resolveSkillReviewTransition(progress, skillId, passed, now);
+    setProgress(result.progress);
+    for (const evt of result.events) {
+      emitEventInternal(evt);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progress, emitEventInternal]);
+
+  const getSkillReviewSchedule = useCallback(
+    (skillId: string) => getSkillReviewScheduleUtil(progress, skillId),
+    [progress],
+  );
+
+  const setExperimentAssignment = useCallback((skillId: string, assignment: ExperimentAssignment) => {
+    setProgress((prev) => setExperimentAssignmentUtil(prev, skillId, assignment));
+  }, []);
+
+  const getEffectiveAssignment = useCallback(
+    (skillId: string) => getEffectiveAssignmentUtil(progress, user?.id ?? null, skillId),
+    [progress, user],
+  );
+
+  const getHomeTasks = useCallback(
+    () => getHomeTasksUtil(progress, getDueReviewIdsUtil(progress, Date.now()), Date.now()),
+    [progress],
+  );
+
+  // ===== v0.3: Course Intervention =====
+
+  const startCourseIntervention = useCallback((
+    skillId: string,
+    targetSkillId: string,
+    courseId: string,
+    options?: { reviewStage?: 'd1' | 'd7'; nextForm?: 'a' | 'b'; origin?: 'diagnostic' | 'review' },
+  ) => {
+    setProgress((prev) => startCourseInterventionUtil(prev, skillId, targetSkillId, courseId, Date.now(), options));
+  }, []);
+
+  // ===== v0.3: Event logging =====
+
+  const emitEvent = useCallback((params: {
+    clientEventId: string;
+    eventName: LearningEventName;
+    skillId?: string;
+    courseId?: string;
+    mode?: string;
+    variant?: string;
+    passed?: boolean;
+    firstTry?: boolean;
+    durationMs?: number;
+    dueAt?: string;
+    properties?: Record<string, unknown>;
+  }) => {
+    emitEventInternal(params as TransitionEvent);
+  }, [emitEventInternal]);
+
   const value = useMemo(
     () => ({
       progress,
@@ -303,6 +473,17 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       setGoal,
       startRepair,
       finishRepair,
+      // v0.3
+      scheduleSkillReview,
+      getDueSkillReviews,
+      resolveSkillReview,
+      getSkillReviewSchedule,
+      setExperimentAssignment,
+      getEffectiveAssignment,
+      // v0.3 course intervention
+      startCourseIntervention,
+      getHomeTasks,
+      emitEvent,
     }),
     [
       progress,
@@ -324,6 +505,15 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       setGoal,
       startRepair,
       finishRepair,
+      scheduleSkillReview,
+      getDueSkillReviews,
+      resolveSkillReview,
+      getSkillReviewSchedule,
+      setExperimentAssignment,
+      getEffectiveAssignment,
+      startCourseIntervention,
+      getHomeTasks,
+      emitEvent,
     ],
   );
 

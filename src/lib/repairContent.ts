@@ -40,14 +40,17 @@ export interface ValidationError {
  * 无错误时返回空数组。
  *
  * 校验项：
- * - 恰好 9 单元 / 36 题
+ * - 恰好 9 单元 / 108 题（36 补修 + 72 复习 A/B）
  * - 9 个预期 skillId 恰好出现一次
- * - 每单元 2 diagnostic + 2 check
+ * - 每单元 2 diagnostic + 2 check + D1/D7 各 2 题 × 2 套卷（A/B）
  * - 题目 ID 全局唯一
  * - 仅 choice/fill-blank；choice 有 options 且 options 包含 correctAnswer
  * - 答案/解析非空
  * - 每题 primarySkillId 等于 unit.skillId
  * - check 全部 evidenceType=transfer
+ * - D1 全部 evidenceType=transfer；D7 第一题 transfer，第二题 retention（A、B 各自）
+ * - D1/D7 每套卷至少一道 fill-blank
+ * - 同一 skill 的 A/B 两套卷在归一化 prompt 模板上不重复
  * - estimatedMinutes 3-5；lesson steps 2-4；workedExample/misconception 字段完整
  */
 export function validateRepairUnits(units: RepairUnit[] = repairUnits): ValidationError[] {
@@ -58,10 +61,28 @@ export function validateRepairUnits(units: RepairUnit[] = repairUnits): Validati
     errors.push({ type: 'error', message: `期望 9 个补修单元，实际 ${units.length} 个` });
   }
 
+  // 补修题目总数（diagnostic + check）
+  const repairQ = units.reduce((s, u) => s + u.diagnosticQuestions.length + u.checkQuestions.length, 0);
+  if (repairQ !== 36) {
+    errors.push({ type: 'error', message: `期望 36 道补修题，实际 ${repairQ} 道` });
+  }
+
+  // 复习题目总数（d1 + d7 的 A/B 两套卷）
+  const reviewQ = units.reduce((s, u) => {
+    const d1A = u.reviewSets?.d1?.questions?.length ?? 0;
+    const d1B = u.reviewSets?.d1?.alternateQuestions?.length ?? 0;
+    const d7A = u.reviewSets?.d7?.questions?.length ?? 0;
+    const d7B = u.reviewSets?.d7?.alternateQuestions?.length ?? 0;
+    return s + d1A + d1B + d7A + d7B;
+  }, 0);
+  if (reviewQ !== 72) {
+    errors.push({ type: 'error', message: `期望 72 道复习题（A/B 两套卷），实际 ${reviewQ} 道` });
+  }
+
   // 题目总数
-  const totalQ = units.reduce((s, u) => s + u.diagnosticQuestions.length + u.checkQuestions.length, 0);
-  if (totalQ !== 36) {
-    errors.push({ type: 'error', message: `期望 36 道题，实际 ${totalQ} 道` });
+  const totalQ = repairQ + reviewQ;
+  if (totalQ !== 108) {
+    errors.push({ type: 'error', message: `期望 108 道题（补修+复习 A/B），实际 ${totalQ} 道` });
   }
 
   // skillId 覆盖
@@ -81,10 +102,18 @@ export function validateRepairUnits(units: RepairUnit[] = repairUnits): Validati
     }
   }
 
-  // 全局题目 ID 唯一
+  // 全局题目 ID 唯一（包括 A/B 复习题）
   const allQuestionIds = new Set<string>();
   for (const u of units) {
-    for (const q of [...u.diagnosticQuestions, ...u.checkQuestions]) {
+    const allQs = [
+      ...u.diagnosticQuestions,
+      ...u.checkQuestions,
+      ...(u.reviewSets?.d1?.questions ?? []),
+      ...(u.reviewSets?.d1?.alternateQuestions ?? []),
+      ...(u.reviewSets?.d7?.questions ?? []),
+      ...(u.reviewSets?.d7?.alternateQuestions ?? []),
+    ];
+    for (const q of allQs) {
       if (allQuestionIds.has(q.id)) {
         errors.push({ type: 'error', message: `题目 ID 重复: ${q.id}` });
       }
@@ -115,6 +144,50 @@ export function validateRepairUnits(units: RepairUnit[] = repairUnits): Validati
     }
     if (u.checkQuestions.length !== 2) {
       errors.push({ type: 'error', message: `${prefix} 验证题应为 2 道，实际 ${u.checkQuestions.length} 道` });
+    }
+
+    // 复习集结构：每 stage 有 A/B 两套卷，各 2 题
+    const d1A = u.reviewSets?.d1?.questions ?? [];
+    const d1B = u.reviewSets?.d1?.alternateQuestions ?? [];
+    const d7A = u.reviewSets?.d7?.questions ?? [];
+    const d7B = u.reviewSets?.d7?.alternateQuestions ?? [];
+    for (const [setName, qs] of [
+      ['D1 A 卷', d1A],
+      ['D1 B 卷', d1B],
+      ['D7 A 卷', d7A],
+      ['D7 B 卷', d7B],
+    ] as const) {
+      if (qs.length !== 2) {
+        errors.push({ type: 'error', message: `${prefix} ${setName} 应为 2 题，实际 ${qs.length} 道` });
+      }
+    }
+
+    // D1 evidenceType: all transfer（A、B 各自）
+    for (const q of [...d1A, ...d1B]) {
+      if (q.evidenceType !== 'transfer') {
+        errors.push({ type: 'error', message: `${prefix}[${q.id}] D1 题 evidenceType 应为 transfer，实际 ${q.evidenceType}` });
+      }
+    }
+    // D7 evidenceType: first=transfer, second=retention（A、B 各自）
+    for (const d7Qs of [d7A, d7B]) {
+      if (d7Qs.length >= 1 && d7Qs[0].evidenceType !== 'transfer') {
+        errors.push({ type: 'error', message: `${prefix}[${d7Qs[0].id}] D7 第一题 evidenceType 应为 transfer，实际 ${d7Qs[0].evidenceType}` });
+      }
+      if (d7Qs.length >= 2 && d7Qs[1].evidenceType !== 'retention') {
+        errors.push({ type: 'error', message: `${prefix}[${d7Qs[1].id}] D7 第二题 evidenceType 应为 retention，实际 ${d7Qs[1].evidenceType}` });
+      }
+    }
+
+    // D1/D7 每套卷至少一道 fill-blank
+    for (const [setName, qs] of [
+      ['D1 A 卷', d1A],
+      ['D1 B 卷', d1B],
+      ['D7 A 卷', d7A],
+      ['D7 B 卷', d7B],
+    ] as const) {
+      if (qs.length > 0 && qs.every((q) => q.type === 'choice')) {
+        errors.push({ type: 'error', message: `${prefix} ${setName} 至少包含一道 fill-blank 题` });
+      }
     }
 
     // estimatedMinutes 3-5
@@ -148,10 +221,14 @@ export function validateRepairUnits(units: RepairUnit[] = repairUnits): Validati
       errors.push({ type: 'error', message: `${prefix} lesson.misconception 字段不完整` });
     }
 
-    // 验证每道题
+    // 验证每道题（包括 A/B 复习题）
     const allQuestions = [
-      ...u.diagnosticQuestions.map((q) => ({ q, phase: 'diagnostic' })),
-      ...u.checkQuestions.map((q) => ({ q, phase: 'check' })),
+      ...u.diagnosticQuestions.map((q) => ({ q, phase: 'diagnostic' as const })),
+      ...u.checkQuestions.map((q) => ({ q, phase: 'check' as const })),
+      ...d1A.map((q) => ({ q, phase: 'd1a' as const })),
+      ...d1B.map((q) => ({ q, phase: 'd1b' as const })),
+      ...d7A.map((q) => ({ q, phase: 'd7a' as const })),
+      ...d7B.map((q) => ({ q, phase: 'd7b' as const })),
     ];
     for (const { q, phase } of allQuestions) {
       const qp = `${prefix}[${q.id}]`;
@@ -189,17 +266,17 @@ export function validateRepairUnits(units: RepairUnit[] = repairUnits): Validati
         errors.push({ type: 'error', message: `${qp} primarySkillId (${q.primarySkillId}) 与 unit.skillId (${u.skillId}) 不一致` });
       }
 
-      // check 题 evidenceType=transfer
+      // check 题 evidenceType=transfer (already checked for d1/d7 above)
       if (phase === 'check' && q.evidenceType !== 'transfer') {
         errors.push({ type: 'error', message: `${qp} check 题 evidenceType 应为 transfer，实际 ${q.evidenceType}` });
       }
     }
 
-    // R4: Within same unit, diagnostic/check prompt+correctAnswer must not duplicate each other or workedExample
+    // R4: Within same unit, ALL questions prompt+correctAnswer must not duplicate each other or workedExample
     const qaKeys = new Set<string>();
     const workedKey = `${(l.workedExample.question || '').trim()}|||${(l.workedExample.answer || '').trim()}`;
     qaKeys.add(workedKey);
-    for (const q of [...u.diagnosticQuestions, ...u.checkQuestions]) {
+    for (const q of [...u.diagnosticQuestions, ...u.checkQuestions, ...d1A, ...d1B, ...d7A, ...d7B]) {
       const answer = Array.isArray(q.correctAnswer) ? q.correctAnswer[0] : q.correctAnswer;
       const key = `${(q.prompt || '').trim()}|||${(answer || '').trim()}`;
       if (qaKeys.has(key)) {
@@ -207,7 +284,71 @@ export function validateRepairUnits(units: RepairUnit[] = repairUnits): Validati
       }
       qaKeys.add(key);
     }
+
+    // v0.3: Mechanical guard — A/B forms within the same skill and same stage must differ
+    // in normalized prompt template. Normalize digits, fractions (a/b), and whitespace
+    // so pure number/noun swaps between form A and form B are caught.
+    const normalizeTemplate = (s: string): string =>
+      s
+        .replace(/\d+/g, '#')
+        .replace(/#\s*\/\s*#/g, '#/#')
+        .replace(/\s+/g, ' ')
+        .trim();
+    for (const [stageName, formA, formB] of [
+      ['D1', d1A, d1B],
+      ['D7', d7A, d7B],
+    ] as const) {
+      const aTemplates = new Set(formA.map((q) => normalizeTemplate(q.prompt)));
+      for (const q of formB) {
+        const normalized = normalizeTemplate(q.prompt);
+        if (aTemplates.has(normalized)) {
+          errors.push({ type: 'error', message: `${prefix}[${q.id}] ${stageName} B 卷归一化 prompt 模板与 A 卷重复（仅数字/名词替换？）` });
+        }
+      }
+    }
+
+    // v0.3: Extended guard — diagnostic/check questions must not share normalized prompt
+    // templates with D1/D7 A/B review questions in the same skill. This catches cases
+    // where a review question is merely a number-swap of a diagnostic/check question.
+    const diagCheckTemplates = new Set(
+      [...u.diagnosticQuestions, ...u.checkQuestions].map((q) => normalizeTemplate(q.prompt)),
+    );
+    for (const [phaseLabel, qs] of [
+      ['D1 A', d1A],
+      ['D1 B', d1B],
+      ['D7 A', d7A],
+      ['D7 B', d7B],
+    ] as const) {
+      for (const q of qs) {
+        const normalized = normalizeTemplate(q.prompt);
+        if (diagCheckTemplates.has(normalized)) {
+          errors.push({ type: 'error', message: `${prefix}[${q.id}] ${phaseLabel} 卷归一化 prompt 模板与诊断/验证题重复（仅数字/名词替换？）` });
+        }
+      }
+    }
   }
 
   return errors;
+}
+
+/** 获取所有补修+复习题目（供测试去重校验用） */
+export function getAllRepairQuestions(): { questions: import('./types').Question[]; skillId: string; phase: string }[] {
+  const result: { questions: import('./types').Question[]; skillId: string; phase: string }[] = [];
+  for (const u of repairUnits) {
+    result.push({ questions: u.diagnosticQuestions, skillId: u.skillId, phase: 'diagnostic' });
+    result.push({ questions: u.checkQuestions, skillId: u.skillId, phase: 'check' });
+    if (u.reviewSets?.d1?.questions) {
+      result.push({ questions: u.reviewSets.d1.questions, skillId: u.skillId, phase: 'd1a' });
+    }
+    if (u.reviewSets?.d1?.alternateQuestions) {
+      result.push({ questions: u.reviewSets.d1.alternateQuestions, skillId: u.skillId, phase: 'd1b' });
+    }
+    if (u.reviewSets?.d7?.questions) {
+      result.push({ questions: u.reviewSets.d7.questions, skillId: u.skillId, phase: 'd7a' });
+    }
+    if (u.reviewSets?.d7?.alternateQuestions) {
+      result.push({ questions: u.reviewSets.d7.alternateQuestions, skillId: u.skillId, phase: 'd7b' });
+    }
+  }
+  return result;
 }

@@ -180,7 +180,12 @@ export interface Question {
 }
 
 export interface ReviewSet {
-  questions: Question[];
+  questions: Question[];              // form A (backward-compatible)
+}
+
+/** Skill-repair review set: extends ReviewSet with a required form-B alternate set */
+export interface SkillReviewSet extends ReviewSet {
+  alternateQuestions: Question[];     // form B (fresh evidence opportunity)
 }
 
 export interface GameConfig {
@@ -206,6 +211,36 @@ export interface MasteryRecord {
   delayedReviewCount: number;    // 已完成的延迟复习次数（0/1/2）
 }
 
+/** v0.3：单个技能的复习调度记录 */
+export interface SkillReviewSchedule {
+  skillId: string;
+  targetSkillId: string;
+  stage: 'd1' | 'd7';
+  status: 'scheduled' | 'due' | 'passed' | 'failed';
+  dueAt: number;
+  updatedAt: number;
+  contentVersion: string;
+  firstExposure: boolean;
+  formId: 'a' | 'b';                // current review form (default/backward-compatible = 'a')
+  attemptNo: number;                // >= 1, increments on each valid attempt
+}
+
+/** v0.3 实验分组：repair=补修路径, course=完整课程路径, observer=快速通过观察 */
+export type ExperimentAssignment = 'repair' | 'course' | 'observer';
+
+/** v0.3：课程干预会话（诊断失败或复习失败后分配 course 组的持续跟踪标记） */
+export interface CourseIntervention {
+  skillId: string;
+  targetSkillId: string;
+  courseId: string;
+  variant: 'course';
+  status: 'active' | 'completed';
+  updatedAt: number;
+  reviewStage?: 'd1' | 'd7';        // target review stage after course completion (for review remediation)
+  nextForm?: 'a' | 'b';             // form to schedule after course completion
+  origin?: 'diagnostic' | 'review'; // whether intervention came from diagnostic or review-form failure
+}
+
 export interface ProgressData {
   passedKnowledgePoints: string[];
   stars: Record<string, number>; // 知识点 ID -> 1-3 星
@@ -224,10 +259,27 @@ export interface ProgressData {
     status: 'active' | 'completed';
     updatedAt: number;
   };
+  // ===== v0.3：技能复习调度 =====
+  skillReviews?: Record<string, SkillReviewSchedule>;
+  // ===== v0.3：实验分组 =====
+  experimentAssignments?: Record<string, ExperimentAssignment>;
+  // ===== v0.3：课程干预 =====
+  courseIntervention?: CourseIntervention;
 }
 
 /** 技能证据模式 */
 export type SkillEvidenceMode = 'initial' | 'd1' | 'd7' | 'repair';
+
+/** v0.3: Exact 8 learning event names (must match DB chk_event_name constraint) */
+export type LearningEventName =
+  | 'home_task_viewed'
+  | 'home_task_opened'
+  | 'intervention_assigned'
+  | 'intervention_completed'
+  | 'skill_review_scheduled'
+  | 'skill_review_started'
+  | 'skill_review_finished'
+  | 'stable_achieved';
 
 /** 单个微技能的题目证据 */
 export interface SkillEvidenceRecord {
@@ -277,4 +329,8 @@ export interface RepairUnit {
   diagnosticQuestions: Question[];    // 恰好 2 道
   lesson: RepairLesson;
   checkQuestions: Question[];         // 恰好 2 道，evidenceType=transfer
+  reviewSets?: {                      // v0.3：技能延迟复习题集
+    d1?: SkillReviewSet;              // D1 复习：补修通过后 1 天
+    d7?: SkillReviewSet;              // D7 复习：D1 通过后 6 天
+  };
 }

@@ -61,7 +61,7 @@
       {
         "id": "rep-whole-c1",
         "type": "choice",
-        "prompt": "把一根绳子剪成6段，问：在这道题里，单位“1”指的是？（迁移：请在新情境中判断）",
+        "prompt": "把一根绳子剪成6段，问：在这道题里，单位“1”指的是？",
         "options": [
           "6段绳子",
           "一根绳子",
@@ -77,7 +77,7 @@
       {
         "id": "rep-whole-c2",
         "type": "choice",
-        "prompt": "一个班有30名学生，其中有18名女生。题目中的单位“1”是哪个？（迁移）",
+        "prompt": "一个班有30名学生，其中有18名女生。题目中的单位“1”是哪个？",
         "options": [
           "18名女生",
           "12名男生",
@@ -90,7 +90,125 @@
         "primarySkillId": "frac.whole",
         "evidenceType": "transfer"
       }
-    ]
+    ],
+    "reviewSets": {
+      "d1": {
+        "questions": [
+          {
+            "id": "rev-whole-d1a",
+            "type": "choice",
+            "prompt": "学校图书馆有一批书，借走了其中的2/7。这道题里被看作单位“1”的是哪个？",
+            "options": [
+              "借走的书",
+              "这批书的总数",
+              "2/7",
+              "剩下的书"
+            ],
+            "correctAnswer": "这批书的总数",
+            "explanation": "单位“1”是被分的整体。借走了“其中的”2/7，说明是把这批书的总数看作整体。",
+            "points": 10,
+            "primarySkillId": "frac.whole",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-whole-d1b",
+            "type": "fill-blank",
+            "prompt": "小华每天跑一段3千米的路，今天跑了全程的2/3。这段路的全长就是单位“1”，单位“1”包含多少千米？（填数字）",
+            "correctAnswer": "3",
+            "explanation": "全程3千米是被分的整体，即单位“1”。单位“1”就是全长3千米。",
+            "points": 10,
+            "primarySkillId": "frac.whole",
+            "evidenceType": "transfer"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-whole-d1a-alt",
+            "type": "choice",
+            "prompt": "一盘草莓有15颗，吃掉了一部分后还剩2/5。下面哪个量被当作单位“1”？",
+            "options": [
+              "吃掉的草莓",
+              "剩下的草莓",
+              "这盘草莓的总数",
+              "15颗减去剩下的数量"
+            ],
+            "correctAnswer": "这盘草莓的总数",
+            "explanation": "还剩“这盘草莓”的2/5，说明整体是这盘草莓的总数。",
+            "points": 10,
+            "primarySkillId": "frac.whole",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-whole-d1b-alt",
+            "type": "fill-blank",
+            "prompt": "一桶水总容量是15升，用去了这桶水的1/3。单位“1”包含多少升水？（填数字）",
+            "correctAnswer": "15",
+            "explanation": "“一半”“1/3”都是相对于整桶水来说的，整桶水就是单位“1”，即15升。",
+            "points": 10,
+            "primarySkillId": "frac.whole",
+            "evidenceType": "transfer"
+          }
+        ]
+      },
+      "d7": {
+        "questions": [
+          {
+            "id": "rev-whole-d7a",
+            "type": "fill-blank",
+            "prompt": "果园里苹果树和梨树共80棵，其中苹果树占3/8。题目把单位“1”看作一个整体，单位“1”包含多少棵果树？（填数字）",
+            "correctAnswer": "80",
+            "explanation": "苹果树占“全部果树”的3/8，所以单位“1”是全部果树，共80棵。",
+            "points": 10,
+            "primarySkillId": "frac.whole",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-whole-d7b",
+            "type": "choice",
+            "prompt": "一袋大米重25千克，做饭用掉了这袋米的2/5。被看作单位“1”的是哪个？",
+            "options": [
+              "用掉的10千克",
+              "25千克这袋大米",
+              "2/5",
+              "剩下的15千克"
+            ],
+            "correctAnswer": "25千克这袋大米",
+            "explanation": "整袋大米25千克是被分的整体，所以单位“1”是25千克这袋大米。",
+            "points": 10,
+            "primarySkillId": "frac.whole",
+            "evidenceType": "retention"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-whole-d7a-alt",
+            "type": "choice",
+            "prompt": "六年级有120名学生，其中5/12参加了合唱团。参加合唱团的人数是相对于哪个整体说的？",
+            "options": [
+              "120名六年级学生",
+              "参加合唱团的学生",
+              "未参加合唱团的学生",
+              "5/12"
+            ],
+            "correctAnswer": "120名六年级学生",
+            "explanation": "5/12表示把六年级总人数120名平均分成12份，取其中5份，所以单位“1”是120名六年级学生。",
+            "points": 10,
+            "primarySkillId": "frac.whole",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-whole-d7b-alt",
+            "type": "fill-blank",
+            "prompt": "小明带了一包饼干共20块，分给同学后自己留下1/4。题目把单位“1”看作一个整体，单位“1”包含多少块饼干？（填数字）",
+            "correctAnswer": "20",
+            "explanation": "自己留下“一包饼干”的1/4，所以单位“1”是一包饼干，共20块。",
+            "points": 10,
+            "primarySkillId": "frac.whole",
+            "evidenceType": "retention"
+          }
+        ]
+      }
+    }
   },
   {
     "skillId": "frac.equal_partition",
@@ -154,7 +272,7 @@
       {
         "id": "rep-eqpart-c1",
         "type": "choice",
-        "prompt": "把一个圆形纸片折成4份，只有哪种方式是平均分？（迁移）",
+        "prompt": "把一个圆形纸片折成4份，只有哪种方式是平均分？",
         "options": [
           "随意折4折",
           "对折两次，得4个大小相等的扇形",
@@ -170,7 +288,7 @@
       {
         "id": "rep-eqpart-c2",
         "type": "choice",
-        "prompt": "15本书平均分给5个小组，每组得几本？（迁移）",
+        "prompt": "15本书平均分给5个小组，每组得几本？",
         "options": [
           "2本",
           "3本",
@@ -183,7 +301,125 @@
         "primarySkillId": "frac.equal_partition",
         "evidenceType": "transfer"
       }
-    ]
+    ],
+    "reviewSets": {
+      "d1": {
+        "questions": [
+          {
+            "id": "rev-eqpart-d1a",
+            "type": "fill-blank",
+            "prompt": "老师把18支铅笔平均分给6名同学，每名同学分到几支？（填数字）",
+            "correctAnswer": "3",
+            "explanation": "18÷6=3，每名同学分到3支，每份相等就是平均分。",
+            "points": 10,
+            "primarySkillId": "frac.equal_partition",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-eqpart-d1b",
+            "type": "choice",
+            "prompt": "下面哪种情况属于平均分？",
+            "options": [
+              "把10块巧克力分成2份，一份4块一份6块",
+              "把14颗花生分给7只小松鼠，每只2颗",
+              "把一张纸随意撕成4片",
+              "把9个梨分成2堆"
+            ],
+            "correctAnswer": "把14颗花生分给7只小松鼠，每只2颗",
+            "explanation": "每只小松鼠得到同样多（2颗），每份相等就是平均分。",
+            "points": 10,
+            "primarySkillId": "frac.equal_partition",
+            "evidenceType": "transfer"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-eqpart-d1a-alt",
+            "type": "choice",
+            "prompt": "下面哪种分法不是平均分？",
+            "options": [
+              "把12块糖平均装在3个盒子里，每盒4块",
+              "把一根绳子剪成3段，每段长度不同",
+              "把16个苹果分给4个小朋友，每人4个",
+              "把20元钱换成4张5元"
+            ],
+            "correctAnswer": "把一根绳子剪成3段，每段长度不同",
+            "explanation": "平均分要求每份相等，每段长度不同就不是平均分。",
+            "points": 10,
+            "primarySkillId": "frac.equal_partition",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-eqpart-d1b-alt",
+            "type": "fill-blank",
+            "prompt": "有24瓶酸奶，每箱装8瓶，平均可以装几箱？（填数字）",
+            "correctAnswer": "3",
+            "explanation": "24÷8=3，每箱8瓶且箱数相等，可以装3箱。",
+            "points": 10,
+            "primarySkillId": "frac.equal_partition",
+            "evidenceType": "transfer"
+          }
+        ]
+      },
+      "d7": {
+        "questions": [
+          {
+            "id": "rev-eqpart-d7a",
+            "type": "choice",
+            "prompt": "老师把24块橡皮分给4个小组：第一组7块、第二组6块、第三组5块、第四组6块。这种分法是平均分吗？",
+            "options": [
+              "是平均分，因为分给了4个小组",
+              "不是平均分，因为每组数量不同",
+              "是平均分，因为总数是24块",
+              "无法判断"
+            ],
+            "correctAnswer": "不是平均分，因为每组数量不同",
+            "explanation": "平均分要求每份数量相同。7、6、5、6数量不等，所以不是平均分。",
+            "points": 10,
+            "primarySkillId": "frac.equal_partition",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-eqpart-d7b",
+            "type": "fill-blank",
+            "prompt": "36个气球平均扎成6束，每束几个？（填数字）",
+            "correctAnswer": "6",
+            "explanation": "36÷6=6，每束6个，每份相等就是平均分。",
+            "points": 10,
+            "primarySkillId": "frac.equal_partition",
+            "evidenceType": "retention"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-eqpart-d7a-alt",
+            "type": "fill-blank",
+            "prompt": "一块长方形菜地长12米，要平均分成4块同样长的小菜地，每块长几米？（填数字）",
+            "correctAnswer": "3",
+            "explanation": "12÷4=3，平均分成4块，每块3米。",
+            "points": 10,
+            "primarySkillId": "frac.equal_partition",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-eqpart-d7b-alt",
+            "type": "choice",
+            "prompt": "下面哪种说法是平均分的正确判断？",
+            "options": [
+              "只要分成几份，就是平均分",
+              "每份数量相同，才是平均分",
+              "其中一份特别大，也可以是平均分",
+              "只分成2份才叫平均分"
+            ],
+            "correctAnswer": "每份数量相同，才是平均分",
+            "explanation": "平均分的核心是每份相等，与分成几份无关。",
+            "points": 10,
+            "primarySkillId": "frac.equal_partition",
+            "evidenceType": "retention"
+          }
+        ]
+      }
+    }
   },
   {
     "skillId": "frac.notation",
@@ -248,7 +484,7 @@
       {
         "id": "rep-notation-c1",
         "type": "choice",
-        "prompt": "分数 5/9 的分子是几？它表示什么？（迁移）",
+        "prompt": "分数 5/9 的分子是几？它表示什么？",
         "options": [
           "9，表示分成9份",
           "5，表示取了5份",
@@ -271,12 +507,130 @@
         "primarySkillId": "frac.notation",
         "evidenceType": "transfer"
       }
-    ]
+    ],
+    "reviewSets": {
+      "d1": {
+        "questions": [
+          {
+            "id": "rev-notation-d1a",
+            "type": "fill-blank",
+            "prompt": "把一个披萨平均切成8块，小朋友吃了5块。吃掉的部分用分数表示是？（用a/b格式）",
+            "correctAnswer": "5/8",
+            "explanation": "分母=8（平均切成8块），分子=5（吃了5块），所以是5/8。",
+            "points": 10,
+            "primarySkillId": "frac.notation",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-notation-d1b",
+            "type": "choice",
+            "prompt": "一个长方形被平均分成10份，其中涂色部分占3份。涂色部分用分数怎么表示？",
+            "options": [
+              "10/3",
+              "3/10",
+              "1/10",
+              "3/7"
+            ],
+            "correctAnswer": "3/10",
+            "explanation": "分母=10（平均分成10份），分子=3（涂色3份），所以是3/10。",
+            "points": 10,
+            "primarySkillId": "frac.notation",
+            "evidenceType": "transfer"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-notation-d1a-alt",
+            "type": "choice",
+            "prompt": "分数 2/6 中，分母6和分子2分别表示什么？",
+            "options": [
+              "分母表示取了6份，分子表示平均分成2份",
+              "分母表示平均分成6份，分子表示取了2份",
+              "分母表示整体有6个，分子表示去掉2个",
+              "分母和分子都表示份数，没有区别"
+            ],
+            "correctAnswer": "分母表示平均分成6份，分子表示取了2份",
+            "explanation": "分数线下面的分母表示平均分的总份数，线上面的分子表示取的份数。",
+            "points": 10,
+            "primarySkillId": "frac.notation",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-notation-d1b-alt",
+            "type": "fill-blank",
+            "prompt": "一张正方形纸被平均分成9个小正方形，其中4个涂成红色。红色部分用分数表示是？（用a/b格式）",
+            "correctAnswer": "4/9",
+            "explanation": "分母=9（平均分成9份），分子=4（涂红4份），所以是4/9。",
+            "points": 10,
+            "primarySkillId": "frac.notation",
+            "evidenceType": "transfer"
+          }
+        ]
+      },
+      "d7": {
+        "questions": [
+          {
+            "id": "rev-notation-d7a",
+            "type": "fill-blank",
+            "prompt": "一条彩带被平均分成12段，装饰用去7段。用去的部分占这条彩带的几分之几？（用a/b格式）",
+            "correctAnswer": "7/12",
+            "explanation": "分母=12（分成12段），分子=7（用去7段），所以是7/12。",
+            "points": 10,
+            "primarySkillId": "frac.notation",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-notation-d7b",
+            "type": "choice",
+            "prompt": "把一个月饼平均分成4块，爷爷吃了1块。下面哪个分数表示爷爷吃的部分？",
+            "options": [
+              "4/1",
+              "1/4",
+              "3/4",
+              "1/3"
+            ],
+            "correctAnswer": "1/4",
+            "explanation": "分母=4（平均分成4块），分子=1（吃了1块），所以是1/4。",
+            "points": 10,
+            "primarySkillId": "frac.notation",
+            "evidenceType": "retention"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-notation-d7a-alt",
+            "type": "choice",
+            "prompt": "一个数轴上把0到1之间平均分成5小段，箭头指向第3小段末端。这个点表示的分数是？",
+            "options": [
+              "5/3",
+              "3/5",
+              "2/5",
+              "1/5"
+            ],
+            "correctAnswer": "3/5",
+            "explanation": "0到1平均分成5份，取3份，所以是3/5。",
+            "points": 10,
+            "primarySkillId": "frac.notation",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-notation-d7b-alt",
+            "type": "fill-blank",
+            "prompt": "一个班有40人，平均分成8个小组，每个小组占全班人数的几分之几？（用a/b格式）",
+            "correctAnswer": "1/8",
+            "explanation": "平均分成8组，每组是1份，所以每组占全班的1/8。",
+            "points": 10,
+            "primarySkillId": "frac.notation",
+            "evidenceType": "retention"
+          }
+        ]
+      }
+    }
   },
   {
     "skillId": "frac.of_quantity",
     "estimatedMinutes": 4,
-    "courseId": "g6-fraction-mult",
+    "courseId": "g5-fraction-meaning",
     "diagnosticQuestions": [
       {
         "id": "rep-ofqty-d1",
@@ -331,7 +685,7 @@
       {
         "id": "rep-ofqty-c1",
         "type": "fill-blank",
-        "prompt": "一个水箱容积40升，现在装了水箱容积的3/8。水箱里有多少升水？（填数字）（迁移）",
+        "prompt": "一个水箱容积40升，现在装了水箱容积的3/8。水箱里有多少升水？（填数字）",
         "correctAnswer": "15",
         "explanation": "40 × 3/8 = 120/8 = 15升。",
         "points": 10,
@@ -341,7 +695,7 @@
       {
         "id": "rep-ofqty-c2",
         "type": "choice",
-        "prompt": "一本书共50页，已经读了全书的4/5。下面哪个算式能求出已读了多少页？（迁移）",
+        "prompt": "一本书共50页，已经读了全书的4/5。下面哪个算式能求出已读了多少页？",
         "options": [
           "50 ÷ 4/5",
           "50 × 4/5",
@@ -354,7 +708,125 @@
         "primarySkillId": "frac.of_quantity",
         "evidenceType": "transfer"
       }
-    ]
+    ],
+    "reviewSets": {
+      "d1": {
+        "questions": [
+          {
+            "id": "rev-ofqty-d1a",
+            "type": "fill-blank",
+            "prompt": "一袋大米重60千克，食堂用去了它的5/6。用去了多少千克？（填数字）",
+            "correctAnswer": "50",
+            "explanation": "60 × 5/6 = 300/6 = 50千克。",
+            "points": 10,
+            "primarySkillId": "frac.of_quantity",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-ofqty-d1b",
+            "type": "choice",
+            "prompt": "公园里有72棵树，其中3/8是松树。下面哪个算式能求出松树有多少棵？",
+            "options": [
+              "72 ÷ 3/8",
+              "72 × 3/8",
+              "72 - 3/8",
+              "3/8 ÷ 72"
+            ],
+            "correctAnswer": "72 × 3/8",
+            "explanation": "求72的3/8用乘法：72 × 3/8 = 27棵。",
+            "points": 10,
+            "primarySkillId": "frac.of_quantity",
+            "evidenceType": "transfer"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-ofqty-d1a-alt",
+            "type": "choice",
+            "prompt": "小明的储蓄罐里有48元，他花掉了其中的1/4。求花掉多少元，下面哪个算式正确？",
+            "options": [
+              "48 + 1/4",
+              "48 × 1/4",
+              "48 - 1/4",
+              "48 × 4"
+            ],
+            "correctAnswer": "48 × 1/4",
+            "explanation": "求48的1/4用乘法：48 × 1/4 = 12元。",
+            "points": 10,
+            "primarySkillId": "frac.of_quantity",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-ofqty-d1b-alt",
+            "type": "fill-blank",
+            "prompt": "一块布长28米，做衣服用去了它的4/7。用去了多少米？（填数字）",
+            "correctAnswer": "16",
+            "explanation": "28 × 4/7 = 112/7 = 16米。",
+            "points": 10,
+            "primarySkillId": "frac.of_quantity",
+            "evidenceType": "transfer"
+          }
+        ]
+      },
+      "d7": {
+        "questions": [
+          {
+            "id": "rev-ofqty-d7a",
+            "type": "choice",
+            "prompt": "一桶油有30升，倒出这桶油的2/5。倒出了多少升？",
+            "options": [
+              "30 ÷ 2/5",
+              "30 × 2/5",
+              "30 - 2/5",
+              "2/5 ÷ 30"
+            ],
+            "correctAnswer": "30 × 2/5",
+            "explanation": "求30的2/5用乘法：30 × 2/5 = 12升。",
+            "points": 10,
+            "primarySkillId": "frac.of_quantity",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-ofqty-d7b",
+            "type": "fill-blank",
+            "prompt": "一本书共80页，小红第一天看了全书的3/10。第一天看了多少页？（填数字）",
+            "correctAnswer": "24",
+            "explanation": "80 × 3/10 = 240/10 = 24页。",
+            "points": 10,
+            "primarySkillId": "frac.of_quantity",
+            "evidenceType": "retention"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-ofqty-d7a-alt",
+            "type": "fill-blank",
+            "prompt": "学校操场一圈长400米，小军跑了其中的3/4。小军跑了多少米？（填数字）",
+            "correctAnswer": "300",
+            "explanation": "400 × 3/4 = 1200/4 = 300米。",
+            "points": 10,
+            "primarySkillId": "frac.of_quantity",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-ofqty-d7b-alt",
+            "type": "choice",
+            "prompt": "一篮子鸡蛋有36个，奶奶取出其中的2/9做蛋糕。取出了几个鸡蛋？",
+            "options": [
+              "36 - 2 = 34个",
+              "36 × 2/9 = 8个",
+              "36 - 2/9 = 35个",
+              "36 ÷ 2/9 = 162个"
+            ],
+            "correctAnswer": "36 × 2/9 = 8个",
+            "explanation": "求36的2/9用乘法：36 × 2/9 = 72/9 = 8个。",
+            "points": 10,
+            "primarySkillId": "frac.of_quantity",
+            "evidenceType": "retention"
+          }
+        ]
+      }
+    }
   },
   {
     "skillId": "frac.multiply_fraction",
@@ -414,7 +886,7 @@
       {
         "id": "rep-multfrac-c1",
         "type": "fill-blank",
-        "prompt": "计算 4/5 × 5/8，结果化最简（用a/b格式）：（迁移）",
+        "prompt": "计算 4/5 × 5/8，结果化最简（用a/b格式）：",
         "correctAnswer": "1/2",
         "explanation": "4×5=20，5×8=40，20/40=1/2。",
         "points": 10,
@@ -424,14 +896,132 @@
       {
         "id": "rep-multfrac-c2",
         "type": "fill-blank",
-        "prompt": "计算 7/12 × 4/7，结果化最简（用a/b格式）：（迁移）",
+        "prompt": "计算 7/12 × 4/7，结果化最简（用a/b格式）：",
         "correctAnswer": "1/3",
         "explanation": "7×4=28，12×7=84，28/84=1/3。",
         "points": 10,
         "primarySkillId": "frac.multiply_fraction",
         "evidenceType": "transfer"
       }
-    ]
+    ],
+    "reviewSets": {
+      "d1": {
+        "questions": [
+          {
+            "id": "rev-multfrac-d1a",
+            "type": "fill-blank",
+            "prompt": "求 2/3 乘 4/5 的积，结果化最简（用a/b格式）：",
+            "correctAnswer": "8/15",
+            "explanation": "2×4=8，3×5=15，8/15已是最简分数。",
+            "points": 10,
+            "primarySkillId": "frac.multiply_fraction",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-multfrac-d1b",
+            "type": "choice",
+            "prompt": "计算 2/5 × 5/6 时，下面哪种做法是正确的？",
+            "options": [
+              "分子加分母：2+5=7，5+6=11，得7/11",
+              "分子乘分子、分母乘分母：2×5=10，5×6=30，再约分得1/3",
+              "交叉相乘：2×6=12，5×5=25，得12/25",
+              "只乘分子：2×5=10，分母不变6，得10/6"
+            ],
+            "correctAnswer": "分子乘分子、分母乘分母：2×5=10，5×6=30，再约分得1/3",
+            "explanation": "分数乘法是同位相乘：分子乘分子，分母乘分母。2/5 × 5/6 = 10/30 = 1/3。",
+            "points": 10,
+            "primarySkillId": "frac.multiply_fraction",
+            "evidenceType": "transfer"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-multfrac-d1a-alt",
+            "type": "choice",
+            "prompt": "一块布长 3/4 米，用去它的 2/3。用去了多少米？列式正确的是？",
+            "options": [
+              "3/4 + 2/3",
+              "3/4 × 2/3",
+              "3/4 ÷ 2/3",
+              "2/3 - 3/4"
+            ],
+            "correctAnswer": "3/4 × 2/3",
+            "explanation": "求3/4的2/3用乘法：3/4 × 2/3 = 6/12 = 1/2米。",
+            "points": 10,
+            "primarySkillId": "frac.multiply_fraction",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-multfrac-d1b-alt",
+            "type": "fill-blank",
+            "prompt": "一块长方形木板长 5/6 米，宽 3/10 米，这块木板的面积是多少平方米？（用a/b格式填写最简结果）",
+            "correctAnswer": "1/4",
+            "explanation": "长方形面积=长×宽：5/6 × 3/10 = 15/60 = 1/4 平方米。",
+            "points": 10,
+            "primarySkillId": "frac.multiply_fraction",
+            "evidenceType": "transfer"
+          }
+        ]
+      },
+      "d7": {
+        "questions": [
+          {
+            "id": "rev-multfrac-d7a",
+            "type": "fill-blank",
+            "prompt": "求 2/5 乘 3/7 的积，结果化最简（用a/b格式）：",
+            "correctAnswer": "6/35",
+            "explanation": "2×3=6，5×7=35，6/35已是最简分数。",
+            "points": 10,
+            "primarySkillId": "frac.multiply_fraction",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-multfrac-d7b",
+            "type": "choice",
+            "prompt": "一杯果汁先喝了1/3，再喝剩下部分的1/4。第二次喝了几分之几杯？",
+            "options": [
+              "1/3 × 1/4 = 1/12杯",
+              "2/3 × 1/4 = 1/6杯",
+              "1/3 + 1/4 = 7/12杯",
+              "1/3 ÷ 1/4 = 4/3杯"
+            ],
+            "correctAnswer": "2/3 × 1/4 = 1/6杯",
+            "explanation": "先喝1/3后剩下2/3，再喝2/3的1/4用乘法：2/3 × 1/4 = 2/12 = 1/6杯。",
+            "points": 10,
+            "primarySkillId": "frac.multiply_fraction",
+            "evidenceType": "retention"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-multfrac-d7a-alt",
+            "type": "choice",
+            "prompt": "比较 3/4 × 2/5 和 3/4 的大小，下面哪个说法正确？",
+            "options": [
+              "3/4 × 2/5 比 3/4 大",
+              "3/4 × 2/5 比 3/4 小",
+              "3/4 × 2/5 等于 3/4",
+              "无法比较"
+            ],
+            "correctAnswer": "3/4 × 2/5 比 3/4 小",
+            "explanation": "乘以一个小于1的分数（2/5），结果比原数小：3/4 × 2/5 = 6/20 = 3/10 < 3/4。",
+            "points": 10,
+            "primarySkillId": "frac.multiply_fraction",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-multfrac-d7b-alt",
+            "type": "fill-blank",
+            "prompt": "求 7/8 的 8/7 是多少？（用a/b格式或整数填写最简结果）",
+            "correctAnswer": "1",
+            "explanation": "7/8 × 8/7 = 56/56 = 1。互为倒数的两个数相乘得1。",
+            "points": 10,
+            "primarySkillId": "frac.multiply_fraction",
+            "evidenceType": "retention"
+          }
+        ]
+      }
+    }
   },
   {
     "skillId": "frac.reciprocal",
@@ -490,7 +1080,7 @@
       {
         "id": "rep-recip-c1",
         "type": "fill-blank",
-        "prompt": "整数6的倒数是多少？（用a/b格式）（迁移）",
+        "prompt": "整数6的倒数是多少？（用a/b格式）",
         "correctAnswer": "1/6",
         "explanation": "6=6/1，倒数是1/6，因为6 × 1/6 = 1。",
         "points": 10,
@@ -500,7 +1090,7 @@
       {
         "id": "rep-recip-c2",
         "type": "choice",
-        "prompt": "下面哪个说法是正确的？（迁移）",
+        "prompt": "下面哪个说法是正确的？",
         "options": [
           "0的倒数是0",
           "1的倒数是自身（1）",
@@ -513,7 +1103,125 @@
         "primarySkillId": "frac.reciprocal",
         "evidenceType": "transfer"
       }
-    ]
+    ],
+    "reviewSets": {
+      "d1": {
+        "questions": [
+          {
+            "id": "rev-recip-d1a",
+            "type": "fill-blank",
+            "prompt": "把整数 9 化成分数后，它的倒数是多少？（用a/b格式）",
+            "correctAnswer": "1/9",
+            "explanation": "9=9/1，化成分数后分子分母互换，倒数是1/9。",
+            "points": 10,
+            "primarySkillId": "frac.reciprocal",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-recip-d1b",
+            "type": "choice",
+            "prompt": "5/7 和它的倒数相乘，积是多少？",
+            "options": [
+              "5/7",
+              "7/5",
+              "1",
+              "25/49"
+            ],
+            "correctAnswer": "1",
+            "explanation": "任何非零数和它的倒数相乘都等于1，这是倒数的定义。",
+            "points": 10,
+            "primarySkillId": "frac.reciprocal",
+            "evidenceType": "transfer"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-recip-d1a-alt",
+            "type": "choice",
+            "prompt": "下面哪个数是 4/9 的倒数？",
+            "options": [
+              "4/9",
+              "9/4",
+              "-4/9",
+              "1/4"
+            ],
+            "correctAnswer": "9/4",
+            "explanation": "倒数是分子分母互换，4/9 的倒数是 9/4。",
+            "points": 10,
+            "primarySkillId": "frac.reciprocal",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-recip-d1b-alt",
+            "type": "fill-blank",
+            "prompt": "一个数与 2/5 相乘等于1，这个数是多少？（用a/b格式）",
+            "correctAnswer": "5/2",
+            "explanation": "与2/5相乘等于1的数就是2/5的倒数，即5/2。",
+            "points": 10,
+            "primarySkillId": "frac.reciprocal",
+            "evidenceType": "transfer"
+          }
+        ]
+      },
+      "d7": {
+        "questions": [
+          {
+            "id": "rev-recip-d7a",
+            "type": "fill-blank",
+            "prompt": "3/11 的分子和分母交换位置后，得到什么数？（用a/b格式）",
+            "correctAnswer": "11/3",
+            "explanation": "3/11 分子分母互换得 11/3，3/11 × 11/3 = 1。",
+            "points": 10,
+            "primarySkillId": "frac.reciprocal",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-recip-d7b",
+            "type": "choice",
+            "prompt": "下面关于倒数的说法，哪个是正确的？",
+            "options": [
+              "1的倒数是0",
+              "0有倒数",
+              "非零真分数的倒数一定大于1",
+              "倒数就是相反数"
+            ],
+            "correctAnswer": "非零真分数的倒数一定大于1",
+            "explanation": "非零真分数分子小于分母（均大于0），互换后分子大于分母，所以倒数大于1。0没有倒数（0乘任何数都不等于1），1的倒数是1。",
+            "points": 10,
+            "primarySkillId": "frac.reciprocal",
+            "evidenceType": "retention"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-recip-d7a-alt",
+            "type": "choice",
+            "prompt": "下面哪一组数互为倒数？",
+            "options": [
+              "3/5 和 5/3",
+              "3/5 和 3/5",
+              "3/5 和 2/5",
+              "3/5 和 1"
+            ],
+            "correctAnswer": "3/5 和 5/3",
+            "explanation": "互为倒数要求乘积为1，3/5 × 5/3 = 15/15 = 1。",
+            "points": 10,
+            "primarySkillId": "frac.reciprocal",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-recip-d7b-alt",
+            "type": "fill-blank",
+            "prompt": "写出 3/5 的倒数。（用a/b格式）",
+            "correctAnswer": "5/3",
+            "explanation": "3/5 的倒数是分子分母互换：5/3。验证 3/5 × 5/3 = 15/15 = 1。",
+            "points": 10,
+            "primarySkillId": "frac.reciprocal",
+            "evidenceType": "retention"
+          }
+        ]
+      }
+    }
   },
   {
     "skillId": "frac.division_grouping",
@@ -572,7 +1280,7 @@
       {
         "id": "rep-divgrp-c1",
         "type": "choice",
-        "prompt": "5/6 米的布，每件衣服用1/6米，能做几件衣服？下面哪个算式正确？（迁移，包含除）",
+        "prompt": "5/6 米的布，每件衣服用1/6米，能做几件衣服？下面哪个算式正确？（包含除）",
         "options": [
           "5/6 × 1/6",
           "5/6 ÷ 1/6",
@@ -595,7 +1303,125 @@
         "primarySkillId": "frac.division_grouping",
         "evidenceType": "transfer"
       }
-    ]
+    ],
+    "reviewSets": {
+      "d1": {
+        "questions": [
+          {
+            "id": "rev-divgrp-d1a",
+            "type": "fill-blank",
+            "prompt": "一根铁丝长3/5米，每1/10米剪一段，能剪几段？（填数字）",
+            "correctAnswer": "6",
+            "explanation": "3/5 ÷ 1/10 = 3/5 × 10 = 30/5 = 6段。",
+            "points": 10,
+            "primarySkillId": "frac.division_grouping",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-divgrp-d1b",
+            "type": "choice",
+            "prompt": "9/10米布，每条围巾用3/10米，能做几条？用哪个算式？",
+            "options": [
+              "9/10 × 3/10",
+              "3/10 ÷ 9/10",
+              "9/10 ÷ 3/10",
+              "9/10 - 3/10"
+            ],
+            "correctAnswer": "9/10 ÷ 3/10",
+            "explanation": "问9/10里面有几个3/10 → 9/10 ÷ 3/10 = 9/10 × 10/3 = 3条。",
+            "points": 10,
+            "primarySkillId": "frac.division_grouping",
+            "evidenceType": "transfer"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-divgrp-d1a-alt",
+            "type": "choice",
+            "prompt": "7/8升牛奶，每小杯装1/8升，可以装满几小杯？",
+            "options": [
+              "7小杯",
+              "8小杯",
+              "1小杯",
+              "56小杯"
+            ],
+            "correctAnswer": "7小杯",
+            "explanation": "7/8 ÷ 1/8 = 7/8 × 8 = 7小杯。",
+            "points": 10,
+            "primarySkillId": "frac.division_grouping",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-divgrp-d1b-alt",
+            "type": "fill-blank",
+            "prompt": "4/5千克糖果，每袋装2/15千克，能装几袋？（填数字）",
+            "correctAnswer": "6",
+            "explanation": "4/5 ÷ 2/15 = 4/5 × 15/2 = 60/10 = 6袋。",
+            "points": 10,
+            "primarySkillId": "frac.division_grouping",
+            "evidenceType": "transfer"
+          }
+        ]
+      },
+      "d7": {
+        "questions": [
+          {
+            "id": "rev-divgrp-d7a",
+            "type": "fill-blank",
+            "prompt": "一段铁丝长3/4米，每3/8米剪一段，能剪几段？（填数字）",
+            "correctAnswer": "2",
+            "explanation": "3/4 ÷ 3/8 = 3/4 × 8/3 = 24/12 = 2段。",
+            "points": 10,
+            "primarySkillId": "frac.division_grouping",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-divgrp-d7b",
+            "type": "choice",
+            "prompt": "5/6千克面粉，每个包子用1/12千克，能做几个包子？",
+            "options": [
+              "5/6 × 1/12 = 5/72个",
+              "5/6 ÷ 1/12 = 10个",
+              "1/12 ÷ 5/6 = 1/10个",
+              "5/6 + 1/12 = 11/12个"
+            ],
+            "correctAnswer": "5/6 ÷ 1/12 = 10个",
+            "explanation": "问5/6里面有几个1/12 → 5/6 ÷ 1/12 = 5/6 × 12 = 10个。",
+            "points": 10,
+            "primarySkillId": "frac.division_grouping",
+            "evidenceType": "retention"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-divgrp-d7a-alt",
+            "type": "choice",
+            "prompt": "3/4升果汁，每杯倒1/8升，可以倒满几杯？",
+            "options": [
+              "3杯",
+              "4杯",
+              "6杯",
+              "8杯"
+            ],
+            "correctAnswer": "6杯",
+            "explanation": "3/4 ÷ 1/8 = 3/4 × 8 = 6杯。",
+            "points": 10,
+            "primarySkillId": "frac.division_grouping",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-divgrp-d7b-alt",
+            "type": "fill-blank",
+            "prompt": "8/9米长的绸带，每2/9米做一朵花，可以做几朵？（填数字）",
+            "correctAnswer": "4",
+            "explanation": "8/9 ÷ 2/9 = 8/9 × 9/2 = 4朵。",
+            "points": 10,
+            "primarySkillId": "frac.division_grouping",
+            "evidenceType": "retention"
+          }
+        ]
+      }
+    }
   },
   {
     "skillId": "frac.division_sharing",
@@ -654,7 +1480,7 @@
       {
         "id": "rep-divsha-c1",
         "type": "choice",
-        "prompt": "5/6 升牛奶平均倒入5个杯子，每杯多少升？下面哪个算式正确？（迁移，平均分）",
+        "prompt": "5/6 升牛奶平均倒入5个杯子，每杯多少升？下面哪个算式正确？（平均分）",
         "options": [
           "5/6 × 5",
           "5 ÷ 5/6",
@@ -670,14 +1496,132 @@
       {
         "id": "rep-divsha-c2",
         "type": "fill-blank",
-        "prompt": "3/8 千克面粉平均装入3个袋子，每袋多少千克？（计算 3/8 ÷ 3，用a/b格式）（迁移）",
+        "prompt": "3/8 千克面粉平均装入3个袋子，每袋多少千克？（计算 3/8 ÷ 3，用a/b格式）",
         "correctAnswer": "1/8",
         "explanation": "3/8 ÷ 3 = 3/8 × 1/3 = 3/24 = 1/8千克。",
         "points": 10,
         "primarySkillId": "frac.division_sharing",
         "evidenceType": "transfer"
       }
-    ]
+    ],
+    "reviewSets": {
+      "d1": {
+        "questions": [
+          {
+            "id": "rev-divsha-d1a",
+            "type": "fill-blank",
+            "prompt": "6/7 升牛奶平均分给6个小朋友，每人多少升？（用a/b格式，化最简分数）",
+            "correctAnswer": "1/7",
+            "explanation": "6/7 ÷ 6 = 6/7 × 1/6 = 6/42 = 1/7升。",
+            "points": 10,
+            "primarySkillId": "frac.division_sharing",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-divsha-d1b",
+            "type": "choice",
+            "prompt": "4/5 米布平均做2件背心，每件用多少米？",
+            "options": [
+              "4/5 × 2 = 8/5米",
+              "2 ÷ 4/5 = 5/2米",
+              "4/5 ÷ 2 = 2/5米",
+              "4/5 - 2 = 负数"
+            ],
+            "correctAnswer": "4/5 ÷ 2 = 2/5米",
+            "explanation": "平均分成2份 → 4/5 ÷ 2 = 4/5 × 1/2 = 2/5米。",
+            "points": 10,
+            "primarySkillId": "frac.division_sharing",
+            "evidenceType": "transfer"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-divsha-d1a-alt",
+            "type": "choice",
+            "prompt": "把 3/5 千克糖果平均分给3个人，每人分得多少？下面哪个算式正确？",
+            "options": [
+              "3/5 × 3",
+              "3/5 ÷ 3",
+              "3 ÷ 3/5",
+              "3/5 + 3"
+            ],
+            "correctAnswer": "3/5 ÷ 3",
+            "explanation": "平均分给3人，用除法：3/5 ÷ 3 = 3/5 × 1/3 = 1/5千克。",
+            "points": 10,
+            "primarySkillId": "frac.division_sharing",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-divsha-d1b-alt",
+            "type": "fill-blank",
+            "prompt": "8/9 升水平均倒入4个杯子，每个杯子有多少升？（用a/b格式，化最简分数）",
+            "correctAnswer": "2/9",
+            "explanation": "8/9 ÷ 4 = 8/9 × 1/4 = 8/36 = 2/9升。",
+            "points": 10,
+            "primarySkillId": "frac.division_sharing",
+            "evidenceType": "transfer"
+          }
+        ]
+      },
+      "d7": {
+        "questions": [
+          {
+            "id": "rev-divsha-d7a",
+            "type": "fill-blank",
+            "prompt": "3/4 千克糖平均分成2份，每份多少千克？（用a/b格式，化最简分数）",
+            "correctAnswer": "3/8",
+            "explanation": "3/4 ÷ 2 = 3/4 × 1/2 = 3/8千克。",
+            "points": 10,
+            "primarySkillId": "frac.division_sharing",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-divsha-d7b",
+            "type": "choice",
+            "prompt": "7/8 ÷ 7 表示什么意思？",
+            "options": [
+              "7/8 里面有几个7",
+              "把7/8 平均分成7份，每份多少",
+              "7 里面有几个7/8",
+              "7/8 和7的积"
+            ],
+            "correctAnswer": "把7/8 平均分成7份，每份多少",
+            "explanation": "除以整数7就是平均分成7份，求每份大小。7/8 ÷ 7 = 1/8。",
+            "points": 10,
+            "primarySkillId": "frac.division_sharing",
+            "evidenceType": "retention"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-divsha-d7a-alt",
+            "type": "choice",
+            "prompt": "把 5/6 升果汁平均倒入2个瓶子，每瓶有多少升？",
+            "options": [
+              "5/6 × 2 = 5/3升",
+              "5/6 ÷ 2 = 5/12升",
+              "2 ÷ 5/6 = 12/5升",
+              "5/6 + 1/2 = 4/3升"
+            ],
+            "correctAnswer": "5/6 ÷ 2 = 5/12升",
+            "explanation": "平均倒入2瓶，用除法：5/6 ÷ 2 = 5/6 × 1/2 = 5/12升。",
+            "points": 10,
+            "primarySkillId": "frac.division_sharing",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-divsha-d7b-alt",
+            "type": "fill-blank",
+            "prompt": "3/5 米长的绳子平均剪成2段，每段长多少米？（用a/b格式，化最简分数）",
+            "correctAnswer": "3/10",
+            "explanation": "3/5 ÷ 2 = 3/5 × 1/2 = 3/10米。",
+            "points": 10,
+            "primarySkillId": "frac.division_sharing",
+            "evidenceType": "retention"
+          }
+        ]
+      }
+    }
   },
   {
     "skillId": "frac.divide_transform",
@@ -738,7 +1682,7 @@
       {
         "id": "rep-divtrans-c1",
         "type": "fill-blank",
-        "prompt": "计算 5/8 ÷ 5/4，结果化最简（用a/b格式）：（迁移）",
+        "prompt": "计算 5/8 ÷ 5/4，结果化最简（用a/b格式）：",
         "correctAnswer": "1/2",
         "explanation": "5/8 ÷ 5/4 = 5/8 × 4/5 = 20/40 = 1/2。",
         "points": 10,
@@ -748,13 +1692,131 @@
       {
         "id": "rep-divtrans-c2",
         "type": "fill-blank",
-        "prompt": "计算 7/9 ÷ 7/3，结果化最简（用a/b格式）：（迁移）",
+        "prompt": "计算 7/9 ÷ 7/3，结果化最简（用a/b格式）：",
         "correctAnswer": "1/3",
         "explanation": "7/9 ÷ 7/3 = 7/9 × 3/7 = 21/63 = 1/3。",
         "points": 10,
         "primarySkillId": "frac.divide_transform",
         "evidenceType": "transfer"
       }
-    ]
+    ],
+    "reviewSets": {
+      "d1": {
+        "questions": [
+          {
+            "id": "rev-divtrans-d1a",
+            "type": "fill-blank",
+            "prompt": "求 3/7 ÷ 9/14 的商，结果化最简（用a/b格式）：",
+            "correctAnswer": "2/3",
+            "explanation": "3/7 ÷ 9/14 = 3/7 × 14/9 = 42/63 = 2/3。",
+            "points": 10,
+            "primarySkillId": "frac.divide_transform",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-divtrans-d1b",
+            "type": "choice",
+            "prompt": "小明有3/4米布，每块手帕用3/8米，能做几块？用哪个算式？",
+            "options": [
+              "3/4 × 3/8 = 9/32",
+              "3/4 ÷ 3/8 = 2",
+              "3/8 ÷ 3/4 = 1/2",
+              "3/4 - 3/8 = 3/8"
+            ],
+            "correctAnswer": "3/4 ÷ 3/8 = 2",
+            "explanation": "问3/4里面有几个3/8 → 3/4 ÷ 3/8 = 3/4 × 8/3 = 2块。",
+            "points": 10,
+            "primarySkillId": "frac.divide_transform",
+            "evidenceType": "transfer"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-divtrans-d1a-alt",
+            "type": "choice",
+            "prompt": "计算 2/5 ÷ 3/4 时，下面哪个转化是正确的？",
+            "options": [
+              "2/5 ÷ 3/4 = 2/5 × 3/4",
+              "2/5 ÷ 3/4 = 2/5 × 4/3",
+              "2/5 ÷ 3/4 = 5/2 × 4/3",
+              "2/5 ÷ 3/4 = 2/5 + 4/3"
+            ],
+            "correctAnswer": "2/5 ÷ 3/4 = 2/5 × 4/3",
+            "explanation": "除以3/4等于乘3/4的倒数4/3，被除数2/5不变。",
+            "points": 10,
+            "primarySkillId": "frac.divide_transform",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-divtrans-d1b-alt",
+            "type": "fill-blank",
+            "prompt": "计算 5/6 除以 10/9 的商，结果化最简（用a/b格式）：",
+            "correctAnswer": "3/4",
+            "explanation": "5/6 ÷ 10/9 = 5/6 × 9/10 = 45/60 = 3/4。",
+            "points": 10,
+            "primarySkillId": "frac.divide_transform",
+            "evidenceType": "transfer"
+          }
+        ]
+      },
+      "d7": {
+        "questions": [
+          {
+            "id": "rev-divtrans-d7a",
+            "type": "fill-blank",
+            "prompt": "求 4/9 ÷ 8/3 的商，结果化最简（用a/b格式）：",
+            "correctAnswer": "1/6",
+            "explanation": "4/9 ÷ 8/3 = 4/9 × 3/8 = 12/72 = 1/6。",
+            "points": 10,
+            "primarySkillId": "frac.divide_transform",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-divtrans-d7b",
+            "type": "choice",
+            "prompt": "一段绳子长5/6米，每小段长5/12米，能剪成几段？",
+            "options": [
+              "5/6 × 5/12 = 25/72段",
+              "5/6 ÷ 5/12 = 2段",
+              "5/12 ÷ 5/6 = 1/2段",
+              "5/6 + 5/12 = 5/4段"
+            ],
+            "correctAnswer": "5/6 ÷ 5/12 = 2段",
+            "explanation": "5/6 ÷ 5/12 = 5/6 × 12/5 = 60/30 = 2段。除以分数等于乘以倒数。",
+            "points": 10,
+            "primarySkillId": "frac.divide_transform",
+            "evidenceType": "retention"
+          }
+        ],
+        "alternateQuestions": [
+          {
+            "id": "rev-divtrans-d7a-alt",
+            "type": "choice",
+            "prompt": "计算 3/4 ÷ 1/8 时，第一步应该怎样转化？",
+            "options": [
+              "3/4 × 1/8",
+              "3/4 × 8/1",
+              "3/4 ÷ 8/1",
+              "8/1 ÷ 3/4"
+            ],
+            "correctAnswer": "3/4 × 8/1",
+            "explanation": "除以1/8等于乘1/8的倒数8/1，被除数3/4不变：3/4 × 8/1 = 6。",
+            "points": 10,
+            "primarySkillId": "frac.divide_transform",
+            "evidenceType": "transfer"
+          },
+          {
+            "id": "rev-divtrans-d7b-alt",
+            "type": "fill-blank",
+            "prompt": "求 7/10 除以 14/15 的商，结果化最简（用a/b格式）：",
+            "correctAnswer": "3/4",
+            "explanation": "7/10 ÷ 14/15 = 7/10 × 15/14 = 105/140 = 3/4。",
+            "points": 10,
+            "primarySkillId": "frac.divide_transform",
+            "evidenceType": "retention"
+          }
+        ]
+      }
+    }
   }
 ]

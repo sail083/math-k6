@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { getGrades, getKnowledgePointsByGrade, getAllKnowledgePoints, getKnowledgePointById } from '@/lib/content';
 import { getCourseMapping, getSkillById } from '@/lib/knowledgeGraph';
 import { useProgress } from '@/context/ProgressContext';
+import { useAuth } from '@/context/AuthContext';
 import type { TextbookFilter } from '@/lib/types';
+import type { HomeTask } from '@/lib/progress';
 
 const gradeMeta: Record<number, { title: string; desc: string; emoji: string }> = {
   3: { title: '三年级', desc: '面积、分数初步认识', emoji: '📐' },
@@ -21,101 +23,109 @@ const versionColors: Record<TextbookFilter, string> = {
   苏教版: 'bg-emerald-600 text-white',
 };
 
-interface RecommendedAction {
-  link: string;
-  reason: string;
-  title: string;
-  description: string;
-  urgent: boolean;
+/** Resolve a display title for a HomeTask using knowledge graph / content lookups */
+function resolveTaskTitle(task: HomeTask): string {
+  if (task.type === 'skill_review' && task.skillId) {
+    const node = getSkillById(task.skillId);
+    if (node) return node.name;
+  }
+  if (task.type === 'course_review' && task.courseId) {
+    const kp = getKnowledgePointById(task.courseId);
+    if (kp) return kp.meta.title;
+  }
+  if (task.type === 'active_repair' && task.skillId) {
+    const node = getSkillById(task.skillId);
+    if (node) return node.name;
+  }
+  if (task.type === 'course_intervention' && task.courseId) {
+    const kp = getKnowledgePointById(task.courseId);
+    if (kp) return kp.meta.title;
+  }
+  if (task.type === 'learning_goal' && task.skillId) {
+    const node = getSkillById(task.skillId);
+    if (node) return node.name;
+  }
+  if (task.type === 'current_learning' && task.courseId) {
+    const kp = getKnowledgePointById(task.courseId);
+    if (kp) return kp.meta.title;
+  }
+  return task.title;
 }
 
 export default function HomePage() {
   const grades = getGrades();
-  const { progress, isPassed, getDueReviewIds, getMasteryStatus } = useProgress();
+  const { progress, isPassed, getDueReviewIds, getMasteryStatus, getHomeTasks, getDueSkillReviews, emitEvent } = useProgress();
+  const { user } = useAuth();
   const [version, setVersion] = useState<TextbookFilter>('全部');
 
-  // Compute recommended action
+  // Compute task list (priority-based)
   const allKPs = getAllKnowledgePoints();
   const dueReviews = getDueReviewIds();
+  const dueSkillReviewCount = getDueSkillReviews().length;
+  const tasks = getHomeTasks();
 
-  let recommended: RecommendedAction | null = null;
+  // Primary task = first item; upcoming = next 2
+  const primaryTask = tasks[0] ?? null;
+  const upcomingTasks = tasks.slice(1, 3);
 
-  if (dueReviews.length > 0) {
-    const kp = getKnowledgePointById(dueReviews[0]);
-    if (kp) {
-      recommended = {
-        link: `/kp/${kp.meta.id}`,
-        reason: '复习时间到了',
-        title: kp.meta.title,
-        description: `${kp.meta.grade}年级 · 这个知识点需要复习了，来巩固一下。`,
-        urgent: true,
-      };
+  // F3: home_task_viewed — idempotent per task identity/due cycle
+  const viewedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (primaryTask && user) {
+      const cycleId = primaryTask.eventCycleId;
+      if (viewedRef.current !== cycleId) {
+        viewedRef.current = cycleId;
+        emitEvent({
+          clientEventId: `htv:${cycleId}`,
+          eventName: 'home_task_viewed',
+          skillId: primaryTask.skillId,
+          courseId: primaryTask.courseId,
+        });
+      }
     }
-  } else if (progress.repairSession?.status === 'active') {
-    // Priority 2: active repair session
-    const { skillId, targetSkillId } = progress.repairSession;
-    const skillNode = getSkillById(skillId);
-    const targetNode = getSkillById(targetSkillId);
-    recommended = {
-      link: `/repair/${skillId}?target=${targetSkillId}`,
-      reason: '微补修进行中',
-      title: skillNode?.name ?? skillId,
-      description: `目标：${targetNode?.name ?? targetSkillId} · 继续你的微补修`,
-      urgent: false,
-    };
-  } else if (progress.learningGoal) {
-    // Priority 3: learning goal
-    const { skillId } = progress.learningGoal;
-    const goalNode = getSkillById(skillId);
-    recommended = {
-      link: `/map?target=${skillId}`,
-      reason: '学习目标',
-      title: goalNode?.name ?? skillId,
-      description: `前往知识地图，查看通往"${goalNode?.name ?? skillId}"的下一步`,
-      urgent: false,
-    };
-  } else if (progress.currentLearning) {
-    const kp = getKnowledgePointById(progress.currentLearning);
-    if (kp && !isPassed(kp.meta.id)) {
-      recommended = {
-        link: `/kp/${kp.meta.id}`,
-        reason: '继续学习',
-        title: kp.meta.title,
-        description: `${kp.meta.grade}年级 · 你上次学到这里，继续吧。`,
-        urgent: false,
-      };
-    }
-  }
+  }, [primaryTask, user, emitEvent]);
 
-  if (!recommended) {
+  // F3: home_task_opened on CTA click
+  const handleTaskClick = (task: HomeTask) => {
+    if (user) {
+      emitEvent({
+        clientEventId: `hto:${task.eventCycleId}`,
+        eventName: 'home_task_opened',
+        skillId: task.skillId,
+        courseId: task.courseId,
+      });
+    }
+  };
+
+  // Fallback: next new course when no tasks exist
+  let fallbackTask: { link: string; title: string; description: string } | null = null;
+  if (!primaryTask) {
     const firstRecommended = allKPs.find(
       (kp) => !isPassed(kp.meta.id) && kp.meta.prerequisites.every((p) => isPassed(p)),
     );
     const target = firstRecommended ?? allKPs.find((kp) => !isPassed(kp.meta.id));
     if (target) {
       const hasUnmetPrereqs = target.meta.prerequisites.some((p) => !isPassed(p));
-      recommended = {
+      fallbackTask = {
         link: `/kp/${target.meta.id}`,
-        reason: hasUnmetPrereqs ? '推荐学习' : '开始学习',
         title: target.meta.title,
         description: hasUnmetPrereqs
           ? `${target.meta.grade}年级 · 可自由学习，建议先复习前置知识。`
           : `${target.meta.grade}年级 · 还没有学过的知识点，从这里开始吧。`,
-        urgent: false,
       };
     }
   }
 
   // 计算推荐课程的路径语境
-  const recommendedKpId = recommended?.link?.replace('/kp/', '');
-  const recommendedMapping = recommendedKpId ? getCourseMapping(recommendedKpId) : null;
-  const recommendedPath = recommendedMapping && recommendedMapping.coreSkills.length > 0
-    ? `数字与运算 › 分数 › ${getSkillById(recommendedMapping.coreSkills[0])?.name ?? ''}`
+  const primaryKpId = primaryTask?.courseId ?? (primaryTask?.link?.startsWith('/kp/') ? primaryTask.link.replace('/kp/', '') : null);
+  const primaryMapping = primaryKpId ? getCourseMapping(primaryKpId) : null;
+  const primaryPath = primaryMapping && primaryMapping.coreSkills.length > 0
+    ? `数字与运算 › 分数 › ${getSkillById(primaryMapping.coreSkills[0])?.name ?? ''}`
     : null;
 
-  // Compute stable/provisional/due counts
+  // Compute stable/provisional/due counts (F6: include skill reviews in due count)
   const stableCount = allKPs.filter((kp) => getMasteryStatus(kp.meta.id) === 'stable').length;
-  const dueCount = dueReviews.length;
+  const dueCount = dueReviews.length + dueSkillReviewCount;
   const provisionalCount = allKPs.filter((kp) => getMasteryStatus(kp.meta.id) === 'provisional').length;
 
   // 计算每个版本覆盖的知识点总数
@@ -142,31 +152,83 @@ export default function HomePage() {
         </p>
       </section>
 
-      {/* 今日推荐 / 继续学习 */}
-      {recommended && (
+      {/* 今日任务 */}
+      {(primaryTask || fallbackTask) && (
         <section>
-          <Link
-            to={recommended.link}
-            className={`block rounded-xl border-2 p-5 transition-all hover:shadow-md min-h-[88px] ${
-              recommended.urgent
-                ? 'border-amber-400 bg-amber-50'
-                : 'border-indigo-200 bg-indigo-50/60'
-            }`}
-          >
-            <div className="flex items-center justify-between gap-4">
-              <div className="min-w-0 flex-1">
-                <span className={`text-xs font-bold ${recommended.urgent ? 'text-amber-600' : 'text-indigo-500'}`}>
-                  {recommended.reason}
-                </span>
-                <h2 className="text-lg font-bold text-slate-800 mt-1 truncate">{recommended.title}</h2>
-                <p className="text-sm text-slate-500 mt-0.5">{recommended.description}</p>
-                {recommendedPath && (
-                  <p className="text-xs text-indigo-500 mt-1">📍 {recommendedPath}</p>
-                )}
+          <h2 className="text-sm font-semibold text-slate-500 mb-2">今日任务</h2>
+
+          {/* Primary task card */}
+          {primaryTask ? (
+            <Link
+              to={primaryTask.link}
+              onClick={() => handleTaskClick(primaryTask)}
+              className={`block rounded-xl border-2 p-5 transition-all hover:shadow-md min-h-[88px] ${
+                primaryTask.urgent
+                  ? 'border-amber-400 bg-amber-50'
+                  : 'border-indigo-200 bg-indigo-50/60'
+              }`}
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <span className={`text-xs font-bold ${primaryTask.urgent ? 'text-amber-600' : 'text-indigo-500'}`}>
+                    {primaryTask.reason}
+                  </span>
+                  <h2 className="text-lg font-bold text-slate-800 mt-1 truncate">
+                    {resolveTaskTitle(primaryTask)}
+                  </h2>
+                  <p className="text-sm text-slate-500 mt-0.5">
+                    {primaryTask.title}
+                    {primaryTask.duration && ` · ${primaryTask.duration}`}
+                  </p>
+                  {primaryPath && (
+                    <p className="text-xs text-indigo-500 mt-1">📍 {primaryPath}</p>
+                  )}
+                </div>
+                <span className={`shrink-0 text-2xl ${primaryTask.urgent ? 'text-amber-400' : 'text-indigo-400'}`}>→</span>
               </div>
-              <span className={`shrink-0 text-2xl ${recommended.urgent ? 'text-amber-400' : 'text-indigo-400'}`}>→</span>
+            </Link>
+          ) : fallbackTask ? (
+            <Link
+              to={fallbackTask.link}
+              className="block rounded-xl border-2 border-indigo-200 bg-indigo-50/60 p-5 transition-all hover:shadow-md min-h-[88px]"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <span className="text-xs font-bold text-indigo-500">开始学习</span>
+                  <h2 className="text-lg font-bold text-slate-800 mt-1 truncate">{fallbackTask.title}</h2>
+                  <p className="text-sm text-slate-500 mt-0.5">{fallbackTask.description}</p>
+                </div>
+                <span className="shrink-0 text-2xl text-indigo-400">→</span>
+              </div>
+            </Link>
+          ) : null}
+
+          {/* Upcoming task previews (max 2) */}
+          {upcomingTasks.length > 0 && (
+            <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {upcomingTasks.map((task) => (
+                <Link
+                  key={`${task.type}-${task.skillId ?? task.courseId ?? ''}`}
+                  to={task.link}
+                  onClick={() => handleTaskClick(task)}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 transition-all hover:border-indigo-300 hover:shadow-sm min-h-[44px]"
+                >
+                  <div className="min-w-0 flex-1">
+                    <span className={`text-xs font-medium ${task.urgent ? 'text-amber-600' : 'text-slate-500'}`}>
+                      {task.reason}
+                    </span>
+                    <p className="text-sm font-semibold text-slate-700 truncate">
+                      {resolveTaskTitle(task)}
+                    </p>
+                    {task.duration && (
+                      <p className="text-xs text-slate-400">{task.duration}</p>
+                    )}
+                  </div>
+                  <span className="shrink-0 text-slate-300">→</span>
+                </Link>
+              ))}
             </div>
-          </Link>
+          )}
         </section>
       )}
 
