@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, type ReactNode } from 'react';
-import type { ProgressData, MasteryStatus, EvidenceType, SkillEvidenceMode, SkillReviewSchedule, ExperimentAssignment, LearningEventName } from '@/lib/types';
+import type { ProgressData, MasteryStatus, EvidenceType, SkillEvidenceMode, SkillReviewSchedule, ExperimentAssignment, LearningEventName, LearningGoalSource } from '@/lib/types';
 import { useAuth } from '@/context/AuthContext';
 import { supabase, logLearningEvent } from '@/lib/supabase';
 import {
@@ -70,7 +70,7 @@ interface ProgressContextValue {
   hasDirectSkillEvidence: (skillId: string) => boolean;
   isSkillReadyForPath: (skillId: string) => boolean;
   // ===== v0.2：目标与补修 =====
-  setGoal: (skillId: string) => void;
+  setGoal: (skillId: string, source?: LearningGoalSource) => void;
   startRepair: (skillId: string, targetSkillId: string) => void;
   finishRepair: (skillId: string) => void;
   // ===== v0.3：技能复习 =====
@@ -354,9 +354,22 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     [progress],
   );
 
-  const setGoal = useCallback((skillId: string) => {
-    setProgress((prev) => setLearningGoalUtil(prev, skillId, Date.now()));
-  }, []);
+  const setGoal = useCallback((skillId: string, source: LearningGoalSource = 'map') => {
+    const now = Date.now();
+    const prevGoal = progress.learningGoal;
+    // 只有真正切换目标或来源时才写 learning_goal_started，避免重复目标重复上报。
+    const changed = !prevGoal || prevGoal.skillId !== skillId || prevGoal.source !== source;
+    setProgress((prev) => setLearningGoalUtil(prev, skillId, now, source));
+    if (changed) {
+      // clientEventId 含时间戳：每次真正切换目标/来源都产生一个新事件，不记录任何 PII。
+      emitEventInternal({
+        clientEventId: `lg:${skillId}:${source}:${now}`,
+        eventName: 'learning_goal_started',
+        skillId,
+        properties: { source },
+      });
+    }
+  }, [progress, emitEventInternal]);
 
   const startRepair = useCallback((skillId: string, targetSkillId: string) => {
     setProgress((prev) => startRepairSessionUtil(prev, skillId, targetSkillId, Date.now()));

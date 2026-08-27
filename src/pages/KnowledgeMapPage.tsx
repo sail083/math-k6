@@ -1,5 +1,6 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import GoalContextBar from '@/components/GoalContextBar';
 import {
   graph,
   getSkillById,
@@ -288,7 +289,7 @@ function TargetPathSection({
   targetSkillId: string;
   onSelectTarget: (id: string) => void;
 }) {
-  const { getSkillDisplayStatus, isSkillReadyForPath } = useProgress();
+  const { getSkillDisplayStatus, isSkillReadyForPath, progress, emitEvent } = useProgress();
 
   const isReady = useCallback(
     (id: string) => isSkillReadyForPath(id),
@@ -329,8 +330,54 @@ function TargetPathSection({
 
   const nextRepairUnit = nextStep ? repairUnitMap.get(nextStep.skillId) : null;
 
+  const persistedGoal = progress.learningGoal;
+  const activeGoal = persistedGoal
+    && persistedGoal.skillId === targetSkillId
+    && isValidPublishedTarget(persistedGoal.skillId)
+    ? persistedGoal
+    : null;
+  const shownEventIdsRef = useRef(new Set<string>());
+
+  useEffect(() => {
+    if (!activeGoal) return;
+
+    const clientEventId = `gpv:${targetSkillId}:${activeGoal.updatedAt}`;
+    if (shownEventIdsRef.current.has(clientEventId)) return;
+    shownEventIdsRef.current.add(clientEventId);
+    emitEvent?.({
+      clientEventId,
+      eventName: 'goal_path_viewed',
+      skillId: targetSkillId,
+      properties: { surface: 'map' },
+    });
+  }, [activeGoal, emitEvent, targetSkillId]);
+
+  useEffect(() => {
+    if (!nextStep || nextRepairUnit) return;
+
+    const clientEventId = `rus:map:${nextStep.skillId}:${targetSkillId}:${activeGoal?.updatedAt ?? 0}`;
+    if (shownEventIdsRef.current.has(clientEventId)) return;
+    shownEventIdsRef.current.add(clientEventId);
+    emitEvent?.({
+      clientEventId,
+      eventName: 'repair_unavailable_shown',
+      skillId: nextStep.skillId,
+      properties: { surface: 'map', targetSkillId },
+    });
+  }, [activeGoal?.updatedAt, emitEvent, nextRepairUnit, nextStep, targetSkillId]);
+
   return (
     <section className="rounded-xl border border-indigo-200 bg-indigo-50/40 p-4 space-y-4" aria-label="目标路径">
+      {activeGoal && (
+        <GoalContextBar
+          targetSkillId={targetSkillId}
+          goalUpdatedAt={activeGoal.updatedAt}
+          surface="map"
+          mode="repair"
+          currentSkillId={nextStep?.skillId ?? targetSkillId}
+        />
+      )}
+
       {/* 目标选择 */}
       <div className="flex items-center gap-3 flex-wrap">
         <label htmlFor="target-select" className="text-sm font-semibold text-indigo-700">我的目标</label>
@@ -376,7 +423,7 @@ function TargetPathSection({
                   <p className="text-xs text-slate-500 mt-0.5">{step.reason}</p>
                   {step.courseId && step.courseTitle && (
                     <Link
-                      to={`/kp/${step.courseId}`}
+                      to={`/kp/${step.courseId}?target=${encodeURIComponent(targetSkillId)}`}
                       className="text-xs text-indigo-600 hover:underline mt-0.5 inline-block"
                     >
                       📚 {step.courseTitle} →
@@ -404,14 +451,14 @@ function TargetPathSection({
               {nextRepairUnit ? (
                 <>
                   <Link
-                    to={`/repair/${nextStep.skillId}?target=${targetSkillId}`}
+                    to={`/repair/${nextStep.skillId}?target=${encodeURIComponent(targetSkillId)}`}
                     className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs bg-violet-600 text-white hover:bg-violet-700 transition-colors min-h-[44px] font-medium"
                   >
                     ⚡ 2分钟诊断
                   </Link>
                   {nextStep.courseId && nextStep.courseTitle && (
                     <Link
-                      to={`/kp/${nextStep.courseId}`}
+                      to={`/kp/${nextStep.courseId}?target=${encodeURIComponent(targetSkillId)}`}
                       className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs border border-amber-300 text-amber-700 bg-white hover:bg-amber-50 transition-colors min-h-[44px]"
                     >
                       📚 完整课程
@@ -420,19 +467,24 @@ function TargetPathSection({
                 </>
               ) : (
                 <>
-                  <span className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs border border-slate-200 text-slate-400 bg-slate-50 min-h-[44px]">
-                    微补修准备中
-                  </span>
                   {nextStep.courseId && nextStep.courseTitle && (
                     <Link
-                      to={`/kp/${nextStep.courseId}`}
+                      to={`/kp/${nextStep.courseId}?target=${encodeURIComponent(targetSkillId)}`}
                       className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs bg-amber-600 text-white hover:bg-amber-700 transition-colors min-h-[44px]"
                     >
-                      前往课程：{nextStep.courseTitle} →
+                      学习完整课程
                     </Link>
                   )}
-                  {!nextStep.courseId && (
-                    <span className="text-xs text-slate-400">该技能暂无关联课程</span>
+                  {(!nextStep.courseId || !nextStep.courseTitle) && (
+                    <div className="space-y-2">
+                      <p className="text-xs text-slate-500">这个小技能暂时没有完整课程，先回目标地图看看其他学习步骤吧。</p>
+                      <Link
+                        to={`/map?target=${encodeURIComponent(targetSkillId)}`}
+                        className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs bg-amber-600 text-white hover:bg-amber-700 transition-colors min-h-[44px]"
+                      >
+                        返回目标地图
+                      </Link>
+                    </div>
                   )}
                 </>
               )}
@@ -530,7 +582,7 @@ export default function KnowledgeMapPage() {
   // R2: Persist valid URL target as learningGoal (only when actually different)
   useEffect(() => {
     if (validUrlTarget && validUrlTarget !== progress.learningGoal?.skillId) {
-      setGoal(validUrlTarget);
+      setGoal(validUrlTarget, 'map');
     }
   }, [validUrlTarget, progress.learningGoal?.skillId, setGoal]);
 
@@ -548,7 +600,7 @@ export default function KnowledgeMapPage() {
   }, [searchParams, setSearchParams]);
 
   const handleSelectTarget = (id: string) => {
-    setGoal(id);
+    setGoal(id, 'map');
     const newParams = new URLSearchParams(searchParams);
     newParams.set('target', id);
     setSearchParams(newParams, { replace: true });

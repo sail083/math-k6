@@ -1,4 +1,4 @@
-import type { ProgressData, MasteryStatus, MasteryRecord, SkillEvidenceRecord, EvidenceType, SkillEvidenceMode, SkillReviewSchedule, ExperimentAssignment, CourseIntervention, LearningEventName } from './types';
+import type { ProgressData, MasteryStatus, MasteryRecord, SkillEvidenceRecord, EvidenceType, SkillEvidenceMode, SkillReviewSchedule, ExperimentAssignment, CourseIntervention, LearningEventName, LearningGoalSource } from './types';
 
 const STORAGE_KEY = 'math-k6-progress';
 export const DAY_MS = 86_400_000;
@@ -531,11 +531,29 @@ export function isSkillReadyForPath(
 
 // ===== 学习目标与补修会话 =====
 
-/** 设置学习目标（忽略更早的更新） */
-export function setLearningGoal(progress: ProgressData, skillId: string, now: number): ProgressData {
+/** 设置学习目标（忽略更早的更新）。source 默认 map；同一目标重复设置保留 startedAt，只更新 updatedAt/source。 */
+export function setLearningGoal(
+  progress: ProgressData,
+  skillId: string,
+  now: number,
+  source: LearningGoalSource = 'map',
+): ProgressData {
   const existing = progress.learningGoal;
   if (existing && existing.updatedAt > now) return progress;
-  return { ...progress, learningGoal: { skillId, updatedAt: now } };
+  if (existing && existing.skillId === skillId) {
+    return {
+      ...progress,
+      learningGoal: {
+        skillId,
+        startedAt: Number.isFinite(existing.startedAt) && existing.startedAt >= 0
+          ? existing.startedAt
+          : existing.updatedAt,
+        updatedAt: now,
+        source,
+      },
+    };
+  }
+  return { ...progress, learningGoal: { skillId, startedAt: now, updatedAt: now, source } };
 }
 
 /** 开始补修会话（同时保留/更新目标） */
@@ -545,7 +563,9 @@ export function startRepairSession(
   targetSkillId: string,
   now: number,
 ): ProgressData {
-  const updated = setLearningGoal(progress, targetSkillId, now);
+  const existing = progress.learningGoal;
+  const source: LearningGoalSource = existing && existing.skillId === targetSkillId ? existing.source : 'map';
+  const updated = setLearningGoal(progress, targetSkillId, now, source);
   return {
     ...updated,
     repairSession: { skillId, targetSkillId, status: 'active', updatedAt: now },
@@ -573,7 +593,15 @@ export function parseLearningGoal(raw: unknown): ProgressData['learningGoal'] {
   const r = raw as Record<string, unknown>;
   if (typeof r.skillId !== 'string' || r.skillId.trim() === '') return undefined;
   if (typeof r.updatedAt !== 'number' || !Number.isFinite(r.updatedAt) || r.updatedAt < 0) return undefined;
-  return { skillId: r.skillId, updatedAt: r.updatedAt };
+  // Backward-compatible: old data {skillId, updatedAt} has no startedAt/source — backfill
+  // startedAt from updatedAt and default source to 'map'. Invalid source fails closed to 'map'.
+  const startedAt = typeof r.startedAt === 'number' && Number.isFinite(r.startedAt) && r.startedAt >= 0
+    ? r.startedAt
+    : r.updatedAt;
+  const source: LearningGoalSource = r.source === 'home' || r.source === 'map' || r.source === 'course'
+    ? r.source
+    : 'map';
+  return { skillId: r.skillId, startedAt, updatedAt: r.updatedAt, source };
 }
 
 /**
@@ -597,7 +625,8 @@ export function parseRepairSession(raw: unknown): ProgressData['repairSession'] 
 
 /**
  * 合并两个 learningGoal 记录（确定性，可测试）。
- * 更新时间更新的记录胜；相同时间两者相同。
+ * 更新时间更新的记录胜；相同时间前者胜（保持原有可预测规则）。
+ * 若两记录指向同一目标，保留最早 startedAt、最新 updatedAt，source 取较新记录，避免丢失字段。
  */
 export function mergeLearningGoal(
   a: ProgressData['learningGoal'],
@@ -606,6 +635,15 @@ export function mergeLearningGoal(
   if (!a && !b) return undefined;
   if (!a) return b;
   if (!b) return a;
+  if (a.skillId === b.skillId) {
+    const newer = a.updatedAt >= b.updatedAt ? a : b;
+    return {
+      skillId: a.skillId,
+      startedAt: Math.min(a.startedAt, b.startedAt),
+      updatedAt: Math.max(a.updatedAt, b.updatedAt),
+      source: newer.source,
+    };
+  }
   return a.updatedAt >= b.updatedAt ? a : b;
 }
 

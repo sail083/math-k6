@@ -1,17 +1,47 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { getCurriculum, getTextbookRef, loadKnowledgePointDetail } from '@/lib/content';
 import type { KnowledgePoint as KnowledgePointType, TextbookFilter } from '@/lib/types';
 import KnowledgePoint from '@/components/KnowledgePoint';
+import GoalContextBar from '@/components/GoalContextBar';
 import UiIcon from '@/components/UiIcon';
+import { useProgress } from '@/context/ProgressContext';
+import { getCourseMapping, getSkillById } from '@/lib/knowledgeGraph';
+
+function isValidPublishedTarget(skillId: string | null | undefined): skillId is string {
+  if (!skillId) return false;
+  return getSkillById(skillId)?.status === 'published';
+}
 
 export default function KnowledgePointPage() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { progress, setGoal, emitEvent } = useProgress();
   const [kp, setKp] = useState<KnowledgePointType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const startedEventIdsRef = useRef(new Set<string>());
+
+  const urlTarget = searchParams.get('target');
+  const storedGoalSkillId = progress.learningGoal?.skillId;
+  const validUrlTarget = isValidPublishedTarget(urlTarget) ? urlTarget : null;
+  const validStoredTarget = isValidPublishedTarget(storedGoalSkillId) ? storedGoalSkillId : null;
+  const targetSkillId = validUrlTarget ?? validStoredTarget ?? undefined;
+  const goalUpdatedAt = progress.learningGoal?.updatedAt;
+  const activeGoal = !!targetSkillId
+    && validStoredTarget === targetSkillId
+    && typeof goalUpdatedAt === 'number';
+  const courseId = kp?.meta.id ?? null;
+  const mappedCurrentSkillId = courseId
+    ? getCourseMapping(courseId)?.coreSkills.find(isValidPublishedTarget)
+    : undefined;
+  const currentSkillId = mappedCurrentSkillId ?? targetSkillId;
+
+  useEffect(() => {
+    if (!validUrlTarget || validUrlTarget === validStoredTarget) return;
+    setGoal(validUrlTarget, 'course');
+  }, [setGoal, validStoredTarget, validUrlTarget]);
 
   useEffect(() => {
     if (!id) {
@@ -35,6 +65,20 @@ export default function KnowledgePointPage() {
       cancelled = true;
     };
   }, [id]);
+
+  useEffect(() => {
+    if (!activeGoal || !courseId || !targetSkillId || goalUpdatedAt === undefined) return;
+    const clientEventId = `tls:${courseId}:${targetSkillId}:${goalUpdatedAt}`;
+    if (startedEventIdsRef.current.has(clientEventId)) return;
+    startedEventIdsRef.current.add(clientEventId);
+    emitEvent?.({
+      clientEventId,
+      eventName: 'target_learning_started',
+      skillId: targetSkillId,
+      courseId,
+      properties: { surface: 'course' },
+    });
+  }, [activeGoal, courseId, emitEvent, goalUpdatedAt, targetSkillId]);
 
   if (loading) {
     return (
@@ -78,7 +122,16 @@ export default function KnowledgePointPage() {
   const currentIndex = curriculum.findIndex((item) => item.meta.id === meta.id);
   const previous = currentIndex > 0 ? curriculum[currentIndex - 1] : undefined;
   const next = currentIndex >= 0 && currentIndex < curriculum.length - 1 ? curriculum[currentIndex + 1] : undefined;
-  const queryString = `?version=${encodeURIComponent(version)}`;
+  const queryString = `?version=${encodeURIComponent(version)}${targetSkillId ? `&target=${encodeURIComponent(targetSkillId)}` : ''}`;
+  const handleCoursePassed = activeGoal && targetSkillId && goalUpdatedAt !== undefined
+    ? () => emitEvent?.({
+      clientEventId: `tlc:${meta.id}:${targetSkillId}:${goalUpdatedAt}`,
+      eventName: 'target_learning_completed',
+      skillId: targetSkillId,
+      courseId: meta.id,
+      properties: { surface: 'course' },
+    })
+    : undefined;
 
   return (
     <div className="knowledge-page">
@@ -91,12 +144,27 @@ export default function KnowledgePointPage() {
         <span className="text-slate-600 font-medium">{meta.title}</span>
       </div>
 
+      {activeGoal && targetSkillId && goalUpdatedAt !== undefined ? (
+        <GoalContextBar
+          targetSkillId={targetSkillId}
+          goalUpdatedAt={goalUpdatedAt}
+          surface="course"
+          mode="learning"
+          currentSkillId={currentSkillId}
+        />
+      ) : null}
+
       {/* 知识点内容（3-tab：讲解 / 原理 / 闯关） */}
       <KnowledgePoint
         key={kp.meta.id}
         knowledgePoint={kp}
-        nextCourseTitle={next?.meta.title}
-        onNextCourse={next ? () => navigate(`/kp/${next.meta.id}${queryString}`) : undefined}
+        targetSkillId={targetSkillId}
+        nextCourseTitle={activeGoal ? undefined : next?.meta.title}
+        nextActionLabel={activeGoal ? '继续我的目标' : undefined}
+        onNextCourse={activeGoal && targetSkillId
+          ? () => navigate(`/map?target=${encodeURIComponent(targetSkillId)}`)
+          : next ? () => navigate(`/kp/${next.meta.id}${queryString}`) : undefined}
+        onCoursePassed={handleCoursePassed}
       />
 
       <nav className="course-navigation" aria-label="连续学习">

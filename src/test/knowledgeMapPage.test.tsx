@@ -17,15 +17,22 @@ import type { SkillDisplayStatus } from '@/lib/progress';
 const mockGetSkillDisplayStatus = vi.fn<(skillId: string) => SkillDisplayStatus>(() => 'not_started');
 const mockHasDirectSkillEvidence = vi.fn(() => false);
 const mockSetGoal = vi.fn();
-const mockIsSkillReadyForPath = vi.fn(() => false);
+const mockIsSkillReadyForPath = vi.fn<(skillId: string) => boolean>(() => false);
+const mockEmitEvent = vi.fn();
+let mockProgress: {
+  passedKnowledgePoints: string[];
+  stars: Record<string, number>;
+  learningGoal?: { skillId: string; startedAt: number; updatedAt: number; source: 'home' | 'map' | 'course' };
+};
 
 vi.mock('@/context/ProgressContext', () => ({
   useProgress: () => ({
-    progress: { passedKnowledgePoints: [], stars: {} },
+    progress: mockProgress,
     getSkillDisplayStatus: mockGetSkillDisplayStatus,
     hasDirectSkillEvidence: mockHasDirectSkillEvidence,
     setGoal: mockSetGoal,
     isSkillReadyForPath: mockIsSkillReadyForPath,
+    emitEvent: mockEmitEvent,
   }),
 }));
 
@@ -35,6 +42,8 @@ describe('KnowledgeMapPage', () => {
     mockHasDirectSkillEvidence.mockReset();
     mockSetGoal.mockReset();
     mockIsSkillReadyForPath.mockReset();
+    mockEmitEvent.mockReset();
+    mockProgress = { passedKnowledgePoints: [], stars: {} };
     mockGetSkillDisplayStatus.mockReturnValue('not_started');
     mockHasDirectSkillEvidence.mockReturnValue(false);
     mockIsSkillReadyForPath.mockReturnValue(false);
@@ -63,6 +72,106 @@ describe('KnowledgeMapPage', () => {
 
     // "下一小步" section should exist (first non-stable step)
     expect(screen.getByText('下一小步')).toBeInTheDocument();
+
+    expect(screen.getByRole('link', { name: /2分钟诊断/ })).toHaveAttribute(
+      'href',
+      '/repair/frac.whole?target=frac.divide_transform',
+    );
+    expect(screen.getByRole('link', { name: /完整课程/ })).toHaveAttribute(
+      'href',
+      '/kp/g3-fraction-intro?target=frac.divide_transform',
+    );
+    for (const link of screen.getAllByRole('link').filter((item) => item.getAttribute('href')?.startsWith('/kp/'))) {
+      expect(link.getAttribute('href')).toContain('?target=frac.divide_transform');
+    }
+  });
+
+  it('shows goal context and emits exact once-per-cycle path and unsupported events', () => {
+    mockProgress = {
+      passedKnowledgePoints: [],
+      stars: {},
+      learningGoal: {
+        skillId: 'frac.unit_fraction',
+        startedAt: 100,
+        updatedAt: 123456,
+        source: 'home',
+      },
+    };
+    mockIsSkillReadyForPath.mockImplementation((id) => id !== 'frac.unit_fraction');
+
+    const { rerender } = render(
+      <MemoryRouter>
+        <KnowledgeMapPage />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByLabelText('学习目标')).toBeInTheDocument();
+    expect(screen.getByText('学习完整课程')).toHaveAttribute(
+      'href',
+      '/kp/g3-fraction-intro?target=frac.unit_fraction',
+    );
+    expect(screen.queryByText('微补修准备中')).not.toBeInTheDocument();
+    expect(mockEmitEvent).toHaveBeenCalledWith({
+      clientEventId: 'gpv:frac.unit_fraction:123456',
+      eventName: 'goal_path_viewed',
+      skillId: 'frac.unit_fraction',
+      properties: { surface: 'map' },
+    });
+    expect(mockEmitEvent).toHaveBeenCalledWith({
+      clientEventId: 'rus:map:frac.unit_fraction:frac.unit_fraction:123456',
+      eventName: 'repair_unavailable_shown',
+      skillId: 'frac.unit_fraction',
+      properties: { surface: 'map', targetSkillId: 'frac.unit_fraction' },
+    });
+
+    rerender(
+      <MemoryRouter>
+        <KnowledgeMapPage />
+      </MemoryRouter>,
+    );
+    expect(mockEmitEvent.mock.calls.filter(([event]) => event.eventName === 'goal_path_viewed')).toHaveLength(1);
+    expect(mockEmitEvent.mock.calls.filter(([event]) => event.eventName === 'repair_unavailable_shown')).toHaveLength(1);
+  });
+
+  it('uses map source for URL and selected targets while preserving a same-skill home goal', () => {
+    mockProgress = {
+      passedKnowledgePoints: [],
+      stars: {},
+      learningGoal: { skillId: 'frac.notation', startedAt: 1, updatedAt: 2, source: 'home' },
+    };
+    const { unmount } = render(
+      <MemoryRouter initialEntries={['/map?target=frac.notation']}>
+        <KnowledgeMapPage />
+      </MemoryRouter>,
+    );
+    expect(mockSetGoal).not.toHaveBeenCalled();
+    unmount();
+
+    render(
+      <MemoryRouter initialEntries={['/map?target=frac.unit_fraction']}>
+        <KnowledgeMapPage />
+      </MemoryRouter>,
+    );
+    expect(mockSetGoal).toHaveBeenCalledWith('frac.unit_fraction', 'map');
+
+    fireEvent.change(screen.getByLabelText('我的目标'), { target: { value: 'frac.notation' } });
+    expect(mockSetGoal).toHaveBeenLastCalledWith('frac.notation', 'map');
+  });
+
+  it('ignores an invalid URL target without replacing a valid persisted goal', () => {
+    mockProgress = {
+      passedKnowledgePoints: [],
+      stars: {},
+      learningGoal: { skillId: 'frac.notation', startedAt: 1, updatedAt: 2, source: 'home' },
+    };
+    render(
+      <MemoryRouter initialEntries={['/map?target=not-a-skill']}>
+        <KnowledgeMapPage />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByLabelText('我的目标')).toHaveValue('frac.notation');
+    expect(mockSetGoal).not.toHaveBeenCalled();
   });
 
   it('switching target updates the path', () => {

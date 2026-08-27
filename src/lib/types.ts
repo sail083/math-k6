@@ -251,7 +251,9 @@ export interface ProgressData {
   // ===== v0.2：学习目标与补修会话 =====
   learningGoal?: {
     skillId: string;
+    startedAt: number;
     updatedAt: number;
+    source: LearningGoalSource;
   };
   repairSession?: {
     skillId: string;
@@ -270,7 +272,10 @@ export interface ProgressData {
 /** 技能证据模式 */
 export type SkillEvidenceMode = 'initial' | 'd1' | 'd7' | 'repair';
 
-/** v0.3: Exact 8 learning event names (must match DB chk_event_name constraint) */
+/** 学习目标来源：home=首页快捷目标, map=知识地图选择, course=课程页面进入 */
+export type LearningGoalSource = 'home' | 'map' | 'course';
+
+/** 学习事件名：v0.3 基础 8 项 + v0.4 新增 8 项，共 16 项，必须与 DB chk_event_name 一致 */
 export type LearningEventName =
   | 'home_task_viewed'
   | 'home_task_opened'
@@ -279,7 +284,16 @@ export type LearningEventName =
   | 'skill_review_scheduled'
   | 'skill_review_started'
   | 'skill_review_finished'
-  | 'stable_achieved';
+  | 'stable_achieved'
+  // v0.4: goal continuity
+  | 'goal_entry_viewed'
+  | 'learning_goal_started'
+  | 'goal_path_viewed'
+  | 'target_resume_shown'
+  | 'target_resume_opened'
+  | 'target_learning_started'
+  | 'target_learning_completed'
+  | 'repair_unavailable_shown';
 
 /** 单个微技能的题目证据 */
 export interface SkillEvidenceRecord {

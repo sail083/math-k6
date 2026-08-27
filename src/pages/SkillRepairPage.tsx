@@ -13,6 +13,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import ChoiceGame from '@/components/games/ChoiceGame';
 import FillBlankGame from '@/components/games/FillBlankGame';
+import GoalContextBar from '@/components/GoalContextBar';
 import { useProgress } from '@/context/ProgressContext';
 import { useAuth } from '@/context/AuthContext';
 import { getRepairUnit } from '@/lib/repairContent';
@@ -109,6 +110,11 @@ export default function SkillRepairPage() {
     : null;
   const DEFAULT_TARGET = 'frac.divide_transform';
   const targetSkillId = urlTarget ?? goalTarget ?? DEFAULT_TARGET;
+  const encodedTargetSkillId = encodeURIComponent(targetSkillId);
+  const activeGoal = progress.learningGoal?.skillId === targetSkillId
+    && isValidPublishedTarget(progress.learningGoal.skillId)
+    ? progress.learningGoal
+    : undefined;
 
   // R2: Clean invalid target from URL (replace, no flicker)
   useEffect(() => {
@@ -177,6 +183,7 @@ export default function SkillRepairPage() {
   const reviewRecorded = useRef(false);
   const reviewStartedRef = useRef(false);
   const reviewWasFirstExposureRef = useRef(false);
+  const repairUnavailableShownRef = useRef(new Set<string>());
 
   // Start repair session on mount (once) — skip if already ready or review mode
   // F14: Do NOT persist repair|course assignment before diagnosis. All users start
@@ -188,6 +195,22 @@ export default function SkillRepairPage() {
     startRepair(skillId, targetSkillId);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [skillId, repairUnit, isAlreadyReady, reviewMode, isReviewBlocked]);
+
+  // Published graph skills may not have a micro-repair unit. This hook remains
+  // above every conditional return so direct unsupported routes are hook-safe.
+  useEffect(() => {
+    if (!skillId || !skillExists || repairUnit) return;
+
+    const clientEventId = `rus:repair:${skillId}:${targetSkillId}:${activeGoal?.updatedAt ?? 0}`;
+    if (repairUnavailableShownRef.current.has(clientEventId)) return;
+    repairUnavailableShownRef.current.add(clientEventId);
+    emitEvent?.({
+      clientEventId,
+      eventName: 'repair_unavailable_shown',
+      skillId,
+      properties: { surface: 'repair', targetSkillId },
+    });
+  }, [activeGoal?.updatedAt, emitEvent, repairUnit, skillExists, skillId, targetSkillId]);
 
   // ===== E: Review started effect — top-level, once per schedule cycle =====
   // F12: fire for every actual attempt (no firstExposure gate), gated on review phase,
@@ -280,32 +303,48 @@ export default function SkillRepairPage() {
           </div>
           <h1 className="text-xl sm:text-2xl font-bold">{skillNode.name} 微补修</h1>
         </section>
+        {activeGoal && (
+          <GoalContextBar
+            targetSkillId={targetSkillId}
+            goalUpdatedAt={activeGoal.updatedAt}
+            surface="repair"
+            mode="repair"
+            currentSkillId={skillId}
+          />
+        )}
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-center space-y-4">
-          <p className="text-2xl">🔧</p>
-          <p className="text-slate-700 font-semibold">微补修准备中</p>
-          <p className="text-sm text-slate-500">&ldquo;{skillNode.name}&rdquo;的微补修内容正在教研团队准备中，请稍后再来。</p>
+          <p className="text-2xl">📚</p>
           {primaryKp && (
-            <Link
-              to={`/kp/${primaryCourse.courseId}`}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors min-h-[44px]"
-            >
-              前往完整课程：{primaryKp.meta.title} →
-            </Link>
+            <>
+              <p className="text-slate-700 font-semibold">通过完整课程学习这项技能</p>
+              <p className="text-sm text-slate-500">完整课程会一步一步带你学会“{skillNode.name}”。</p>
+              <Link
+                to={`/kp/${primaryCourse.courseId}?target=${encodedTargetSkillId}`}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors min-h-[44px]"
+              >
+                学习完整课程
+              </Link>
+            </>
+          )}
+          {!primaryKp && (
+            <p className="text-sm text-slate-600">这项技能暂时没有可以学习的课程，先回目标地图看看下一步吧。</p>
           )}
           <Link
-            to={`/map?target=${targetSkillId}`}
+            to={`/map?target=${encodedTargetSkillId}`}
             className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${
               primaryKp
                 ? 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
                 : 'bg-indigo-600 text-white hover:bg-indigo-700'
             }`}
           >
-            返回目标路径 →
+            {primaryKp ? '继续我的目标' : '返回目标地图'}
           </Link>
         </div>
       </div>
     );
   }
+
+  const hasRepairCourse = !!getKnowledgePointById(repairUnit.courseId);
 
   // F4: Invalid review/form param or mismatch — show safe invalid/not-due state (fail-closed)
   if (isReviewBlocked) {
@@ -339,6 +378,15 @@ export default function SkillRepairPage() {
           </div>
           <h1 className="text-xl sm:text-2xl font-bold">{skillNode.name}</h1>
         </section>
+        {activeGoal && (
+          <GoalContextBar
+            targetSkillId={targetSkillId}
+            goalUpdatedAt={activeGoal.updatedAt}
+            surface="repair"
+            mode="repair"
+            currentSkillId={skillId}
+          />
+        )}
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-6 text-center space-y-4">
           <p className="text-3xl">✅</p>
           <p className="text-lg font-bold text-emerald-700">已具备路径准备度</p>
@@ -349,7 +397,7 @@ export default function SkillRepairPage() {
             to={`/map?target=${targetSkillId}`}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition-colors min-h-[44px]"
           >
-            返回目标路径 →
+            继续我的目标
           </Link>
         </div>
       </div>
@@ -449,6 +497,16 @@ export default function SkillRepairPage() {
           </p>
         </section>
 
+        {activeGoal && (
+          <GoalContextBar
+            targetSkillId={targetSkillId}
+            goalUpdatedAt={activeGoal.updatedAt}
+            surface="review"
+            mode="repair"
+            currentSkillId={skillId}
+          />
+        )}
+
         {/* 进度指示 */}
         {reviewPhase === 'review' && (
           <div className="flex items-center gap-1" aria-label="复习进度">
@@ -504,17 +562,19 @@ export default function SkillRepairPage() {
                   <p className="text-sm text-sky-600">
                     本次是复习练习，尚未产生新的稳固证据。建议完成完整课程后再来尝试。
                   </p>
-                  <Link
-                    to={`/kp/${repairUnit.courseId}`}
-                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[44px]"
-                  >
-                    前往完整课程学习 →
-                  </Link>
+                  {hasRepairCourse && (
+                    <Link
+                      to={`/kp/${repairUnit.courseId}?target=${encodedTargetSkillId}`}
+                      className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[44px]"
+                    >
+                      前往完整课程学习 →
+                    </Link>
+                  )}
                   <Link
                     to={`/map?target=${targetSkillId}`}
                     className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-white border border-slate-200 text-slate-500 text-sm hover:bg-slate-50 transition-colors min-h-[44px]"
                   >
-                    返回目标路径
+                    继续我的目标
                   </Link>
                 </div>
               ) : (
@@ -533,7 +593,7 @@ export default function SkillRepairPage() {
                     onClick={() => navigate(`/map?target=${targetSkillId}`)}
                     className="w-full py-3 rounded-xl bg-emerald-600 text-white font-medium hover:bg-emerald-700 transition-colors min-h-[44px]"
                   >
-                    返回目标路径 →
+                    继续我的目标
                   </button>
                 </div>
               )
@@ -567,12 +627,14 @@ export default function SkillRepairPage() {
                     </p>
                   </>
                 )}
-                <Link
-                  to={`/kp/${repairUnit.courseId}`}
-                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[44px]"
-                >
-                  前往完整课程学习 →
-                </Link>
+                {hasRepairCourse && (
+                  <Link
+                    to={`/kp/${repairUnit.courseId}?target=${encodedTargetSkillId}`}
+                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[44px]"
+                  >
+                    前往完整课程学习 →
+                  </Link>
+                )}
                 <button
                   type="button"
                   onClick={() => {
@@ -595,7 +657,7 @@ export default function SkillRepairPage() {
                   to={`/map?target=${targetSkillId}`}
                   className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-white border border-slate-200 text-slate-500 text-sm hover:bg-slate-50 transition-colors min-h-[44px]"
                 >
-                  返回目标路径
+                  继续我的目标
                 </Link>
               </div>
             )}
@@ -774,6 +836,16 @@ export default function SkillRepairPage() {
         <p className="text-violet-100 text-sm mt-1">预计 {repairUnit.estimatedMinutes} 分钟</p>
       </section>
 
+      {activeGoal && (
+        <GoalContextBar
+          targetSkillId={targetSkillId}
+          goalUpdatedAt={activeGoal.updatedAt}
+          surface="repair"
+          mode="repair"
+          currentSkillId={skillId}
+        />
+      )}
+
       {/* 进度步骤条 */}
       <div className="flex items-center gap-1" aria-label="补修进度">
         {progressSteps.map((step, i) => {
@@ -918,7 +990,7 @@ export default function SkillRepairPage() {
                 const courseKp = getKnowledgePointById(repairUnit.courseId);
                 return courseKp ? (
                   <Link
-                    to={`/kp/${repairUnit.courseId}`}
+                    to={`/kp/${repairUnit.courseId}?target=${encodedTargetSkillId}`}
                     className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors min-h-[44px]"
                   >
                     前往完整课程：{courseKp.meta.title} →
@@ -929,7 +1001,7 @@ export default function SkillRepairPage() {
                 to={`/map?target=${targetSkillId}`}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors min-h-[44px]"
               >
-                返回目标路径 →
+                继续我的目标
               </Link>
             </div>
           ) : passed ? (
@@ -945,7 +1017,7 @@ export default function SkillRepairPage() {
                 onClick={() => navigate(`/map?target=${targetSkillId}&repaired=${skillId}`)}
                 className="w-full py-3 rounded-xl bg-emerald-600 text-white font-medium hover:bg-emerald-700 transition-colors min-h-[44px]"
               >
-                返回目标路径，看下一步 →
+                继续我的目标
               </button>
             </div>
           ) : (
@@ -954,17 +1026,19 @@ export default function SkillRepairPage() {
               <p className="text-sm text-amber-600">
                 这次没能全部首次答对，没关系！可以先去完整课程巩固，或者返回目标路径。
               </p>
-              <Link
-                to={`/kp/${repairUnit.courseId}`}
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[44px]"
-              >
-                前往完整课程学习 →
-              </Link>
+              {hasRepairCourse && (
+                <Link
+                  to={`/kp/${repairUnit.courseId}?target=${encodedTargetSkillId}`}
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[44px]"
+                >
+                  前往完整课程学习 →
+                </Link>
+              )}
               <Link
                 to={`/map?target=${targetSkillId}`}
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-white border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 transition-colors min-h-[44px]"
               >
-                返回目标路径
+                继续我的目标
               </Link>
             </div>
           )}

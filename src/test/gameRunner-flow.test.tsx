@@ -138,6 +138,48 @@ describe('GameRunner rendered regression', () => {
     vi.clearAllMocks();
   });
 
+  it('calls onPassed once for an initial pass and displays the exact next action label', () => {
+    const onPassed = vi.fn();
+    render(
+      <GameRunner
+        game={gameWithReview}
+        knowledgePointId="kp-review"
+        onPassed={onPassed}
+        onNextCourse={vi.fn()}
+        nextCourseTitle="旧标题"
+        nextActionLabel="继续目标课程"
+      />,
+    );
+
+    fireEvent.click(screen.getByText('X'));
+    fireEvent.click(screen.getByText('下一题'));
+    fireEvent.click(screen.getByTestId('fill-submit'));
+    fireEvent.click(screen.getByText('查看结果'));
+
+    expect(onPassed).toHaveBeenCalledTimes(1);
+    expect(screen.getByText('继续目标课程', { exact: true })).toBeInTheDocument();
+    expect(screen.queryByText('下一课：旧标题')).not.toBeInTheDocument();
+  });
+
+  it('does not call onPassed when an initial challenge fails', () => {
+    const onPassed = vi.fn();
+    render(
+      <GameRunner
+        game={gameWithReview}
+        knowledgePointId="kp-review"
+        onPassed={onPassed}
+      />,
+    );
+
+    fireEvent.click(screen.getByText('Y'));
+    fireEvent.click(screen.getByText('下一题'));
+    fireEvent.click(screen.getByTestId('fill-submit'));
+    fireEvent.click(screen.getByText('查看结果'));
+
+    expect(onPassed).not.toHaveBeenCalled();
+    expect(screen.getByText('最后再练一下')).toBeInTheDocument();
+  });
+
   /**
    * Harness: manages GameRunner props in state so the test can simulate
    * parent re-renders (e.g. reviewMode going null after mastery change,

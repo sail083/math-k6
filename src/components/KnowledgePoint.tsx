@@ -74,8 +74,11 @@ function getExploreMission(meta: KnowledgePointType['meta']) {
 
 export interface KnowledgePointProps {
   knowledgePoint: KnowledgePointType;
+  onCoursePassed?: () => void;
   onNextCourse?: () => void;
   nextCourseTitle?: string;
+  nextActionLabel?: string;
+  targetSkillId?: string;
 }
 
 interface LessonSession {
@@ -111,7 +114,14 @@ function loadValidStage(id: string): LessonStage {
   return stage;
 }
 
-export default function KnowledgePoint({ knowledgePoint: kp, onNextCourse, nextCourseTitle }: KnowledgePointProps) {
+export default function KnowledgePoint({
+  knowledgePoint: kp,
+  onCoursePassed,
+  onNextCourse,
+  nextCourseTitle,
+  nextActionLabel,
+  targetSkillId,
+}: KnowledgePointProps) {
   const { meta } = kp;
   const { getStars, isPassed, getMasteryStatus, getReviewMode, setCurrentLearning } = useProgress();
   const stars = getStars(meta.id);
@@ -166,7 +176,7 @@ export default function KnowledgePoint({ knowledgePoint: kp, onNextCourse, nextC
         ) : null}
       </header>
 
-      <KnowledgeContextStrip courseId={meta.id} />
+      <KnowledgeContextStrip courseId={meta.id} targetSkillId={targetSkillId} />
 
       <nav className="lesson-rail-mobile" aria-label="三阶段学习进度">
         {stages.map((stage) => {
@@ -246,7 +256,7 @@ export default function KnowledgePoint({ knowledgePoint: kp, onNextCourse, nextC
             <div><p>试一题</p><h2 id="challenge-title">{isReviewSession ? '复习时间到了' : '换一道题，你也会吗？'}</h2><small>{isReviewSession ? '换一道复习题，看看还记得多少。' : '慢慢想，答错了会给你一个小提示。'}</small></div>
           </div>
           {kp.game ? (
-            <GameRunner key={`gamerunner-${meta.id}`} game={kp.game} knowledgePointId={meta.id} onReviewCourse={() => goToStage('discover')} onNextCourse={onNextCourse} nextCourseTitle={nextCourseTitle} reviewMode={entryReviewMode} />
+            <GameRunner key={`gamerunner-${meta.id}`} game={kp.game} knowledgePointId={meta.id} onPassed={onCoursePassed} onReviewCourse={() => goToStage('discover')} onNextCourse={onNextCourse} nextCourseTitle={nextCourseTitle} nextActionLabel={nextActionLabel} reviewMode={entryReviewMode} />
           ) : <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-500 space-y-4">挑战内容正在准备中。<button type="button" onClick={() => goToStage('discover')} className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[48px] flex items-center mx-auto">回看讲解</button></div>}
         </section>
       ) : null}

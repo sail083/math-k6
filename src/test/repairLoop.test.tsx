@@ -14,7 +14,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import type { ProgressData, SkillReviewSchedule, CourseIntervention } from '@/lib/types';
 import type { SkillDisplayStatus } from '@/lib/progress';
 
@@ -435,7 +435,12 @@ describe('getSkillDisplayStatus: repair mode not directly stable', () => {
 
 describe('parseLearningGoal', () => {
   it('parses valid object', () => {
-    expect(parseLearningGoal({ skillId: 'frac.whole', updatedAt: 100 })).toEqual({ skillId: 'frac.whole', updatedAt: 100 });
+    expect(parseLearningGoal({ skillId: 'frac.whole', updatedAt: 100 })).toEqual({
+      skillId: 'frac.whole',
+      startedAt: 100,
+      updatedAt: 100,
+      source: 'map',
+    });
   });
 
   it('returns undefined for null', () => {
@@ -513,15 +518,15 @@ describe('mergeRepairSession: three time/tombstone scenarios', () => {
 
 describe('mergeLearningGoal', () => {
   it('more recent updatedAt wins', () => {
-    const a = { skillId: 'frac.whole', updatedAt: 200 };
-    const b = { skillId: 'frac.divide_transform', updatedAt: 100 };
+    const a = { skillId: 'frac.whole', startedAt: 50, updatedAt: 200, source: 'map' as const };
+    const b = { skillId: 'frac.divide_transform', startedAt: 50, updatedAt: 100, source: 'home' as const };
     expect(mergeLearningGoal(a, b)?.skillId).toBe('frac.whole');
     expect(mergeLearningGoal(b, a)?.skillId).toBe('frac.whole');
   });
 
   it('equal updatedAt → first wins (stable tie-break)', () => {
-    const a = { skillId: 'frac.whole', updatedAt: 100 };
-    const b = { skillId: 'frac.divide_transform', updatedAt: 100 };
+    const a = { skillId: 'frac.whole', startedAt: 50, updatedAt: 100, source: 'map' as const };
+    const b = { skillId: 'frac.divide_transform', startedAt: 50, updatedAt: 100, source: 'home' as const };
     expect(mergeLearningGoal(a, b)?.skillId).toBe('frac.whole');
   });
 });
@@ -587,10 +592,28 @@ describe('SkillRepairPage: state machine rendering', () => {
     expect(mockStartRepair).not.toHaveBeenCalled();
   });
 
-  it('valid skillId with no RepairUnit shows "微补修准备中"', () => {
-    // frac.as_quotient is a valid published node but has no repair unit
-    renderRepairRoute('frac.as_quotient');
-    expect(screen.getByText(/微补修准备中/)).toBeInTheDocument();
+  it('valid skillId with no RepairUnit directs learners to the complete course', () => {
+    const { rerender } = renderRepairRoute('frac.as_quotient', '?target=frac.notation');
+    expect(screen.getByText('通过完整课程学习这项技能')).toBeInTheDocument();
+    expect(screen.queryByText(/微补修准备中/)).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '学习完整课程' })).toHaveAttribute(
+      'href',
+      '/kp/g5-fraction-meaning?target=frac.notation',
+    );
+    expect(mockEmitEvent).toHaveBeenCalledWith({
+      clientEventId: 'rus:repair:frac.as_quotient:frac.notation:0',
+      eventName: 'repair_unavailable_shown',
+      skillId: 'frac.as_quotient',
+      properties: { surface: 'repair', targetSkillId: 'frac.notation' },
+    });
+    rerender(
+      <MemoryRouter initialEntries={['/repair/frac.as_quotient?target=frac.notation']}>
+        <Routes>
+          <Route path="/repair/:skillId" element={<SkillRepairPage />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    expect(mockEmitEvent).toHaveBeenCalledTimes(1);
     expect(mockStartRepair).not.toHaveBeenCalled();
   });
 
@@ -599,6 +622,22 @@ describe('SkillRepairPage: state machine rendering', () => {
     const heading = screen.getByRole('heading', { level: 1 });
     expect(heading.textContent).not.toContain('frac.');
     expect(heading.textContent).toContain('微补修');
+  });
+
+  it('shows GoalContextBar on repair when the valid goal matches target', () => {
+    _mockProgress = {
+      passedKnowledgePoints: [],
+      stars: {},
+      learningGoal: {
+        skillId: 'frac.notation',
+        startedAt: NOW,
+        updatedAt: NOW,
+        source: 'map',
+      },
+    };
+    renderRepairRoute('frac.whole', '?target=frac.notation');
+    expect(screen.getByRole('complementary', { name: '学习目标' })).toBeInTheDocument();
+    expect(screen.getByText('当前在补')).toBeInTheDocument();
   });
 
   it('starts repair session on mount', () => {
@@ -686,7 +725,10 @@ describe('SkillRepairPage: state machine rendering', () => {
     fireEvent.click(screen.getByTestId(`wrong-${unit.checkQuestions[1].id}`));
 
     expect(screen.getByText(/本次还没通过/)).toBeInTheDocument();
-    expect(screen.getByText(/前往完整课程学习/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /前往完整课程学习/ })).toHaveAttribute(
+      'href',
+      '/kp/g3-fraction-intro?target=frac.divide_transform',
+    );
     // No retry
     expect(screen.queryByText(/再做|重试|再答/)).not.toBeInTheDocument();
   });
@@ -904,6 +946,11 @@ describe('KnowledgeMapPage: URL target param', () => {
 
 import HomePage from '@/pages/HomePage';
 
+function LocationProbe() {
+  const location = useLocation();
+  return <div data-testid="location">{location.pathname}{location.search}</div>;
+}
+
 describe('HomePage: recommended action priority', () => {
   beforeEach(resetMocks);
 
@@ -914,6 +961,102 @@ describe('HomePage: recommended action priority', () => {
       </MemoryRouter>,
     );
     expect(screen.getByText(/一次讲透小学数学/)).toBeInTheDocument();
+  });
+
+  it('shows three goal choices and navigates with source=home when one is selected', () => {
+    render(
+      <MemoryRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/map" element={<LocationProbe />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('button', { name: '认识并读懂分数' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '学会分数乘法' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '学会分数除法' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '学会分数乘法' }));
+
+    expect(mockSetGoal).toHaveBeenCalledWith('frac.multiply_fraction', 'home');
+    expect(screen.getByTestId('location')).toHaveTextContent('/map?target=frac.multiply_fraction');
+  });
+
+  it('shows only GoalContextBar when the stored goal is valid', () => {
+    _mockProgress = {
+      passedKnowledgePoints: [],
+      stars: {},
+      learningGoal: {
+        skillId: 'frac.divide_transform',
+        startedAt: NOW,
+        updatedAt: NOW,
+        source: 'home',
+      },
+      repairSession: {
+        skillId: 'frac.notation',
+        targetSkillId: 'frac.divide_transform',
+        status: 'active',
+        updatedAt: NOW,
+      },
+    };
+
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('complementary', { name: '学习目标' })).toBeInTheDocument();
+    expect(screen.getByText('当前在补')).toBeInTheDocument();
+    expect(screen.queryByText('你想先学会什么？')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '学会分数除法' })).not.toBeInTheDocument();
+  });
+
+  it('treats an invalid stored goal as empty, hides its bad goal task, and emits its entry view only once', () => {
+    _mockProgress = {
+      passedKnowledgePoints: [],
+      stars: {},
+      learningGoal: {
+        skillId: 'invalid.skill',
+        startedAt: NOW,
+        updatedAt: NOW,
+        source: 'home',
+      },
+    };
+    mockGetHomeTasks.mockReturnValue([
+      {
+        type: 'learning_goal',
+        eventCycleId: 'bad-goal-task',
+        skillId: 'invalid.skill',
+        link: '/map?target=invalid.skill',
+        title: 'invalid.skill',
+        reason: '泄漏的坏任务',
+        urgent: false,
+      },
+    ]);
+    const { rerender } = render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText('你想先学会什么？')).toBeInTheDocument();
+    expect(screen.queryByRole('complementary', { name: '学习目标' })).not.toBeInTheDocument();
+    expect(screen.queryByText('泄漏的坏任务')).not.toBeInTheDocument();
+    expect(screen.queryByText('invalid.skill')).not.toBeInTheDocument();
+    expect(document.querySelector('a[href="/map?target=invalid.skill"]')).not.toBeInTheDocument();
+    expect(mockEmitEvent).toHaveBeenCalledWith({
+      clientEventId: 'gev:home:v0.4',
+      eventName: 'goal_entry_viewed',
+      properties: { surface: 'home' },
+    });
+
+    rerender(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    );
+    expect(mockEmitEvent).toHaveBeenCalledTimes(1);
   });
 
   it('priority 1: due skill review shown as primary task', () => {
@@ -959,6 +1102,16 @@ describe('HomePage: recommended action priority', () => {
   });
 
   it('priority 3: learning goal shown when no repair, no due reviews', () => {
+    _mockProgress = {
+      passedKnowledgePoints: [],
+      stars: {},
+      learningGoal: {
+        skillId: 'frac.divide_transform',
+        startedAt: NOW,
+        updatedAt: NOW,
+        source: 'home',
+      },
+    };
     mockGetHomeTasks.mockReturnValue([
       {
         type: 'learning_goal',
@@ -1009,7 +1162,7 @@ describe('R1: SkillRepairPage blocks repair for ready skills', () => {
     mockIsSkillReadyForPath.mockReturnValue(true);
     renderRepairRoute('frac.whole');
 
-    expect(screen.getByText(/返回目标路径/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '继续我的目标' })).toBeInTheDocument();
   });
 });
 
@@ -1053,9 +1206,9 @@ describe('R1: Readiness race — mid-session evidence update must not show ready
     expect(screen.queryByText('已具备路径准备度')).not.toBeInTheDocument();
 
     // The return button must be present (uses navigate with repaired= param)
-    const returnBtn = screen.getByRole('button', { name: /返回目标路径/ });
+    const returnBtn = screen.getByRole('button', { name: '继续我的目标' });
     expect(returnBtn).toBeInTheDocument();
-    expect(returnBtn.textContent).toContain('返回目标路径');
+    expect(returnBtn.textContent).toContain('继续我的目标');
   });
 
   it('fast pass result: button href includes repaired=skillId', () => {
@@ -1073,7 +1226,7 @@ describe('R1: Readiness race — mid-session evidence update must not show ready
 
     expect(screen.getByText(/路径准备度通过/)).toBeInTheDocument();
     // The return button uses navigate() with repaired= — verify it is a <button> in the result block
-    const btn = screen.getByRole('button', { name: /返回目标路径/ });
+    const btn = screen.getByRole('button', { name: '继续我的目标' });
     expect(btn.tagName).toBe('BUTTON');
   });
 
@@ -1129,7 +1282,7 @@ describe('R2: KnowledgeMapPage invalid target fallback', () => {
     const select = screen.getByLabelText('我的目标') as HTMLSelectElement;
     expect(select.value).toBe('frac.notation');
     // setGoal should have been called with frac.notation
-    expect(mockSetGoal).toHaveBeenCalledWith('frac.notation');
+    expect(mockSetGoal).toHaveBeenCalledWith('frac.notation', 'map');
   });
 });
 
@@ -1150,13 +1303,14 @@ describe('R2: SkillRepairPage invalid target fallback', () => {
 describe('R3: SkillRepairPage shows course entry for uncovered skills', () => {
   beforeEach(resetMocks);
 
-  it('frac.as_quotient shows "分数的意义和性质" course entry', () => {
-    renderRepairRoute('frac.as_quotient');
-    // Should show the course link with Chinese title
-    expect(screen.getByText(/分数的意义和性质/)).toBeInTheDocument();
-    // Should show the "微补修准备中" message
-    expect(screen.getByText(/微补修准备中/)).toBeInTheDocument();
-    // Should NOT call startRepair
+  it('frac.as_quotient shows its mapped complete-course entry with target continuity', () => {
+    renderRepairRoute('frac.as_quotient', '?target=frac.notation');
+    expect(screen.getByText('通过完整课程学习这项技能')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '学习完整课程' })).toHaveAttribute(
+      'href',
+      '/kp/g5-fraction-meaning?target=frac.notation',
+    );
+    expect(screen.queryByText(/微补修准备中/)).not.toBeInTheDocument();
     expect(mockStartRepair).not.toHaveBeenCalled();
   });
 });
@@ -1788,7 +1942,7 @@ describe('v0.3: getHomeTasks', () => {
         status: 'active',
         updatedAt: NOW,
       },
-      learningGoal: { skillId: 'frac.notation', updatedAt: NOW },
+      learningGoal: { skillId: 'frac.notation', startedAt: NOW, updatedAt: NOW, source: 'map' },
     };
     const tasks = getHomeTasks(p, [], NOW);
     const repairIdx = tasks.findIndex((t) => t.type === 'active_repair');
@@ -1818,7 +1972,17 @@ describe('v0.3: SkillRepairPage review mode rendering', () => {
     expect(screen.getByText(/该复习任务尚未到期或已完成/)).toBeInTheDocument();
   });
 
-  it('review mode with due schedule shows review questions', () => {
+  it('review mode with due schedule shows review questions and goal context', () => {
+    _mockProgress = {
+      passedKnowledgePoints: [],
+      stars: {},
+      learningGoal: {
+        skillId: 'frac.notation',
+        startedAt: NOW,
+        updatedAt: NOW,
+        source: 'map',
+      },
+    };
     mockGetSkillReviewSchedule.mockReturnValue({
       skillId: 'frac.whole',
       targetSkillId: 'frac.notation',
@@ -1834,6 +1998,7 @@ describe('v0.3: SkillRepairPage review mode rendering', () => {
     renderRepairRoute('frac.whole', '?target=frac.notation&review=d1');
     expect(screen.getAllByText(/第1天复习/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText(/共 2 题/)).toBeInTheDocument();
+    expect(screen.getByRole('complementary', { name: '学习目标' })).toBeInTheDocument();
   });
 
   it('review mode: 2/2 firstTry correct → pass result', () => {
@@ -1860,6 +2025,7 @@ describe('v0.3: SkillRepairPage review mode rendering', () => {
     fireEvent.click(screen.getByTestId(`correct-${q2.id}`));
 
     expect(screen.getByText(/第1天复习通过/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '继续我的目标' })).toBeInTheDocument();
     expect(mockResolveSkillReview).toHaveBeenCalledWith('frac.whole', true);
   });
 
@@ -2135,6 +2301,16 @@ describe('v0.3: HomePage today tasks', () => {
   });
 
   it('shows upcoming task previews (max 2)', () => {
+    _mockProgress = {
+      passedKnowledgePoints: [],
+      stars: {},
+      learningGoal: {
+        skillId: 'frac.notation',
+        startedAt: NOW,
+        updatedAt: NOW,
+        source: 'home',
+      },
+    };
     mockGetHomeTasks.mockReturnValue([
       {
         type: 'skill_review',
@@ -2173,7 +2349,7 @@ describe('v0.3: HomePage today tasks', () => {
     expect(screen.getByText(/确定单位/)).toBeInTheDocument();
     // Upcoming previews: frac.equal_partition = "理解平均分", frac.notation = "分子、分母、分数线"
     expect(screen.getByText(/理解平均分/)).toBeInTheDocument();
-    expect(screen.getByText(/分子/)).toBeInTheDocument();
+    expect(screen.getAllByText(/分子/)).toHaveLength(4);
   });
 });
 
@@ -2475,6 +2651,7 @@ describe('F7: D7 review records dual evidence on 2/2 firstTry pass', () => {
     // F7: Should show retention evidence copy, not "stable" claim
     expect(screen.getByText(/已记录第7天保持证据/)).toBeInTheDocument();
     expect(screen.queryByText(/已经稳固掌握/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '继续我的目标' })).toBeInTheDocument();
   });
 });
 
@@ -3215,7 +3392,7 @@ describe('F10–F16 focused regression suite', () => {
   it('F13: learning_goal eventCycleId includes skillId + updatedAt', () => {
     const p: ProgressData = {
       ...empty,
-      learningGoal: { skillId: 'frac.whole', updatedAt: NOW },
+      learningGoal: { skillId: 'frac.whole', startedAt: NOW, updatedAt: NOW, source: 'map' },
     };
     const tasks = getHomeTasks(p, [], NOW);
     const task = tasks.find((t) => t.type === 'learning_goal');
@@ -3281,7 +3458,22 @@ describe('F10–F16 focused regression suite', () => {
     });
 
     await new Promise<void>((resolve) => setTimeout(resolve, 50));
-    expect(mockInsert).toHaveBeenCalled();
+    expect(mockInsert).toHaveBeenCalledWith({
+      user_id: 'test-user',
+      client_event_id: 'dup',
+      event_name: 'skill_review_finished',
+      skill_id: 'frac.whole',
+      course_id: null,
+      mode: null,
+      variant: null,
+      passed: null,
+      first_try: null,
+      duration_ms: null,
+      due_at: null,
+      app_version: '0.4.0',
+      content_version: '0.3.0',
+      properties: {},
+    });
     expect(consoleSpy).not.toHaveBeenCalled();
 
     consoleSpy.mockRestore();

@@ -93,6 +93,36 @@ describe('KnowledgeContextStrip', () => {
     expect(screen.queryByText('以前学过')).not.toBeInTheDocument();
   });
 
+  it('passes a published target through every next-course link', () => {
+    render(
+      <MemoryRouter>
+        <KnowledgeContextStrip courseId="g3-fraction-intro" targetSkillId="frac.notation" />
+      </MemoryRouter>,
+    );
+
+    const nextContainer = screen.getByText('下一步').closest('div');
+    const hrefs = Array.from(nextContainer?.querySelectorAll('a[href]') ?? [])
+      .map((link) => link.getAttribute('href'));
+
+    expect(hrefs.length).toBeGreaterThan(0);
+    expect(hrefs.every((href) => href?.endsWith('?target=frac.notation'))).toBe(true);
+  });
+
+  it('does not pass an invalid target through next-course links', () => {
+    render(
+      <MemoryRouter>
+        <KnowledgeContextStrip courseId="g3-fraction-intro" targetSkillId="invalid target" />
+      </MemoryRouter>,
+    );
+
+    const nextContainer = screen.getByText('下一步').closest('div');
+    const hrefs = Array.from(nextContainer?.querySelectorAll('a[href]') ?? [])
+      .map((link) => link.getAttribute('href'));
+
+    expect(hrefs.length).toBeGreaterThan(0);
+    expect(hrefs.every((href) => href?.includes('?target=') === false)).toBe(true);
+  });
+
   it('g3-fraction-compare: renders without crashing', () => {
     render(
       <MemoryRouter>

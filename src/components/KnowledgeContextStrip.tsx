@@ -7,7 +7,7 @@
  * 仅对 graph 中有 courseMapping 的课程渲染（其他课程返回 null）。
  */
 import { Link } from 'react-router-dom';
-import { getCourseContext } from '@/lib/knowledgeGraph';
+import { getCourseContext, getSkillById } from '@/lib/knowledgeGraph';
 import { getKnowledgePointById } from '@/lib/content';
 import { useProgress } from '@/context/ProgressContext';
 import type { SkillDisplayStatus } from '@/lib/progress';
@@ -52,13 +52,20 @@ function getCourseTitle(courseId: string): string {
 
 interface KnowledgeContextStripProps {
   courseId: string;
+  targetSkillId?: string;
 }
 
-export default function KnowledgeContextStrip({ courseId }: KnowledgeContextStripProps) {
+function getTargetQuery(targetSkillId?: string): string {
+  if (!targetSkillId || getSkillById(targetSkillId)?.status !== 'published') return '';
+  return `?target=${encodeURIComponent(targetSkillId)}`;
+}
+
+export default function KnowledgeContextStrip({ courseId, targetSkillId }: KnowledgeContextStripProps) {
   const ctx = getCourseContext(courseId);
   if (!ctx) return null;
 
   const { coreSkills, reviewSkills, nextCourseIds, contrastSkills } = ctx;
+  const targetQuery = getTargetQuery(targetSkillId);
 
   // Sort next courses by grade ascending, then by title (stable)
   const sortedNextCourseIds = [...nextCourseIds].sort((a, b) => {
@@ -112,7 +119,7 @@ export default function KnowledgeContextStrip({ courseId }: KnowledgeContextStri
             {sortedNextCourseIds.map((id) => (
               <Link
                 key={id}
-                to={`/kp/${id}`}
+                to={`/kp/${id}${targetQuery}`}
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 transition-colors"
               >
                 {getCourseTitle(id)}

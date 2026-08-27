@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import GoalContextBar from '@/components/GoalContextBar';
 import { getGrades, getKnowledgePointsByGrade, getAllKnowledgePoints, getKnowledgePointById } from '@/lib/content';
 import { getCourseMapping, getSkillById } from '@/lib/knowledgeGraph';
 import { useProgress } from '@/context/ProgressContext';
@@ -54,15 +55,44 @@ function resolveTaskTitle(task: HomeTask): string {
 
 export default function HomePage() {
   const grades = getGrades();
-  const { progress, isPassed, getDueReviewIds, getMasteryStatus, getHomeTasks, getDueSkillReviews, emitEvent } = useProgress();
+  const { progress, isPassed, getDueReviewIds, getMasteryStatus, getHomeTasks, getDueSkillReviews, setGoal, emitEvent } = useProgress();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [version, setVersion] = useState<TextbookFilter>('全部');
+
+  const learningGoal = progress.learningGoal;
+  const goalSkill = learningGoal ? getSkillById(learningGoal.skillId) : null;
+  const validGoal = learningGoal && goalSkill?.status === 'published' ? learningGoal : null;
+  const activeGoalRepair = validGoal
+    && progress.repairSession?.status === 'active'
+    && progress.repairSession.targetSkillId === validGoal.skillId
+    ? progress.repairSession
+    : null;
+
+  const goalEntryViewedRef = useRef(false);
+  useEffect(() => {
+    if (!validGoal && user && !goalEntryViewedRef.current) {
+      goalEntryViewedRef.current = true;
+      emitEvent({
+        clientEventId: 'gev:home:v0.4',
+        eventName: 'goal_entry_viewed',
+        properties: { surface: 'home' },
+      });
+    }
+  }, [validGoal, user, emitEvent]);
+
+  const handleGoalSelect = (skillId: string) => {
+    setGoal(skillId, 'home');
+    navigate(`/map?target=${encodeURIComponent(skillId)}`);
+  };
 
   // Compute task list (priority-based)
   const allKPs = getAllKnowledgePoints();
   const dueReviews = getDueReviewIds();
   const dueSkillReviewCount = getDueSkillReviews().length;
-  const tasks = getHomeTasks();
+  const tasks = getHomeTasks().filter(
+    (task) => task.type !== 'learning_goal' || validGoal !== null,
+  );
 
   // Primary task = first item; upcoming = next 2
   const primaryTask = tasks[0] ?? null;
@@ -151,6 +181,39 @@ export default function HomePage() {
           可视化讲解 · 公式原理推导 · 闯关巩固练习，让每个知识点都真正理解。
         </p>
       </section>
+
+      {validGoal ? (
+        <GoalContextBar
+          targetSkillId={validGoal.skillId}
+          goalUpdatedAt={validGoal.updatedAt}
+          surface="home"
+          mode={activeGoalRepair ? 'repair' : 'learning'}
+          currentSkillId={activeGoalRepair?.skillId ?? validGoal.skillId}
+        />
+      ) : (
+        <section className="rounded-xl border border-indigo-100 bg-indigo-50/60 p-5">
+          <h2 className="text-lg font-bold text-slate-800">你想先学会什么？</h2>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {[
+              ['frac.notation', '认识并读懂分数'],
+              ['frac.multiply_fraction', '学会分数乘法'],
+              ['frac.divide_transform', '学会分数除法'],
+            ].map(([skillId, label]) => (
+              <button
+                key={skillId}
+                type="button"
+                onClick={() => handleGoalSelect(skillId)}
+                className="min-h-11 rounded-lg border border-indigo-200 bg-white px-4 py-2 text-sm font-semibold text-indigo-700 transition-all hover:border-indigo-400 hover:shadow-sm"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <Link to="/map" className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-indigo-600 hover:text-indigo-700">
+            看看更多目标
+          </Link>
+        </section>
+      )}
 
       {/* 今日任务 */}
       {(primaryTask || fallbackTask) && (

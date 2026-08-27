@@ -14,9 +14,11 @@ interface GameRunnerProps {
   game: GameConfig;
   knowledgePointId: string;
   className?: string;
+  onPassed?: () => void;
   onReviewCourse?: () => void;
   onNextCourse?: () => void;
   nextCourseTitle?: string;
+  nextActionLabel?: string;
   reviewMode?: 'd1' | 'd7' | null;
 }
 
@@ -86,9 +88,11 @@ export default function GameRunner({
   game,
   knowledgePointId,
   className,
+  onPassed,
   onReviewCourse,
   onNextCourse,
   nextCourseTitle,
+  nextActionLabel,
   reviewMode = null,
 }: GameRunnerProps) {
   const { markInitialPass, markDelayedReviewPass, markDelayedReviewFail, recordSkillEvidence } = useProgress();
@@ -169,6 +173,7 @@ export default function GameRunner({
         if (correctRate >= requiredRate && hasTransferEvidence(game, answers, activeQuestions)) {
           setGameStatus('passed');
           markDelayedReviewPass(knowledgePointId);
+          onPassed?.();
         } else {
           setGameStatus('failed');
           markDelayedReviewFail(knowledgePointId);
@@ -179,6 +184,7 @@ export default function GameRunner({
           const stars = calculateStars(correctRate, requiredRate);
           setGameStatus('passed');
           markInitialPass(knowledgePointId, stars, hasReviewSets);
+          onPassed?.();
         } else {
           setGameStatus('failed');
         }
@@ -421,7 +427,7 @@ export default function GameRunner({
               onClick={onNextCourse}
               className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[48px] flex items-center gap-2 max-w-full"
             >
-              <span className="truncate">下一课{nextCourseTitle ? `：${nextCourseTitle}` : ''}</span>
+              <span className="truncate">{nextActionLabel ?? `下一课${nextCourseTitle ? `：${nextCourseTitle}` : ''}`}</span>
               <span className="shrink-0">→</span>
             </button>
           ) : null}
