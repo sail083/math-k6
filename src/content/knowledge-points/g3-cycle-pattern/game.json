@@ -1,0 +1,103 @@
+{
+  "knowledgePointId": "g3-cycle-pattern",
+  "passThreshold": 0.8,
+  "questions": [
+    {
+      "id": "cycle-q1",
+      "type": "choice",
+      "prompt": "彩旗按红、黄、蓝的顺序重复排列，第14面是什么颜色？",
+      "options": ["红色", "黄色", "蓝色", "无法确定"],
+      "correctAnswer": "黄色",
+      "explanation": "14÷3=4……2，余数2表示落在每组第2个，所以是黄色。",
+      "points": 10
+    },
+    {
+      "id": "cycle-q2",
+      "type": "choice",
+      "prompt": "数字按2、5、8、2、5、8……排列，第20个数是多少？",
+      "options": ["2", "5", "8", "20"],
+      "correctAnswer": "5",
+      "explanation": "周期长度是3，20÷3余2，取每组第2个数5。",
+      "points": 10
+    },
+    {
+      "id": "cycle-q3",
+      "type": "choice",
+      "prompt": "图形按圆、方、三角、星重复排列，第32个图形是什么？",
+      "options": ["圆", "方", "三角", "星"],
+      "correctAnswer": "星",
+      "explanation": "32÷4=8，余数为0，说明落在一组最后一个，即星。",
+      "points": 10
+    },
+    {
+      "id": "cycle-q4",
+      "type": "choice",
+      "prompt": "找周期时，下面哪一组是红、黄、蓝、红、黄、蓝……的最小周期？",
+      "options": ["红、黄、蓝", "红、黄、蓝、红、黄、蓝", "红、黄", "黄、蓝、红"],
+      "correctAnswer": "红、黄、蓝",
+      "explanation": "最小周期必须从开头开始并能完整重复，最短的是红、黄、蓝。",
+      "points": 10
+    },
+    {
+      "id": "cycle-q5",
+      "type": "choice",
+      "prompt": "小宇算第18个位置：18÷6=3没有余数。他应该取周期里的哪个位置？",
+      "options": ["第1个", "第3个", "第6个", "第0个"],
+      "correctAnswer": "第6个",
+      "explanation": "余数为0表示刚好走完整组，应取一组的最后一个，也就是第6个。",
+      "points": 10
+    },
+    {
+      "id": "cycle-q6",
+      "type": "fill-blank",
+      "prompt": "字母按A、B、C、D、E循环排列，第47个字母是____。",
+      "correctAnswer": "B",
+      "explanation": "47÷5=9……2，取周期里的第2个字母B。",
+      "points": 10
+    }
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "cycle-d1q1",
+          "type": "choice",
+          "prompt": "灯光按白、白、蓝、绿循环，第25盏是什么颜色？",
+          "options": ["白", "蓝", "绿", "无法确定"],
+          "correctAnswer": "白",
+          "explanation": "25÷4余1，取每组第1个，是白色。",
+          "points": 10
+        },
+        {
+          "id": "cycle-d1q2",
+          "type": "fill-blank",
+          "prompt": "号码按1、4、7、9循环，第36个号码是____。",
+          "correctAnswer": "9",
+          "explanation": "36÷4没有余数，取一组最后一个号码9。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "cycle-d7q1",
+          "type": "choice",
+          "prompt": "三位同学按小安、小北、小辰轮流值日，第50天轮到谁？",
+          "options": ["小安", "小北", "小辰", "三人一起"],
+          "correctAnswer": "小北",
+          "explanation": "50÷3余2，轮到周期里的第2人小北。",
+          "points": 10
+        },
+        {
+          "id": "cycle-d7q2",
+          "type": "fill-blank",
+          "prompt": "拍手游戏按“拍、拍、停、拍、停”循环，第43个动作是____。",
+          "correctAnswer": "停",
+          "explanation": "43÷5余3，周期第3个动作是停。",
+          "points": 10
+        }
+      ]
+    }
+  }
+}

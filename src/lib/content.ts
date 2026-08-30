@@ -136,15 +136,23 @@ function topologicalSort(courses: KnowledgePoint[]): KnowledgePoint[] {
   return result;
 }
 
+/** 获取思维挑战路径；复用课程前置关系，不混入教材版本。 */
+export function getChallengeCourses(grade?: Grade): KnowledgePoint[] {
+  return topologicalSort(getAllKnowledgePoints().filter((kp) =>
+    kp.meta.track === 'challenge' && (grade === undefined || kp.meta.grade === grade),
+  ));
+}
+
 /** 按教材的实际册别和单元顺序返回课程，避免为不同版本复制知识点。 */
 export function getCurriculum(
   grade: Grade,
   version: TextbookFilter = '全部',
 ): KnowledgePoint[] {
   const candidates = version === '全部'
-    ? getKnowledgePointsByGrade(grade)
+    ? getKnowledgePointsByGrade(grade).filter((kp) => kp.meta.track !== 'challenge')
     : getAllKnowledgePoints().filter((kp) =>
-        kp.meta.textbookRefs.some((ref) => ref.version === version && ref.grade === grade),
+        kp.meta.track !== 'challenge'
+        && kp.meta.textbookRefs.some((ref) => ref.version === version && ref.grade === grade),
       );
 
   const sorted = candidates.sort((a, b) => {

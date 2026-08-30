@@ -26,6 +26,14 @@ const stageDescriptions: Record<LessonStage, string> = {
 };
 
 function getExploreMission(meta: KnowledgePointType['meta']) {
+  const challengeMissions: Record<string, { title: string; hint: string }> = {
+    'g3-cycle-pattern': { title: '排到很后面时，怎样不用一个个数？', hint: '同时改变循环长度和目标位置，观察余数怎样锁定答案。' },
+    'g3-systematic-enumeration': { title: '怎样列出所有搭配，既不重复也不遗漏？', hint: '先固定一种颜色，再依次配完所有形状。' },
+    'g4-sum-difference': { title: '知道总和与相差，怎样把两个量分出来？', hint: '把多出的差先拿开，观察剩下的两份为什么同样多。' },
+    'g4-sum-difference-multiple': { title: '“大数是小数的几倍”到底表示几份？', hint: '把小数看作一份，改变倍数，观察和与差由多少份组成。' },
+    'g5-chicken-rabbit': { title: '只知道头和脚，怎样知道鸡兔各有多少只？', hint: '先假设全是鸡，再观察每换成一只兔会多出几只脚。' },
+  };
+  if (challengeMissions[meta.id]) return challengeMissions[meta.id];
   if (meta.id === 'g3-add-sub-10000') {
     return {
       title: '为什么满十要进一，不够减要退一？',

@@ -1,0 +1,16 @@
+{
+  "id": "g5-chicken-rabbit",
+  "track": "challenge",
+  "grade": 5,
+  "unit": 301,
+  "title": "鸡兔同笼",
+  "objectives": [
+    "能用列表验证鸡兔数量",
+    "能用假设替换解释脚数差",
+    "能把方法迁移到不同单位量的问题"
+  ],
+  "prerequisites": ["g3-systematic-enumeration", "g4-sum-difference-multiple"],
+  "textbookRefs": [],
+  "vizType": "bar-chart",
+  "hasFormula": false
+}

@@ -1,0 +1,103 @@
+{
+  "knowledgePointId": "g3-systematic-enumeration",
+  "passThreshold": 0.8,
+  "questions": [
+    {
+      "id": "enum-q1",
+      "type": "choice",
+      "prompt": "有3件不同上衣和2条不同裤子，一共有多少种搭配？",
+      "options": ["5种", "6种", "8种", "9种"],
+      "correctAnswer": "6种",
+      "explanation": "每件上衣都能搭配2条裤子，共3×2=6种。",
+      "points": 10
+    },
+    {
+      "id": "enum-q2",
+      "type": "choice",
+      "prompt": "用1、2、3组成没有重复数字的两位数，一共有多少个？",
+      "options": ["3个", "4个", "6个", "9个"],
+      "correctAnswer": "6个",
+      "explanation": "十位有3种选择，个位只能从剩下2个数字中选，共3×2=6个。",
+      "points": 10
+    },
+    {
+      "id": "enum-q3",
+      "type": "choice",
+      "prompt": "从家到公园有2条路，从公园到图书馆有3条路，经过公园共有多少种走法？",
+      "options": ["5种", "6种", "8种", "9种"],
+      "correctAnswer": "6种",
+      "explanation": "前一段每种走法都能接3种后一段走法，共2×3=6种。",
+      "points": 10
+    },
+    {
+      "id": "enum-q4",
+      "type": "choice",
+      "prompt": "为了不重不漏地列出搭配，最合适的做法是什么？",
+      "options": ["想到哪种写哪种", "固定一项后按顺序列完", "只写看起来不同的", "写到数量够多为止"],
+      "correctAnswer": "固定一项后按顺序列完",
+      "explanation": "固定一项形成清楚的分类，再逐项变化，才能证明不重不漏。",
+      "points": 10
+    },
+    {
+      "id": "enum-q5",
+      "type": "choice",
+      "prompt": "小明用0、4、7组成两位数，把04也算进去。他忽略了什么条件？",
+      "options": ["个位不能为0", "十位不能为0", "数字必须重复", "两位数必须是偶数"],
+      "correctAnswer": "十位不能为0",
+      "explanation": "04表示4，不是两位数，所以十位不能选择0。",
+      "points": 10
+    },
+    {
+      "id": "enum-q6",
+      "type": "fill-blank",
+      "prompt": "用0、2、5、8组成没有重复数字且个位为偶数的两位数，一共有____个。",
+      "correctAnswer": "7",
+      "explanation": "个位是0时十位有3种；个位是2或8时十位各有2种，共3+2+2=7个。",
+      "points": 10
+    }
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "enum-d1q1",
+          "type": "choice",
+          "prompt": "早餐可选2种主食和3种饮料，每份早餐各选一种，共有多少种搭配？",
+          "options": ["5种", "6种", "8种", "9种"],
+          "correctAnswer": "6种",
+          "explanation": "每种主食都有3种饮料可配，共2×3=6种。",
+          "points": 10
+        },
+        {
+          "id": "enum-d1q2",
+          "type": "fill-blank",
+          "prompt": "用3、6、9组成没有重复数字的三位数，一共有____个。",
+          "correctAnswer": "6",
+          "explanation": "百位3种、十位2种、个位1种，共3×2×1=6个。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "enum-d7q1",
+          "type": "choice",
+          "prompt": "书架有4本不同故事书和2本不同科普书，各选1本，共有多少种选法？",
+          "options": ["6种", "8种", "10种", "12种"],
+          "correctAnswer": "8种",
+          "explanation": "每本故事书都能配2本科普书，共4×2=8种。",
+          "points": 10
+        },
+        {
+          "id": "enum-d7q2",
+          "type": "fill-blank",
+          "prompt": "从0、1、4、8中选两个不同数字组成两位数，一共有____个。",
+          "correctAnswer": "9",
+          "explanation": "十位只能选1、4、8共3种，个位再从其余3个数字中选，共3×3=9个。",
+          "points": 10
+        }
+      ]
+    }
+  }
+}

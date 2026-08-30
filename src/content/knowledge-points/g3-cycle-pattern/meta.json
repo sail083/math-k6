@@ -1,0 +1,16 @@
+{
+  "id": "g3-cycle-pattern",
+  "track": "challenge",
+  "grade": 3,
+  "unit": 101,
+  "title": "周期问题",
+  "objectives": [
+    "能找出重复排列中的最小周期",
+    "能用除法和余数确定较远位置",
+    "能正确处理余数为0的边界"
+  ],
+  "prerequisites": ["g3-division-remainder"],
+  "textbookRefs": [],
+  "vizType": "number-line",
+  "hasFormula": false
+}

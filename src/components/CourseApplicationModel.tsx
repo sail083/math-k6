@@ -1,10 +1,22 @@
 import { useState, type ReactNode } from 'react';
 
-export type ApplicationModelType = 'g4-bar-chart' | 'g5-position' | 'g5-tree-planting';
+export type ApplicationModelType =
+  | 'g4-bar-chart'
+  | 'g5-position'
+  | 'g5-tree-planting'
+  | 'g3-cycle-pattern'
+  | 'g3-systematic-enumeration'
+  | 'g4-sum-difference'
+  | 'g4-sum-difference-multiple'
+  | 'g5-chicken-rabbit';
 
 interface Props { type: ApplicationModelType; onInteract?: () => void }
 
-const modelIds = new Set<string>(['g4-bar-chart', 'g5-position', 'g5-tree-planting']);
+const modelIds = new Set<string>([
+  'g4-bar-chart', 'g5-position', 'g5-tree-planting',
+  'g3-cycle-pattern', 'g3-systematic-enumeration',
+  'g4-sum-difference', 'g4-sum-difference-multiple', 'g5-chicken-rabbit',
+]);
 export function isApplicationModelType(id: string): id is ApplicationModelType { return modelIds.has(id); }
 
 function Shell({ title, result, controls, children }: { title: string; result: string; controls: ReactNode; children: ReactNode }) {
@@ -55,10 +67,62 @@ function TreePlanting({ onInteract }: Pick<Props, 'onInteract'>) {
   </Shell>;
 }
 
+function PatternBoard({ type, onInteract }: Pick<Props, 'onInteract'> & { type: 'cycle' | 'enumeration' }) {
+  const [first, setFirst] = useState(type === 'cycle' ? 4 : 3);
+  const [second, setSecond] = useState(type === 'cycle' ? 11 : 2);
+  if (type === 'cycle') {
+    const symbols = ['红', '黄', '蓝', '绿', '紫', '橙'].slice(0, first);
+    const remainder = second % first;
+    const answer = symbols[(second - 1) % first];
+    return <Shell title="把重复的一段圈成一组，再用余数定位" result={`第 ${second} 个是${answer}`} controls={<><label>每组数量 <output>{first}</output><input type="range" min="3" max="6" value={first} onChange={e => { setFirst(Number(e.target.value)); onInteract?.(); }}/></label><label>要找的位置 <output>{second}</output><input type="range" min="7" max="24" value={second} onChange={e => { setSecond(Number(e.target.value)); onInteract?.(); }}/></label></>}>
+      <div className="flex flex-wrap justify-center gap-2 py-8" aria-label={`按${symbols.join('、')}循环排列，第${second}个是${answer}`}>{Array.from({ length: second }, (_, index) => <span key={index} className={`flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold ${index === second - 1 ? 'bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-700'}`}>{symbols[index % first]}</span>)}</div>
+      <div className="model-proof is-valid"><strong>{second} ÷ {first} 的余数是 {remainder}；{remainder === 0 ? `正好落在一组最后一个` : `落在每组第 ${remainder} 个`}</strong></div>
+    </Shell>;
+  }
+  const colors = ['红', '蓝', '黄', '绿'].slice(0, first);
+  const shapes = ['圆', '方', '三角', '星'].slice(0, second);
+  return <Shell title="先固定一种颜色，再把所有形状依次配完" result={`${first} × ${second} = ${first * second} 种`} controls={<><label>颜色数 <output>{first}</output><input type="range" min="2" max="4" value={first} onChange={e => { setFirst(Number(e.target.value)); onInteract?.(); }}/></label><label>形状数 <output>{second}</output><input type="range" min="2" max="4" value={second} onChange={e => { setSecond(Number(e.target.value)); onInteract?.(); }}/></label></>}>
+    <div className="grid grid-cols-2 gap-2 py-6 sm:grid-cols-4" aria-label={`${first}种颜色和${second}种形状共有${first * second}种搭配`}>{colors.flatMap(color => shapes.map(shape => <span key={`${color}-${shape}`} className="rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-center text-sm font-semibold text-indigo-700">{color}{shape}</span>))}</div>
+    <div className="model-proof is-valid"><strong>固定颜色逐行列出，每行 {second} 种，共 {first} 行，不重也不漏</strong></div>
+  </Shell>;
+}
+
+function QuantityBars({ type, onInteract }: Pick<Props, 'onInteract'> & { type: 'sum-difference' | 'multiple' | 'chicken-rabbit' }) {
+  const [first, setFirst] = useState(type === 'sum-difference' ? 60 : type === 'multiple' ? 10 : 12);
+  const [second, setSecond] = useState(type === 'sum-difference' ? 12 : type === 'multiple' ? 3 : 5);
+  if (type === 'chicken-rabbit') {
+    const rabbits = Math.min(second, first);
+    const chickens = first - rabbits;
+    const feet = chickens * 2 + rabbits * 4;
+    return <Shell title="先假设全是鸡，每替换一只兔就多 2 只脚" result={`${first} 个头 · ${feet} 只脚`} controls={<><label>总头数 <output>{first}</output><input type="range" min="8" max="18" value={first} onChange={e => { const value = Number(e.target.value); setFirst(value); setSecond(current => Math.min(current, value)); onInteract?.(); }}/></label><label>其中兔数 <output>{rabbits}</output><input type="range" min="1" max={first} value={rabbits} onChange={e => { setSecond(Number(e.target.value)); onInteract?.(); }}/></label></>}>
+      <div className="flex flex-wrap justify-center gap-2 py-8" aria-label={`${chickens}只鸡和${rabbits}只兔`}>{Array.from({ length: first }, (_, index) => <span key={index} className={`rounded-lg px-3 py-2 text-sm font-bold ${index < rabbits ? 'bg-amber-100 text-amber-800' : 'bg-sky-100 text-sky-800'}`}>{index < rabbits ? '兔 4脚' : '鸡 2脚'}</span>)}</div>
+      <div className="model-proof is-valid"><strong>全是鸡有 {first * 2} 只脚，多出的 {feet - first * 2} 只脚 ÷ 2 = {rabbits} 只兔</strong></div>
+    </Shell>;
+  }
+  if (type === 'multiple') {
+    const small = first, large = first * second;
+    return <Shell title="把较小量看作 1 份，较大量就是几份" result={`${small} 与 ${large} · ${second} 倍`} controls={<><label>一倍量 <output>{first}</output><input type="range" min="6" max="18" value={first} onChange={e => { setFirst(Number(e.target.value)); onInteract?.(); }}/></label><label>倍数 <output>{second}</output><input type="range" min="2" max="5" value={second} onChange={e => { setSecond(Number(e.target.value)); onInteract?.(); }}/></label></>}>
+      <div className="space-y-4 py-8"><div className="h-10 rounded bg-sky-300" style={{ width: `${100 / second}%` }} aria-label={`较小量${small}`}/><div className="flex gap-1">{Array.from({ length: second }, (_, index) => <span key={index} className="h-10 flex-1 rounded bg-indigo-400" aria-label={`第${index + 1}份，每份${small}`}/>)}</div></div>
+      <div className="model-proof is-valid"><strong>和是 {small + large}，差是 {large - small}；都由一倍量 {small} 组成</strong></div>
+    </Shell>;
+  }
+  const total = first, difference = Math.min(second, first - 2);
+  const small = (total - difference) / 2, large = small + difference;
+  return <Shell title="先从总量里去掉差，剩下两份同样多" result={`${large} 与 ${small}`} controls={<><label>总量 <output>{first}</output><input type="range" min="40" max="80" step="2" value={first} onChange={e => { setFirst(Number(e.target.value)); onInteract?.(); }}/></label><label>相差 <output>{difference}</output><input type="range" min="2" max="20" step="2" value={difference} onChange={e => { setSecond(Number(e.target.value)); onInteract?.(); }}/></label></>}>
+    <div className="space-y-4 py-8"><div className="flex"><span className="h-10 bg-indigo-400" style={{ width: `${small / large * 72}%` }}/><span className="h-10 bg-amber-300" style={{ width: `${difference / large * 72}%` }}/></div><div className="h-10 bg-sky-300" style={{ width: `${small / large * 72}%` }}/></div>
+    <div className="model-proof is-valid"><strong>较小量 =（{total} − {difference}）÷ 2 = {small}；较大量 = {large}</strong></div>
+  </Shell>;
+}
+
 export default function CourseApplicationModel({ type, onInteract }: Props) {
   switch (type) {
     case 'g4-bar-chart': return <BarChartBuild onInteract={onInteract}/>;
     case 'g5-position': return <CoordinatePosition onInteract={onInteract}/>;
     case 'g5-tree-planting': return <TreePlanting onInteract={onInteract}/>;
+    case 'g3-cycle-pattern': return <PatternBoard type="cycle" onInteract={onInteract}/>;
+    case 'g3-systematic-enumeration': return <PatternBoard type="enumeration" onInteract={onInteract}/>;
+    case 'g4-sum-difference': return <QuantityBars type="sum-difference" onInteract={onInteract}/>;
+    case 'g4-sum-difference-multiple': return <QuantityBars type="multiple" onInteract={onInteract}/>;
+    case 'g5-chicken-rabbit': return <QuantityBars type="chicken-rabbit" onInteract={onInteract}/>;
   }
 }

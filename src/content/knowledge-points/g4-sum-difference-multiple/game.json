@@ -1,0 +1,103 @@
+{
+  "knowledgePointId": "g4-sum-difference-multiple",
+  "passThreshold": 0.8,
+  "questions": [
+    {
+      "id": "multiple-q1",
+      "type": "choice",
+      "prompt": "两个数的和是80，大数是小数的3倍，小数是多少？",
+      "options": ["20", "24", "40", "60"],
+      "correctAnswer": "20",
+      "explanation": "总份数是3+1=4，一倍量是80÷4=20。",
+      "points": 10
+    },
+    {
+      "id": "multiple-q2",
+      "type": "choice",
+      "prompt": "大数是小数的4倍，两数相差36，小数是多少？",
+      "options": ["9", "12", "18", "48"],
+      "correctAnswer": "12",
+      "explanation": "相差4-1=3份，一倍量是36÷3=12。",
+      "points": 10
+    },
+    {
+      "id": "multiple-q3",
+      "type": "choice",
+      "prompt": "大数是小数的5倍时，两个数的和相当于几份小数？",
+      "options": ["4份", "5份", "6份", "10份"],
+      "correctAnswer": "6份",
+      "explanation": "小数是1份，大数是5份，和一共是6份。",
+      "points": 10
+    },
+    {
+      "id": "multiple-q4",
+      "type": "choice",
+      "prompt": "大数是小数的5倍时，两数的差相当于几份小数？",
+      "options": ["4份", "5份", "6份", "10份"],
+      "correctAnswer": "4份",
+      "explanation": "大数5份减去小数1份，差是4份。",
+      "points": 10
+    },
+    {
+      "id": "multiple-q5",
+      "type": "choice",
+      "prompt": "两盒彩笔共90支，大盒数量是小盒的5倍，大盒有多少支？",
+      "options": ["15支", "18支", "72支", "75支"],
+      "correctAnswer": "75支",
+      "explanation": "总份数6份，一份90÷6=15，大盒5份是75支。",
+      "points": 10
+    },
+    {
+      "id": "multiple-q6",
+      "type": "fill-blank",
+      "prompt": "大桶水是小桶的5倍，两桶相差56升，小桶有____升。",
+      "correctAnswer": "14",
+      "explanation": "相差5-1=4份，一份是56÷4=14升。",
+      "points": 10
+    }
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "multiple-d1q1",
+          "type": "choice",
+          "prompt": "甲乙共有96元，甲的钱是乙的3倍，甲有多少元？",
+          "options": ["24元", "32元", "64元", "72元"],
+          "correctAnswer": "72元",
+          "explanation": "总份数4份，一份96÷4=24元，甲3份是72元。",
+          "points": 10
+        },
+        {
+          "id": "multiple-d1q2",
+          "type": "fill-blank",
+          "prompt": "长绳是短绳的4倍，两根绳相差45米，长绳有____米。",
+          "correctAnswer": "60",
+          "explanation": "相差3份，一份45÷3=15米，长绳4份是60米。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "multiple-d7q1",
+          "type": "choice",
+          "prompt": "大袋米是小袋的6倍。从大袋取出90千克后，两袋同样重。小袋原有多少千克？",
+          "options": ["18千克", "21千克", "90千克", "108千克"],
+          "correctAnswer": "18千克",
+          "explanation": "大袋比小袋多6−1=5份，这5份是90千克；一份90÷5=18千克。",
+          "points": 10
+        },
+        {
+          "id": "multiple-d7q2",
+          "type": "fill-blank",
+          "prompt": "大箱零件数是小箱的5倍。从大箱取出72个后，两箱同样多，大箱原有____个。",
+          "correctAnswer": "90",
+          "explanation": "取出的72个正是原来相差的4份，一份72÷4=18个，大箱原有5份即90个。",
+          "points": 10
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "g4-sum-difference",
+  "track": "challenge",
+  "grade": 4,
+  "unit": 201,
+  "title": "和差问题",
+  "objectives": [
+    "能用线段图表示两个量的和与差",
+    "理解先去掉差再平均分的理由",
+    "能在不同情境中求出较大数和较小数"
+  ],
+  "prerequisites": ["g3-add-sub-10000", "g3-division-remainder"],
+  "textbookRefs": [],
+  "vizType": "bar-chart",
+  "hasFormula": false
+}

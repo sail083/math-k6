@@ -156,9 +156,21 @@ export function isCourseMasteryModelCType(type: string): type is CourseMasteryMo
 // CourseApplicationModel guards
 // ---------------------------------------------------------------------------
 
-type ApplicationModelType = 'g4-bar-chart' | 'g5-position' | 'g5-tree-planting';
+type ApplicationModelType =
+  | 'g4-bar-chart'
+  | 'g5-position'
+  | 'g5-tree-planting'
+  | 'g3-cycle-pattern'
+  | 'g3-systematic-enumeration'
+  | 'g4-sum-difference'
+  | 'g4-sum-difference-multiple'
+  | 'g5-chicken-rabbit';
 
-const applicationModelIds = new Set<string>(['g4-bar-chart', 'g5-position', 'g5-tree-planting']);
+const applicationModelIds = new Set<string>([
+  'g4-bar-chart', 'g5-position', 'g5-tree-planting',
+  'g3-cycle-pattern', 'g3-systematic-enumeration',
+  'g4-sum-difference', 'g4-sum-difference-multiple', 'g5-chicken-rabbit',
+]);
 
 export function isApplicationModelType(id: string): id is ApplicationModelType {
   return applicationModelIds.has(id);

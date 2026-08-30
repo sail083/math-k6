@@ -3,6 +3,7 @@ import {
   getAllKnowledgePoints,
   getKnowledgePointsByGrade,
   getKnowledgePointById,
+  getChallengeCourses,
   loadKnowledgePointDetail,
   getCurriculum,
   getSemester,
@@ -14,9 +15,9 @@ import { buildDiscoveryContent } from '@/lib/learningContent';
 
 describe('content loading', () => {
   describe('getAllKnowledgePoints', () => {
-    it('returns all 47 knowledge points', () => {
+    it('returns all 52 knowledge points', () => {
       const kps = getAllKnowledgePoints();
-      expect(kps).toHaveLength(47);
+      expect(kps).toHaveLength(52);
     });
 
     it('gives every course enough questions and a non-choice mastery check', async () => {
@@ -51,20 +52,63 @@ describe('content loading', () => {
   });
 
   describe('getKnowledgePointsByGrade', () => {
-    it('returns 10 KPs for grade 3', () => {
-      expect(getKnowledgePointsByGrade(3)).toHaveLength(10);
+    it('returns 12 KPs for grade 3 including challenges', () => {
+      expect(getKnowledgePointsByGrade(3)).toHaveLength(12);
     });
 
-    it('returns 12 KPs for grade 4', () => {
-      expect(getKnowledgePointsByGrade(4)).toHaveLength(12);
+    it('returns 14 KPs for grade 4 including challenges', () => {
+      expect(getKnowledgePointsByGrade(4)).toHaveLength(14);
     });
 
-    it('returns 13 KPs for grade 5', () => {
-      expect(getKnowledgePointsByGrade(5)).toHaveLength(13);
+    it('returns 14 KPs for grade 5 including challenges', () => {
+      expect(getKnowledgePointsByGrade(5)).toHaveLength(14);
     });
 
     it('returns 12 KPs for grade 6', () => {
       expect(getKnowledgePointsByGrade(6)).toHaveLength(12);
+    });
+  });
+
+  describe('challenge track', () => {
+    const challengeIds = [
+      'g3-cycle-pattern',
+      'g3-systematic-enumeration',
+      'g4-sum-difference',
+      'g4-sum-difference-multiple',
+      'g5-chicken-rabbit',
+    ];
+
+    it('keeps five challenge courses in prerequisite order', () => {
+      expect(getChallengeCourses().map((kp) => kp.meta.id)).toEqual(challengeIds);
+      const allIds = new Set(getAllKnowledgePoints().map((kp) => kp.meta.id));
+      for (const kp of getChallengeCourses()) {
+        expect(kp.meta.prerequisites.every((id) => allIds.has(id)), kp.meta.id).toBe(true);
+      }
+    });
+
+    it('does not mix challenges into textbook curricula or fake textbook references', () => {
+      for (const kp of getChallengeCourses()) {
+        expect(kp.meta.track).toBe('challenge');
+        expect(kp.meta.textbookRefs).toEqual([]);
+      }
+      for (const grade of [3, 4, 5, 6] as const) {
+        expect(getCurriculum(grade).every((kp) => kp.meta.track !== 'challenge')).toBe(true);
+      }
+      expect(getCurriculum(3)).toHaveLength(10);
+      expect(getCurriculum(4)).toHaveLength(12);
+      expect(getCurriculum(5)).toHaveLength(13);
+      expect(getCurriculum(6)).toHaveLength(12);
+    });
+
+    it('ships each challenge with six questions, one constructed transfer, and complete D1/D7 reviews', async () => {
+      for (const kp of getChallengeCourses()) {
+        const game = (await loadKnowledgePointDetail(kp.meta.id))?.game;
+        expect(hasCourseSpecificModel(kp.meta.id)).toBe(true);
+        expect(game?.questions).toHaveLength(6);
+        expect(game?.questions.filter((question) => question.type !== 'choice')).toHaveLength(1);
+        expect(game?.reviewSets?.d1?.questions).toHaveLength(2);
+        expect(game?.reviewSets?.d7?.questions).toHaveLength(2);
+      }
     });
   });
 
@@ -276,10 +320,10 @@ describe('content loading', () => {
     });
   });
 
-  describe('delayed review sets (all 47 courses)', () => {
-    it('covers all 47 courses — none missing reviewSets', async () => {
+  describe('delayed review sets (all 52 courses)', () => {
+    it('covers all 52 courses — none missing reviewSets', async () => {
       const kps = getAllKnowledgePoints();
-      expect(kps).toHaveLength(47);
+      expect(kps).toHaveLength(52);
       for (const kp of kps) {
         const detail = await loadKnowledgePointDetail(kp.meta.id);
         expect(detail?.game?.reviewSets?.d1, kp.meta.id).toBeDefined();
@@ -411,7 +455,7 @@ describe('content loading', () => {
       }
     });
 
-    it('review-choice correct positions cover positions A, B, and C across all 47 courses', async () => {
+    it('review-choice correct positions cover positions A, B, and C across all 52 courses', async () => {
       const positions = new Set<number>();
       for (const kp of getAllKnowledgePoints()) {
         const detail = await loadKnowledgePointDetail(kp.meta.id);

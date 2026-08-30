@@ -9,7 +9,7 @@ const mockEmitEvent = vi.fn();
 let mockProgress: ProgressData;
 let latestKnowledgePointProps: Record<string, unknown> = {};
 
-const makeCourse = (id: string, title: string) => ({
+const makeCourse = (id: string, title: string, track?: 'challenge') => ({
   meta: {
     id,
     title,
@@ -20,18 +20,20 @@ const makeCourse = (id: string, title: string) => ({
     textbookRefs: [],
     vizType: 'fraction-pie' as const,
     hasFormula: false,
+    ...(track ? { track } : {}),
   },
   explanation: '',
 });
 
 const previousCourse = makeCourse('course-previous', '上一课标题');
-const currentCourse = makeCourse('g3-fraction-intro', '当前课标题');
+let currentCourse = makeCourse('g3-fraction-intro', '当前课标题');
 const nextCourse = makeCourse('course-next', '下一课标题');
 
 vi.mock('@/lib/content', () => ({
   loadKnowledgePointDetail: vi.fn(async () => currentCourse),
   getTextbookRef: vi.fn(() => undefined),
   getCurriculum: vi.fn(() => [previousCourse, currentCourse, nextCourse]),
+  getChallengeCourses: vi.fn(() => [currentCourse, nextCourse]),
 }));
 
 vi.mock('@/context/ProgressContext', () => ({
@@ -89,6 +91,7 @@ const homeGoal = {
 
 describe('KnowledgePointPage goal continuity', () => {
   beforeEach(() => {
+    currentCourse = makeCourse('g3-fraction-intro', '当前课标题');
     mockSetGoal.mockReset();
     mockEmitEvent.mockReset();
     latestKnowledgePointProps = {};
@@ -180,5 +183,16 @@ describe('KnowledgePointPage goal continuity', () => {
     expect(latestKnowledgePointProps.targetSkillId).toBeUndefined();
     fireEvent.click(screen.getByRole('button', { name: 'mocked-next' }));
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/kp/course-next?version=%E5%85%A8%E9%83%A8'));
+  });
+
+  it('keeps challenge courses isolated from a stored fraction goal', async () => {
+    currentCourse = makeCourse('g3-cycle-pattern', '周期问题', 'challenge');
+    renderPage('?track=challenge', homeGoal);
+    await screen.findByTestId('knowledge-point');
+
+    expect(screen.queryByRole('complementary', { name: '学习目标' })).not.toBeInTheDocument();
+    expect(latestKnowledgePointProps.targetSkillId).toBeUndefined();
+    expect(latestKnowledgePointProps.nextCourseTitle).toBe('下一课标题');
+    expect(mockEmitEvent).not.toHaveBeenCalled();
   });
 });

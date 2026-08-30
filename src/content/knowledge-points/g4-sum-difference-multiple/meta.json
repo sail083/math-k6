@@ -1,0 +1,16 @@
+{
+  "id": "g4-sum-difference-multiple",
+  "track": "challenge",
+  "grade": 4,
+  "unit": 202,
+  "title": "和倍与差倍问题",
+  "objectives": [
+    "能把较小量表示为一倍量",
+    "能根据和或差确定总份数",
+    "能用线段图解决和倍与差倍问题"
+  ],
+  "prerequisites": ["g4-sum-difference", "g4-div-2digit"],
+  "textbookRefs": [],
+  "vizType": "bar-chart",
+  "hasFormula": false
+}

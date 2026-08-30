@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { getCurriculum, getTextbookRef, loadKnowledgePointDetail } from '@/lib/content';
+import { getChallengeCourses, getCurriculum, getTextbookRef, loadKnowledgePointDetail } from '@/lib/content';
 import type { KnowledgePoint as KnowledgePointType, TextbookFilter } from '@/lib/types';
 import KnowledgePoint from '@/components/KnowledgePoint';
 import GoalContextBar from '@/components/GoalContextBar';
@@ -25,8 +25,9 @@ export default function KnowledgePointPage() {
 
   const urlTarget = searchParams.get('target');
   const storedGoalSkillId = progress.learningGoal?.skillId;
-  const validUrlTarget = isValidPublishedTarget(urlTarget) ? urlTarget : null;
-  const validStoredTarget = isValidPublishedTarget(storedGoalSkillId) ? storedGoalSkillId : null;
+  const acceptsLearningGoal = kp !== null && kp.meta.track !== 'challenge';
+  const validUrlTarget = acceptsLearningGoal && isValidPublishedTarget(urlTarget) ? urlTarget : null;
+  const validStoredTarget = acceptsLearningGoal && isValidPublishedTarget(storedGoalSkillId) ? storedGoalSkillId : null;
   const targetSkillId = validUrlTarget ?? validStoredTarget ?? undefined;
   const goalUpdatedAt = progress.learningGoal?.updatedAt;
   const activeGoal = !!targetSkillId
@@ -118,11 +119,12 @@ export default function KnowledgePointPage() {
     ? rawVersion
     : '全部';
   const displayGrade = getTextbookRef(meta, version)?.grade ?? meta.grade;
-  const curriculum = getCurriculum(displayGrade, version);
+  const isChallenge = meta.track === 'challenge';
+  const curriculum = isChallenge ? getChallengeCourses() : getCurriculum(displayGrade, version);
   const currentIndex = curriculum.findIndex((item) => item.meta.id === meta.id);
   const previous = currentIndex > 0 ? curriculum[currentIndex - 1] : undefined;
   const next = currentIndex >= 0 && currentIndex < curriculum.length - 1 ? curriculum[currentIndex + 1] : undefined;
-  const queryString = `?version=${encodeURIComponent(version)}${targetSkillId ? `&target=${encodeURIComponent(targetSkillId)}` : ''}`;
+  const queryString = `?${isChallenge ? 'track=challenge' : `version=${encodeURIComponent(version)}`}${targetSkillId ? `&target=${encodeURIComponent(targetSkillId)}` : ''}`;
   const handleCoursePassed = activeGoal && targetSkillId && goalUpdatedAt !== undefined
     ? () => emitEvent?.({
       clientEventId: `tlc:${meta.id}:${targetSkillId}:${goalUpdatedAt}`,
@@ -138,7 +140,7 @@ export default function KnowledgePointPage() {
       {/* 面包屑导航 */}
       <div className="lesson-breadcrumb">
         <Link to={`/grade/${displayGrade}${queryString}`}>
-          <UiIcon name="arrow-left" size={17}/> {displayGrade}年级课程
+          <UiIcon name="arrow-left" size={17}/> {isChallenge ? '思维挑战' : `${displayGrade}年级课程`}
         </Link>
         <span className="text-slate-300">/</span>
         <span className="text-slate-600 font-medium">{meta.title}</span>
@@ -178,7 +180,7 @@ export default function KnowledgePointPage() {
             <div className="next-course-card__label"><UiIcon name="spark" size={18}/><span>下一课</span></div>
             <div className="next-course-card__content"><div><h2>{next.meta.title}</h2><p>预计 8 分钟 · 待学习</p></div><span className="next-course-card__arrow"><UiIcon name="arrow-right"/></span></div>
           </Link>
-        ) : <div className="next-course-card is-complete"><div className="next-course-card__label"><UiIcon name="check" size={18}/><span>本册课程已完成</span></div><div className="next-course-card__content"><div><h2>继续复习已经学过的知识</h2><p>回到年级课程查看学习记录</p></div></div></div>}
+        ) : <div className="next-course-card is-complete"><div className="next-course-card__label"><UiIcon name="check" size={18}/><span>{isChallenge ? '本条挑战路径已完成' : '本册课程已完成'}</span></div><div className="next-course-card__content"><div><h2>继续复习已经学过的知识</h2><p>回到课程列表查看学习记录</p></div></div></div>}
       </nav>
     </div>
   );

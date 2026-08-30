@@ -1,0 +1,103 @@
+{
+  "knowledgePointId": "g5-chicken-rabbit",
+  "passThreshold": 0.8,
+  "questions": [
+    {
+      "id": "chicken-q1",
+      "type": "choice",
+      "prompt": "鸡兔共有11个头、30只脚，兔有多少只？",
+      "options": ["4只", "5只", "6只", "8只"],
+      "correctAnswer": "4只",
+      "explanation": "假设全是鸡有22只脚，多8只；每只兔比鸡多2只脚，所以兔有8÷2=4只。",
+      "points": 10
+    },
+    {
+      "id": "chicken-q2",
+      "type": "choice",
+      "prompt": "鸡兔共有15个头、44只脚，兔有多少只？",
+      "options": ["5只", "6只", "7只", "8只"],
+      "correctAnswer": "7只",
+      "explanation": "假设全是鸡有30只脚，多14只，兔有14÷2=7只。",
+      "points": 10
+    },
+    {
+      "id": "chicken-q3",
+      "type": "choice",
+      "prompt": "假设鸡兔全是鸡时，哪个数量不会改变？",
+      "options": ["总头数", "总脚数", "兔的只数", "每只动物的脚数"],
+      "correctAnswer": "总头数",
+      "explanation": "替换只改变按几只脚计算，每只动物仍占1个头，所以总头数不变。",
+      "points": 10
+    },
+    {
+      "id": "chicken-q4",
+      "type": "choice",
+      "prompt": "把一只鸡替换成一只兔，总脚数会增加多少？",
+      "options": ["1只", "2只", "3只", "4只"],
+      "correctAnswer": "2只",
+      "explanation": "兔4只脚、鸡2只脚，每替换一只增加4-2=2只脚。",
+      "points": 10
+    },
+    {
+      "id": "chicken-q5",
+      "type": "choice",
+      "prompt": "算出鸡6只、兔4只后，哪项检查是完整的？",
+      "options": ["只检查6+4=10", "只检查6×2+4×4=28", "同时检查头数和脚数", "检查兔比鸡少2只"],
+      "correctAnswer": "同时检查头数和脚数",
+      "explanation": "两个条件都满足，才能证明这组数量是题目的答案。",
+      "points": 10
+    },
+    {
+      "id": "chicken-q6",
+      "type": "fill-blank",
+      "prompt": "鸡兔共有18个头、50只脚，兔有____只。",
+      "correctAnswer": "7",
+      "explanation": "假设全是鸡有36只脚，多14只，兔有14÷2=7只。",
+      "points": 10
+    }
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "chicken-d1q1",
+          "type": "choice",
+          "prompt": "鸡兔共有12个头、34只脚，兔有多少只？",
+          "options": ["4只", "5只", "6只", "7只"],
+          "correctAnswer": "5只",
+          "explanation": "假设全是鸡有24只脚，多10只，兔有10÷2=5只。",
+          "points": 10
+        },
+        {
+          "id": "chicken-d1q2",
+          "type": "fill-blank",
+          "prompt": "鸡兔共有20个头、56只脚，兔有____只。",
+          "correctAnswer": "8",
+          "explanation": "假设全是鸡有40只脚，多16只，兔有16÷2=8只。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "chicken-d7q1",
+          "type": "choice",
+          "prompt": "仙鹤和乌龟共有16个头、46只脚，乌龟有多少只？",
+          "options": ["6只", "7只", "8只", "9只"],
+          "correctAnswer": "7只",
+          "explanation": "假设全是2只脚的仙鹤，共32只脚，多14只；乌龟有14÷2=7只。",
+          "points": 10
+        },
+        {
+          "id": "chicken-d7q2",
+          "type": "fill-blank",
+          "prompt": "停车区有自行车和三轮车共14辆、34个轮子，三轮车有____辆。",
+          "correctAnswer": "6",
+          "explanation": "假设全是自行车有28个轮子，多6个；每辆三轮车多1个轮子，所以有6辆。",
+          "points": 10
+        }
+      ]
+    }
+  }
+}

@@ -58,6 +58,7 @@ export interface TextbookRef {
 
 export interface KnowledgePointMeta {
   id: string;                    // 如 'g3-rect-area'
+  track?: 'challenge';           // 缺省为课内课程；challenge 不参与教材编排
   grade: Grade;
   unit: number;                  // 单元序号
   title: string;                 // 如 '长方形面积'

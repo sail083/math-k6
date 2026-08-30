@@ -1,0 +1,16 @@
+{
+  "id": "g3-systematic-enumeration",
+  "track": "challenge",
+  "grade": 3,
+  "unit": 102,
+  "title": "分类枚举",
+  "objectives": [
+    "能按固定顺序列出所有可能",
+    "能用表格或树状思路做到不重不漏",
+    "能识别首位不能为0等限制条件"
+  ],
+  "prerequisites": ["g3-add-sub-10000", "g3-mult-1digit"],
+  "textbookRefs": [],
+  "vizType": "bar-chart",
+  "hasFormula": false
+}

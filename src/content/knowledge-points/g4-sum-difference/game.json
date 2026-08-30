@@ -1,0 +1,103 @@
+{
+  "knowledgePointId": "g4-sum-difference",
+  "passThreshold": 0.8,
+  "questions": [
+    {
+      "id": "sumdiff-q1",
+      "type": "choice",
+      "prompt": "两个数的和是56，差是8，较大数是多少？",
+      "options": ["24", "28", "32", "36"],
+      "correctAnswer": "32",
+      "explanation": "较大数=(56+8)÷2=32，较小数是24。",
+      "points": 10
+    },
+    {
+      "id": "sumdiff-q2",
+      "type": "choice",
+      "prompt": "两个数的和是90，差是14，较小数是多少？",
+      "options": ["38", "45", "52", "76"],
+      "correctAnswer": "38",
+      "explanation": "较小数=(90-14)÷2=38。",
+      "points": 10
+    },
+    {
+      "id": "sumdiff-q3",
+      "type": "choice",
+      "prompt": "求较小数时，为什么要先用“和减差”？",
+      "options": ["让两个量都变成较小数", "让总和变大", "把两个量都变成较大数", "因为差一定要先除以2"],
+      "correctAnswer": "让两个量都变成较小数",
+      "explanation": "去掉较大量多出的差后，剩下正好是两个相等的较小量。",
+      "points": 10
+    },
+    {
+      "id": "sumdiff-q4",
+      "type": "choice",
+      "prompt": "甲乙共有70张卡片，甲比乙多10张，乙有多少张？",
+      "options": ["30张", "35张", "40张", "60张"],
+      "correctAnswer": "30张",
+      "explanation": "乙是较小量，(70-10)÷2=30张。",
+      "points": 10
+    },
+    {
+      "id": "sumdiff-q5",
+      "type": "choice",
+      "prompt": "小林算出两个数是42和26。怎样最快检查它们是否符合和68、差16？",
+      "options": ["只算42+26", "只算42-26", "同时检查和与差", "把两个数都乘2"],
+      "correctAnswer": "同时检查和与差",
+      "explanation": "42+26=68且42-26=16，两项都符合才能确认答案。",
+      "points": 10
+    },
+    {
+      "id": "sumdiff-q6",
+      "type": "fill-blank",
+      "prompt": "两筐苹果共74个，第一筐比第二筐多18个，第一筐有____个。",
+      "correctAnswer": "46",
+      "explanation": "第一筐是较大量，(74+18)÷2=46个。",
+      "points": 10
+    }
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "sumdiff-d1q1",
+          "type": "choice",
+          "prompt": "两个数的和是64，差是10，较大数是多少？",
+          "options": ["27", "32", "37", "54"],
+          "correctAnswer": "37",
+          "explanation": "较大数=(64+10)÷2=37。",
+          "points": 10
+        },
+        {
+          "id": "sumdiff-d1q2",
+          "type": "fill-blank",
+          "prompt": "两个班共有96人，一班比二班多24人，一班有____人。",
+          "correctAnswer": "60",
+          "explanation": "一班是较大量，(96+24)÷2=60人。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "sumdiff-d7q1",
+          "type": "choice",
+          "prompt": "兄妹今年年龄和是36岁，哥哥4年前的年龄正好等于妹妹今年的年龄。哥哥今年多少岁？",
+          "options": ["16岁", "18岁", "20岁", "22岁"],
+          "correctAnswer": "20岁",
+          "explanation": "哥哥4年前等于妹妹今年，说明哥哥比妹妹大4岁；哥哥今年是(36+4)÷2=20岁。",
+          "points": 10
+        },
+        {
+          "id": "sumdiff-d7q2",
+          "type": "fill-blank",
+          "prompt": "两层书架共有88本书。从上层移8本到下层后两层同样多，上层原有____本。",
+          "correctAnswer": "52",
+          "explanation": "移动8本后相等，原来上层比下层多8×2=16本；上层原有(88+16)÷2=52本。",
+          "points": 10
+        }
+      ]
+    }
+  }
+}

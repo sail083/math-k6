@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import GoalContextBar from '@/components/GoalContextBar';
-import { getGrades, getKnowledgePointsByGrade, getAllKnowledgePoints, getKnowledgePointById } from '@/lib/content';
+import { getGrades, getCurriculum, getChallengeCourses, getAllKnowledgePoints, getKnowledgePointById } from '@/lib/content';
 import { getCourseMapping, getSkillById } from '@/lib/knowledgeGraph';
 import { useProgress } from '@/context/ProgressContext';
 import { useAuth } from '@/context/AuthContext';
@@ -88,6 +88,7 @@ export default function HomePage() {
 
   // Compute task list (priority-based)
   const allKPs = getAllKnowledgePoints();
+  const challengeCourses = getChallengeCourses();
   const dueReviews = getDueReviewIds();
   const dueSkillReviewCount = getDueSkillReviews().length;
   const tasks = getHomeTasks().filter(
@@ -131,9 +132,11 @@ export default function HomePage() {
   let fallbackTask: { link: string; title: string; description: string } | null = null;
   if (!primaryTask) {
     const firstRecommended = allKPs.find(
-      (kp) => !isPassed(kp.meta.id) && kp.meta.prerequisites.every((p) => isPassed(p)),
+      (kp) => kp.meta.track !== 'challenge'
+        && !isPassed(kp.meta.id)
+        && kp.meta.prerequisites.every((p) => isPassed(p)),
     );
-    const target = firstRecommended ?? allKPs.find((kp) => !isPassed(kp.meta.id));
+    const target = firstRecommended ?? allKPs.find((kp) => kp.meta.track !== 'challenge' && !isPassed(kp.meta.id));
     if (target) {
       const hasUnmetPrereqs = target.meta.prerequisites.some((p) => !isPassed(p));
       fallbackTask = {
@@ -165,7 +168,7 @@ export default function HomePage() {
     苏教版: 0,
   };
   for (const g of grades) {
-    for (const kp of getKnowledgePointsByGrade(g)) {
+    for (const kp of getCurriculum(g)) {
       for (const ref of kp.meta.textbookRefs) {
         versionCoverage[ref.version] = (versionCoverage[ref.version] ?? 0) + 1;
       }
@@ -313,6 +316,21 @@ export default function HomePage() {
         </section>
       )}
 
+      {/* 思维挑战入口 */}
+      <section>
+        <Link
+          to="/grade/3?track=challenge"
+          className="flex items-center justify-between gap-4 rounded-xl border border-amber-200 bg-amber-50/70 p-4 transition-all hover:border-amber-400 hover:shadow-md"
+        >
+          <div>
+            <p className="text-xs font-semibold text-amber-600">数学思维挑战</p>
+            <p className="mt-0.5 text-base font-bold text-slate-800">把课内知识用到新问题里</p>
+            <p className="mt-0.5 text-xs text-slate-500">周期、枚举、和差倍、鸡兔同笼 · {challengeCourses.length} 课连续路径</p>
+          </div>
+          <span className="shrink-0 text-xl text-amber-500">→</span>
+        </Link>
+      </section>
+
       {/* 知识地图入口 */}
       <section>
         <Link
@@ -366,13 +384,7 @@ export default function HomePage() {
         <h2 className="text-lg font-semibold text-slate-700 mb-4">选择年级开始学习</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {grades.map((g) => {
-            const allKPs = getKnowledgePointsByGrade(g);
-            const kps =
-              version === '全部'
-                ? allKPs
-                : allKPs.filter((kp) =>
-                    kp.meta.textbookRefs.some((ref) => ref.version === version),
-                  );
+            const kps = getCurriculum(g, version);
             const passed = kps.filter((kp) =>
               progress.passedKnowledgePoints.includes(kp.meta.id),
             ).length;
