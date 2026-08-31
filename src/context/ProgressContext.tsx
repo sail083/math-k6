@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, type ReactNode } from 'react';
-import type { ProgressData, MasteryStatus, EvidenceType, SkillEvidenceMode, SkillReviewSchedule, ExperimentAssignment, LearningEventName, LearningGoalSource } from '@/lib/types';
+import type { ProgressData, MasteryStatus, EvidenceType, SkillEvidenceMode, SkillReviewSchedule, ExperimentAssignment, LearningEventName, LearningGoalSource, LanguageSubject } from '@/lib/types';
 import { useAuth } from '@/context/AuthContext';
 import { supabase, logLearningEvent } from '@/lib/supabase';
 import {
@@ -25,6 +25,10 @@ import {
   mergeLearningGoal,
   mergeRepairSession,
   isSkillReadyForPath as isSkillReadyForPathUtil,
+  parseProgress,
+  mergeLanguageLessons,
+  startLanguageLesson as startLanguageLessonUtil,
+  completeLanguageLesson as completeLanguageLessonUtil,
   setLearningGoal as setLearningGoalUtil,
   startRepairSession as startRepairSessionUtil,
   finishRepairSession as finishRepairSessionUtil,
@@ -88,6 +92,8 @@ interface ProgressContextValue {
     courseId: string,
     options?: { reviewStage?: 'd1' | 'd7'; nextForm?: 'a' | 'b'; origin?: 'diagnostic' | 'review' },
   ) => void;
+  startLanguageLesson: (subject: LanguageSubject, lessonId: string, orderedLessonIds: string[]) => void;
+  completeLanguageLesson: (subject: LanguageSubject, lessonId: string, orderedLessonIds: string[]) => void;
   // ===== v0.3：首页任务 =====
   getHomeTasks: () => HomeTask[];
   // ===== v0.3：学习事件 =====
@@ -176,6 +182,7 @@ function mergeProgress(local: ProgressData, remote: ProgressData): ProgressData 
     parseCourseIntervention(local.courseIntervention),
     parseCourseIntervention(remote.courseIntervention),
   );
+  const languageLessons = mergeLanguageLessons(local.languageLessons, remote.languageLessons);
   return {
     passedKnowledgePoints: Array.from(passedSet),
     stars,
@@ -187,80 +194,103 @@ function mergeProgress(local: ProgressData, remote: ProgressData): ProgressData 
     skillReviews: Object.keys(skillReviews).length > 0 ? skillReviews : undefined,
     experimentAssignments,
     courseIntervention,
+    languageLessons: Object.keys(languageLessons).length > 0 ? languageLessons : undefined,
   };
 }
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [progress, setProgress] = useState<ProgressData>(() => loadProgress());
+  const userId = user?.id;
+  const [progress, setProgress] = useState<ProgressData>(() => loadProgress(userId));
+  const progressRef = useRef(progress);
+  progressRef.current = progress;
 
   // Track whether we've done the initial sync for the current user
   const hasSyncedRef = useRef(false);
+  const syncReadyUserIdRef = useRef<string | null>(null);
   const prevUserIdRef = useRef<string | null>(null);
 
   // When user changes (login/logout), sync remote progress
   useEffect(() => {
     // Reset sync flag when user changes
-    if (user?.id !== prevUserIdRef.current) {
+    if (userId !== prevUserIdRef.current) {
       hasSyncedRef.current = false;
-      prevUserIdRef.current = user?.id ?? null;
+      syncReadyUserIdRef.current = null;
+      prevUserIdRef.current = userId ?? null;
     }
 
-    if (!user || hasSyncedRef.current) return;
+    if (!userId || hasSyncedRef.current) return;
 
     hasSyncedRef.current = true;
+    let cancelled = false;
 
     (async () => {
       try {
         // Load remote progress from profiles table
-        const { data: profile } = await supabase
+        const { data: profile, error: readError } = await supabase
           .from('profiles')
           .select('progress')
-          .eq('id', user.id)
+          .eq('id', userId)
           .single();
+        if (readError) throw readError;
+        if (cancelled) return;
 
-        const remoteProgress = (profile?.progress as ProgressData | null) ?? null;
+        const localProgress = progressRef.current;
+        const remoteProgress = parseProgress(profile?.progress);
+        const merged = hasMeaningfulProgress(remoteProgress)
+          ? mergeProgress(localProgress, remoteProgress)
+          : localProgress;
+        progressRef.current = merged;
+        setProgress(merged);
+        saveProgress(merged, userId);
 
-        if (remoteProgress && hasMeaningfulProgress(remoteProgress)) {
-          // Merge local and remote, then save merged result everywhere
-          const localProgress = loadProgress();
-          const merged = mergeProgress(localProgress, remoteProgress);
-          setProgress(merged);
-          saveProgress(merged);
-          // Also push merged back to Supabase
-          await supabase
+        if (hasMeaningfulProgress(merged)) {
+          const { error: updateError } = await supabase
             .from('profiles')
             .update({ progress: merged })
-            .eq('id', user.id);
-        } else {
-          // No meaningful remote progress yet -- push local progress to Supabase
-          const localProgress = loadProgress();
-          if (hasMeaningfulProgress(localProgress)) {
-            await supabase
-              .from('profiles')
-              .update({ progress: localProgress })
-              .eq('id', user.id);
+            .eq('id', userId);
+          if (updateError) {
+            console.error('[ProgressSync] Failed to save merged progress:', updateError);
+          }
+        }
+        if (cancelled) return;
+        syncReadyUserIdRef.current = userId;
+
+        // A lesson may finish while the first merged UPDATE is in flight.
+        // Write that newer snapshot once so it does not wait for another user action.
+        const latestProgress = progressRef.current;
+        if (latestProgress !== merged && hasMeaningfulProgress(latestProgress)) {
+          const { error: latestUpdateError } = await supabase
+            .from('profiles')
+            .update({ progress: latestProgress })
+            .eq('id', userId);
+          if (latestUpdateError) {
+            console.error('[ProgressSync] Failed to save newer progress:', latestUpdateError);
           }
         }
       } catch (err) {
         console.error('[ProgressSync] Failed to sync on login:', err);
       }
     })();
-  }, [user]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   // 进度变化时自动持久化（防抖）+ sync to Supabase
   const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => {
     clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
-      saveProgress(progress);
+      saveProgress(progress, userId);
 
-      // Sync to Supabase if user is logged in
-      if (user) {
+      // Never overwrite an unknown remote snapshot before the initial read/merge succeeds.
+      if (userId && syncReadyUserIdRef.current === userId) {
         supabase
           .from('profiles')
           .update({ progress })
-          .eq('id', user.id)
+          .eq('id', userId)
           .then(({ error }) => {
             if (error) {
               console.error('[ProgressSync] Failed to save progress to Supabase:', error);
@@ -269,7 +299,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       }
     }, 500);
     return () => clearTimeout(saveTimer.current);
-  }, [progress, user]);
+  }, [progress, userId]);
 
   // Internal event emitter — stable reference, auth-gated. Used by transition methods.
   const emitEventInternal = useCallback((evt: TransitionEvent) => {
@@ -327,6 +357,22 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   const setCurrentLearning = useCallback((kpId: string) => {
     setProgress((prev) => setCurrentLearningUtil(prev, kpId));
+  }, []);
+
+  const startLanguageLesson = useCallback((
+    subject: LanguageSubject,
+    lessonId: string,
+    orderedLessonIds: string[],
+  ) => {
+    setProgress((prev) => startLanguageLessonUtil(prev, subject, lessonId, orderedLessonIds, Date.now()));
+  }, []);
+
+  const completeLanguageLesson = useCallback((
+    subject: LanguageSubject,
+    lessonId: string,
+    orderedLessonIds: string[],
+  ) => {
+    setProgress((prev) => completeLanguageLessonUtil(prev, subject, lessonId, orderedLessonIds, Date.now()));
   }, []);
 
   const recordSkillEvidence = useCallback((
@@ -479,6 +525,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       getDueReviewIds,
       getReviewMode,
       setCurrentLearning,
+      startLanguageLesson,
+      completeLanguageLesson,
       recordSkillEvidence,
       getSkillDisplayStatus,
       hasDirectSkillEvidence,
@@ -511,6 +559,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       getDueReviewIds,
       getReviewMode,
       setCurrentLearning,
+      startLanguageLesson,
+      completeLanguageLesson,
       recordSkillEvidence,
       getSkillDisplayStatus,
       hasDirectSkillEvidence,

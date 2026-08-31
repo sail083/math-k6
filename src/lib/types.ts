@@ -200,6 +200,21 @@ export interface GameConfig {
   };
 }
 
+// ===== 语文 / 英语顺序课程（独立于数学知识点内容模型）=====
+export type LanguageSubject = 'chinese' | 'english';
+
+export type LanguageQuestion = Question & {
+  type: 'choice' | 'fill-blank';
+};
+
+export interface LanguageLesson {
+  id: string;
+  title: string;
+  summary: string;
+  body: string;
+  questions: LanguageQuestion[];
+}
+
 // ===== 学习进度 =====
 
 /** 掌握状态：learning(学习中) / provisional(当堂会) / review_due(待复习) / stable(已稳固) */
@@ -243,6 +258,12 @@ export interface CourseIntervention {
   origin?: 'diagnostic' | 'review'; // whether intervention came from diagnostic or review-form failure
 }
 
+export interface LanguageLessonProgress {
+  completedLessonIds: string[];
+  currentLessonId: string | null;
+  updatedAt: number;
+}
+
 export interface ProgressData {
   passedKnowledgePoints: string[];
   stars: Record<string, number>; // 知识点 ID -> 1-3 星
@@ -269,6 +290,8 @@ export interface ProgressData {
   experimentAssignments?: Record<string, ExperimentAssignment>;
   // ===== v0.3：课程干预 =====
   courseIntervention?: CourseIntervention;
+  // ===== 综合学习平台：语文 / 英语顺序课程 =====
+  languageLessons?: Partial<Record<LanguageSubject, LanguageLessonProgress>>;
 }
 
 /** 技能证据模式 */

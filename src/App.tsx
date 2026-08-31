@@ -1,11 +1,12 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
-import { AuthProvider } from '@/context/AuthContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { ProgressProvider } from '@/context/ProgressContext';
 import Layout from '@/components/Layout';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 const LearningCenterPage = lazy(() => import('@/pages/LearningCenterPage'));
+const LanguageSubjectPage = lazy(() => import('@/pages/LanguageSubjectPage'));
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const GradePage = lazy(() => import('@/pages/GradePage'));
 const KnowledgePointPage = lazy(() => import('@/pages/KnowledgePointPage'));
@@ -40,6 +41,11 @@ function AuthShell() {
   );
 }
 
+function ProgressScope({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  return <ProgressProvider key={user?.id ?? 'signed-out'}>{children}</ProgressProvider>;
+}
+
 export function LegacyMathRedirect() {
   const { pathname, search, hash } = useLocation();
   return <Navigate to={`/math${pathname}${search}${hash}`} replace />;
@@ -49,10 +55,12 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <ProgressProvider>
+        <ProgressScope>
           <Suspense fallback={<SuspenseFallback />}>
             <Routes>
               <Route path="/" element={<ProtectedRoute><LearningCenterPage /></ProtectedRoute>} />
+              <Route path="/chinese" element={<ProtectedRoute><LanguageSubjectPage /></ProtectedRoute>} />
+              <Route path="/chinese/:lessonId" element={<ProtectedRoute><LanguageSubjectPage /></ProtectedRoute>} />
               <Route path="/math" element={<MathShell />}>
                 <Route index element={<HomePage />} />
                 <Route path="grade/:grade" element={<GradePage />} />
@@ -77,7 +85,7 @@ export default function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
-        </ProgressProvider>
+        </ProgressScope>
       </AuthProvider>
     </BrowserRouter>
   );

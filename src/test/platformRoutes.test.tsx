@@ -29,7 +29,11 @@ vi.mock('@/context/AuthContext', () => ({
 
 vi.mock('@/context/ProgressContext', () => ({
   ProgressProvider: ({ children }: { children: ReactNode }) => children,
-  useProgress: () => ({ progress: { passedKnowledgePoints: [], stars: {} } }),
+  useProgress: () => ({
+    progress: { passedKnowledgePoints: [], stars: {} },
+    startLanguageLesson: vi.fn(),
+    completeLanguageLesson: vi.fn(),
+  }),
 }));
 
 vi.mock('@/pages/HomePage', () => ({ default: () => <h1 data-testid="math-page">math-home</h1> }));
@@ -47,10 +51,10 @@ beforeEach(() => {
 });
 
 describe('integrated learning center', () => {
-  it('shows math first and keeps Chinese and English non-interactive', () => {
+  it('shows active math and Chinese cards while English stays non-interactive', () => {
     render(
       <MemoryRouter>
-        <LearningCenter completedCount={6} onLogout={authState.logout} />
+        <LearningCenter completedCount={6} chineseCompletedCount={1} onLogout={authState.logout} />
       </MemoryRouter>,
     );
 
@@ -59,13 +63,21 @@ describe('integrated learning center', () => {
     expect(screen.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent))
       .toEqual(['数学', '语文', '英语']);
     expect(screen.getByRole('link', { name: '进入数学' })).toHaveAttribute('href', '/math');
+    expect(screen.getByRole('link', { name: '进入语文' })).toHaveAttribute('href', '/chinese');
+    expect(screen.getByText('已完成 1 / 3 课')).toBeInTheDocument();
 
-    for (const subject of ['语文', '英语']) {
-      const card = screen.getByRole('article', { name: subject });
-      expect(within(card).queryByRole('link')).not.toBeInTheDocument();
-      expect(within(card).queryByRole('button')).not.toBeInTheDocument();
-      expect(card).not.toHaveAttribute('tabindex');
-    }
+    const englishCard = screen.getByRole('article', { name: '英语' });
+    expect(within(englishCard).queryByRole('link')).not.toBeInTheDocument();
+    expect(within(englishCard).queryByRole('button')).not.toBeInTheDocument();
+    expect(englishCard).not.toHaveAttribute('tabindex');
+  });
+
+  it('opens the real Chinese subject route', async () => {
+    window.history.replaceState({}, '', '/chinese');
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { level: 1, name: '校园里的小发现' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /会观察，也会用词/ })).toHaveAttribute('href', '/chinese/zh-campus-words');
   });
 
   it.each([

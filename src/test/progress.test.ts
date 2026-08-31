@@ -16,6 +16,12 @@ import {
   setCurrentLearning,
   getCurrentLearning,
   pickBetterMastery,
+  parseProgress,
+  getNextLanguageLessonId,
+  startLanguageLesson,
+  completeLanguageLesson,
+  mergeLanguageLessonProgress,
+  hasMeaningfulProgress,
 } from '@/lib/progress';
 import type { ProgressData, MasteryRecord } from '@/lib/types';
 
@@ -459,6 +465,103 @@ describe('progress management', () => {
       // currentLearning should be cleared after passing
       expect(getCurrentLearning(p)).toBeNull();
       expect(isPassed(p, 'g5-fraction-meaning')).toBe(true);
+    });
+  });
+
+  describe('language lesson progress', () => {
+    const lessons = ['zh-campus-words', 'zh-campus-reading', 'zh-campus-speaking'];
+
+    it('keeps legacy storage readable but lets only the first user claim it', () => {
+      localStorage.setItem('math-k6-progress', JSON.stringify({
+        passedKnowledgePoints: ['legacy-math'],
+        stars: { 'legacy-math': 2 },
+      }));
+
+      expect(loadProgress('user-a').passedKnowledgePoints).toEqual(['legacy-math']);
+      expect(loadProgress('user-b').passedKnowledgePoints).toEqual([]);
+
+      saveProgress({
+        passedKnowledgePoints: [],
+        stars: {},
+        languageLessons: {
+          chinese: { completedLessonIds: [lessons[0]], currentLessonId: lessons[1], updatedAt: NOW },
+        },
+      }, 'user-b');
+      expect(loadProgress('user-b').languageLessons?.chinese?.currentLessonId).toBe(lessons[1]);
+      expect(loadProgress('user-a').passedKnowledgePoints).toEqual(['legacy-math']);
+    });
+
+    it('filters malformed untrusted language progress without breaking legacy math data', () => {
+      const parsed = parseProgress({
+        passedKnowledgePoints: ['math-1'],
+        stars: { 'math-1': 9 },
+        languageLessons: {
+          chinese: {
+            completedLessonIds: [lessons[0], 42, lessons[0], ''],
+            currentLessonId: 7,
+            updatedAt: -20,
+          },
+          english: 'bad',
+          science: { completedLessonIds: ['not-supported'] },
+        },
+      });
+
+      expect(parsed.passedKnowledgePoints).toEqual(['math-1']);
+      expect(parsed.stars['math-1']).toBe(3);
+      expect(parsed.languageLessons).toEqual({
+        chinese: { completedLessonIds: [lessons[0]], currentLessonId: null, updatedAt: 0 },
+      });
+    });
+
+    it('starts and completes only the next lesson, then clears current after lesson three', () => {
+      const empty: ProgressData = { passedKnowledgePoints: [], stars: {} };
+      expect(startLanguageLesson(empty, 'chinese', lessons[1], lessons, NOW)).toBe(empty);
+
+      const started = startLanguageLesson(empty, 'chinese', lessons[0], lessons, NOW);
+      expect(started.languageLessons?.chinese?.currentLessonId).toBe(lessons[0]);
+      expect(startLanguageLesson(started, 'chinese', lessons[0], lessons, NOW + 1)).toBe(started);
+
+      const firstDone = completeLanguageLesson(started, 'chinese', lessons[0], lessons, NOW + 2);
+      expect(firstDone.languageLessons?.chinese).toEqual({
+        completedLessonIds: [lessons[0]],
+        currentLessonId: lessons[1],
+        updatedAt: NOW + 2,
+      });
+      expect(completeLanguageLesson(firstDone, 'chinese', lessons[0], lessons, NOW + 3)).toBe(firstDone);
+      expect(completeLanguageLesson(firstDone, 'chinese', lessons[2], lessons, NOW + 3)).toBe(firstDone);
+
+      const secondDone = completeLanguageLesson(firstDone, 'chinese', lessons[1], lessons, NOW + 4);
+      const allDone = completeLanguageLesson(secondDone, 'chinese', lessons[2], lessons, NOW + 5);
+      expect(getNextLanguageLessonId(allDone, 'chinese', lessons)).toBeNull();
+      expect(allDone.languageLessons?.chinese?.currentLessonId).toBeNull();
+    });
+
+    it('merges completed lessons and never revives a stale or completed current lesson', () => {
+      const merged = mergeLanguageLessonProgress(
+        { completedLessonIds: [lessons[0]], currentLessonId: lessons[1], updatedAt: NOW },
+        { completedLessonIds: [lessons[1]], currentLessonId: lessons[0], updatedAt: NOW + 1 },
+      );
+      expect(merged).toEqual({
+        completedLessonIds: [lessons[0], lessons[1]].sort(),
+        currentLessonId: null,
+        updatedAt: NOW + 1,
+      });
+
+      const tie = mergeLanguageLessonProgress(
+        { completedLessonIds: [], currentLessonId: lessons[0], updatedAt: NOW },
+        { completedLessonIds: [], currentLessonId: lessons[1], updatedAt: NOW },
+      );
+      expect(tie.currentLessonId).toBeNull();
+    });
+
+    it('treats language-only activity as meaningful progress', () => {
+      expect(hasMeaningfulProgress({
+        passedKnowledgePoints: [],
+        stars: {},
+        languageLessons: {
+          chinese: { completedLessonIds: [], currentLessonId: lessons[0], updatedAt: NOW },
+        },
+      })).toBe(true);
     });
   });
 });

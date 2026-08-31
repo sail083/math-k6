@@ -1,6 +1,7 @@
-import type { ProgressData, MasteryStatus, MasteryRecord, SkillEvidenceRecord, EvidenceType, SkillEvidenceMode, SkillReviewSchedule, ExperimentAssignment, CourseIntervention, LearningEventName, LearningGoalSource } from './types';
+import type { ProgressData, MasteryStatus, MasteryRecord, SkillEvidenceRecord, EvidenceType, SkillEvidenceMode, SkillReviewSchedule, ExperimentAssignment, CourseIntervention, LearningEventName, LearningGoalSource, LanguageSubject, LanguageLessonProgress } from './types';
 
 const STORAGE_KEY = 'math-k6-progress';
+const STORAGE_OWNER_KEY = `${STORAGE_KEY}-owner`;
 export const DAY_MS = 86_400_000;
 
 const defaultProgress: ProgressData = {
@@ -8,12 +9,34 @@ const defaultProgress: ProgressData = {
   stars: {},
 };
 
-/** 从 localStorage 加载进度数据 */
-export function loadProgress(): ProgressData {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return { ...defaultProgress };
-    const parsed = JSON.parse(stored);
+function userStorageKey(userId: string): string {
+  return `${STORAGE_KEY}:${userId}`;
+}
+
+function readStoredProgress(userId?: string): string | null {
+  if (!userId) return localStorage.getItem(STORAGE_KEY);
+
+  const legacy = localStorage.getItem(STORAGE_KEY);
+  let owner = localStorage.getItem(STORAGE_OWNER_KEY);
+  if (!owner && legacy) {
+    localStorage.setItem(STORAGE_OWNER_KEY, userId);
+    owner = userId;
+  }
+
+  const scopedKey = userStorageKey(userId);
+  const scoped = localStorage.getItem(scopedKey);
+  if (scoped) return scoped;
+  if (legacy && owner === userId) {
+    localStorage.setItem(scopedKey, legacy);
+    return legacy;
+  }
+  return null;
+}
+
+/** 校验本地或远端的不可信进度对象。 */
+export function parseProgress(raw: unknown): ProgressData {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { ...defaultProgress };
+  const parsed = raw as Record<string, unknown>;
 
     // Validate passedKnowledgePoints is an array of strings
     const passedKnowledgePoints = Array.isArray(parsed.passedKnowledgePoints)
@@ -21,7 +44,9 @@ export function loadProgress(): ProgressData {
       : [];
 
     // Validate stars values are numbers in range 0-3
-    const rawStars = (parsed.stars ?? {}) as Record<string, unknown>;
+    const rawStars = parsed.stars && typeof parsed.stars === 'object' && !Array.isArray(parsed.stars)
+      ? parsed.stars as Record<string, unknown>
+      : {};
     const stars: Record<string, number> = {};
     for (const [k, v] of Object.entries(rawStars)) {
       if (typeof v === 'number' && Number.isFinite(v)) {
@@ -30,7 +55,9 @@ export function loadProgress(): ProgressData {
     }
 
     // Validate mastery records (optional — old data has none)
-    const rawMastery = (parsed.mastery ?? {}) as Record<string, unknown>;
+    const rawMastery = parsed.mastery && typeof parsed.mastery === 'object' && !Array.isArray(parsed.mastery)
+      ? parsed.mastery as Record<string, unknown>
+      : {};
     const mastery: Record<string, MasteryRecord> = {};
     for (const [k, v] of Object.entries(rawMastery)) {
       if (v && typeof v === 'object') {
@@ -68,19 +95,170 @@ export function loadProgress(): ProgressData {
     // Validate courseIntervention (optional v0.3 field)
     const courseIntervention = parseCourseIntervention(parsed.courseIntervention);
 
-    return { passedKnowledgePoints, stars, mastery, currentLearning, skillEvidence, learningGoal, repairSession, skillReviews: Object.keys(skillReviews).length > 0 ? skillReviews : undefined, experimentAssignments, courseIntervention };
+    const languageLessons = parseLanguageLessons(parsed.languageLessons);
+
+    return {
+      passedKnowledgePoints,
+      stars,
+      mastery,
+      currentLearning,
+      skillEvidence,
+      learningGoal,
+      repairSession,
+      skillReviews: Object.keys(skillReviews).length > 0 ? skillReviews : undefined,
+      experimentAssignments,
+      courseIntervention,
+      languageLessons: Object.keys(languageLessons).length > 0 ? languageLessons : undefined,
+    };
+}
+
+/** 从 localStorage 加载进度；登录后使用 userId 读取隔离缓存。 */
+export function loadProgress(userId?: string): ProgressData {
+  try {
+    const stored = readStoredProgress(userId);
+    return stored ? parseProgress(JSON.parse(stored)) : { ...defaultProgress };
   } catch {
     return { ...defaultProgress };
   }
 }
 
 /** 将进度数据保存到 localStorage */
-export function saveProgress(progress: ProgressData): void {
+export function saveProgress(progress: ProgressData, userId?: string): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    if (userId && !localStorage.getItem(STORAGE_OWNER_KEY)) {
+      localStorage.setItem(STORAGE_OWNER_KEY, userId);
+    }
+    localStorage.setItem(userId ? userStorageKey(userId) : STORAGE_KEY, JSON.stringify(progress));
   } catch (e) {
     console.error('Failed to save progress:', e);
   }
+}
+
+const LANGUAGE_SUBJECTS: LanguageSubject[] = ['chinese', 'english'];
+
+export function parseLanguageLessons(
+  raw: unknown,
+): Partial<Record<LanguageSubject, LanguageLessonProgress>> {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const source = raw as Record<string, unknown>;
+  const result: Partial<Record<LanguageSubject, LanguageLessonProgress>> = {};
+
+  for (const subject of LANGUAGE_SUBJECTS) {
+    const value = source[subject];
+    if (!value || typeof value !== 'object' || Array.isArray(value)) continue;
+    const record = value as Record<string, unknown>;
+    const completedLessonIds = Array.isArray(record.completedLessonIds)
+      ? Array.from(new Set(record.completedLessonIds.filter(
+        (id: unknown): id is string => typeof id === 'string' && id.length > 0,
+      ))).sort()
+      : [];
+    const currentLessonId = typeof record.currentLessonId === 'string' && record.currentLessonId.length > 0
+      ? record.currentLessonId
+      : null;
+    const updatedAt = typeof record.updatedAt === 'number' && Number.isFinite(record.updatedAt)
+      ? Math.max(0, Math.floor(record.updatedAt))
+      : 0;
+    result[subject] = { completedLessonIds, currentLessonId, updatedAt };
+  }
+  return result;
+}
+
+export function mergeLanguageLessonProgress(
+  local: LanguageLessonProgress,
+  remote: LanguageLessonProgress,
+): LanguageLessonProgress {
+  const completedLessonIds = Array.from(new Set([
+    ...local.completedLessonIds,
+    ...remote.completedLessonIds,
+  ])).sort();
+  const completed = new Set(completedLessonIds);
+  let currentLessonId: string | null;
+  if (local.updatedAt > remote.updatedAt) currentLessonId = local.currentLessonId;
+  else if (remote.updatedAt > local.updatedAt) currentLessonId = remote.currentLessonId;
+  else currentLessonId = local.currentLessonId === remote.currentLessonId ? local.currentLessonId : null;
+
+  if (currentLessonId && completed.has(currentLessonId)) currentLessonId = null;
+  return {
+    completedLessonIds,
+    currentLessonId,
+    updatedAt: Math.max(local.updatedAt, remote.updatedAt),
+  };
+}
+
+export function mergeLanguageLessons(
+  localRaw: unknown,
+  remoteRaw: unknown,
+): Partial<Record<LanguageSubject, LanguageLessonProgress>> {
+  const local = parseLanguageLessons(localRaw);
+  const remote = parseLanguageLessons(remoteRaw);
+  const result: Partial<Record<LanguageSubject, LanguageLessonProgress>> = {};
+  for (const subject of LANGUAGE_SUBJECTS) {
+    const left = local[subject];
+    const right = remote[subject];
+    if (left && right) result[subject] = mergeLanguageLessonProgress(left, right);
+    else if (left || right) result[subject] = left ?? right;
+  }
+  return result;
+}
+
+export function getNextLanguageLessonId(
+  progress: ProgressData,
+  subject: LanguageSubject,
+  orderedLessonIds: string[],
+): string | null {
+  const completed = new Set(progress.languageLessons?.[subject]?.completedLessonIds ?? []);
+  return orderedLessonIds.find((id) => !completed.has(id)) ?? null;
+}
+
+export function startLanguageLesson(
+  progress: ProgressData,
+  subject: LanguageSubject,
+  lessonId: string,
+  orderedLessonIds: string[],
+  now: number,
+): ProgressData {
+  const current = progress.languageLessons?.[subject];
+  if (current?.completedLessonIds.includes(lessonId)) return progress;
+  if (getNextLanguageLessonId(progress, subject, orderedLessonIds) !== lessonId) return progress;
+  if (current?.currentLessonId === lessonId) return progress;
+
+  return {
+    ...progress,
+    languageLessons: {
+      ...progress.languageLessons,
+      [subject]: {
+        completedLessonIds: current?.completedLessonIds ?? [],
+        currentLessonId: lessonId,
+        updatedAt: now,
+      },
+    },
+  };
+}
+
+export function completeLanguageLesson(
+  progress: ProgressData,
+  subject: LanguageSubject,
+  lessonId: string,
+  orderedLessonIds: string[],
+  now: number,
+): ProgressData {
+  const current = progress.languageLessons?.[subject];
+  if (current?.completedLessonIds.includes(lessonId)) return progress;
+  if (getNextLanguageLessonId(progress, subject, orderedLessonIds) !== lessonId) return progress;
+
+  const completedLessonIds = [...(current?.completedLessonIds ?? []), lessonId];
+  const completed = new Set(completedLessonIds);
+  return {
+    ...progress,
+    languageLessons: {
+      ...progress.languageLessons,
+      [subject]: {
+        completedLessonIds,
+        currentLessonId: orderedLessonIds.find((id) => !completed.has(id)) ?? null,
+        updatedAt: now,
+      },
+    },
+  };
 }
 
 /** 标记某知识点为已通过，保留最高星数 */
@@ -693,6 +871,10 @@ export function hasMeaningfulProgress(progress: ProgressData): boolean {
   // F15: non-empty experimentAssignments count as meaningful for sync completeness
   const experimentAssignments = progress.experimentAssignments ?? {};
   if (Object.keys(experimentAssignments).length > 0) return true;
+  for (const subject of LANGUAGE_SUBJECTS) {
+    const lessons = progress.languageLessons?.[subject];
+    if (lessons && (lessons.completedLessonIds.length > 0 || lessons.currentLessonId)) return true;
+  }
   return false;
 }
 
