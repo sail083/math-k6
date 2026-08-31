@@ -31,6 +31,10 @@ vi.mock('@/context/ProgressContext', () => ({
   ProgressProvider: ({ children }: { children: ReactNode }) => children,
   useProgress: () => ({
     progress: { passedKnowledgePoints: [], stars: {} },
+    legacyProgressAvailable: false,
+    legacyCompletedKnowledgePointCount: 0,
+    importLegacyProgress: vi.fn(),
+    dismissLegacyProgress: vi.fn(),
     startLanguageLesson: vi.fn(),
     completeLanguageLesson: vi.fn(),
   }),
@@ -54,7 +58,16 @@ describe('integrated learning center', () => {
   it('shows all three subjects as active links with their progress', () => {
     render(
       <MemoryRouter>
-        <LearningCenter completedCount={6} chineseCompletedCount={1} englishCompletedCount={0} onLogout={authState.logout} />
+        <LearningCenter
+          completedCount={6}
+          chineseCompletedCount={1}
+          englishCompletedCount={0}
+          legacyProgressAvailable={false}
+          legacyCompletedCount={0}
+          onImportLegacy={vi.fn()}
+          onDismissLegacy={vi.fn()}
+          onLogout={authState.logout}
+        />
       </MemoryRouter>,
     );
 
@@ -68,6 +81,31 @@ describe('integrated learning center', () => {
     expect(screen.getByText('已完成 1 / 3 课')).toBeInTheDocument();
     expect(screen.getByText('已完成 0 / 3 课')).toBeInTheDocument();
     expect(screen.getByText('词汇、句型与听读')).toBeInTheDocument();
+  });
+
+  it('asks before importing unowned device progress', () => {
+    const onImportLegacy = vi.fn();
+    const onDismissLegacy = vi.fn();
+    render(
+      <MemoryRouter>
+        <LearningCenter
+          completedCount={0}
+          chineseCompletedCount={0}
+          englishCompletedCount={0}
+          legacyProgressAvailable
+          legacyCompletedCount={4}
+          onImportLegacy={onImportLegacy}
+          onDismissLegacy={onDismissLegacy}
+          onLogout={authState.logout}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText('其中完成了 4 个旧数学知识点。请确认属于当前账号后再导入。')).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: '确认是我的，导入' }));
+    fireEvent.click(screen.getByRole('button', { name: '不是我的，不再提示' }));
+    expect(onImportLegacy).toHaveBeenCalledTimes(1);
+    expect(onDismissLegacy).toHaveBeenCalledTimes(1);
   });
 
   it('opens the real Chinese subject route', async () => {

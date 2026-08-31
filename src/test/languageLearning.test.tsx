@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { StrictMode } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { chineseLessons } from '@/content/chinese';
+import { chineseLessonIds, chineseLessons } from '@/content/chinese';
 import { englishLessonIds, englishLessons } from '@/content/english';
 import LanguageSubjectPage, { LessonPractice, ReadAloudButton } from '@/pages/LanguageSubjectPage';
 import type { LanguageLesson, ProgressData } from '@/lib/types';
@@ -15,9 +16,11 @@ const progressMocks = vi.hoisted(() => ({
 
 const syncMocks = vi.hoisted(() => ({
   user: { id: 'sync-user' },
+  select: vi.fn(),
   single: vi.fn(),
   update: vi.fn(),
   updateEq: vi.fn(),
+  rpc: vi.fn(),
 }));
 
 vi.mock('@/context/ProgressContext', () => ({
@@ -32,12 +35,16 @@ vi.mock('@/lib/supabase', () => ({
   logLearningEvent: vi.fn(),
   supabase: {
     from: () => ({
-      select: () => ({ eq: () => ({ single: syncMocks.single }) }),
+      select: (columns: string) => {
+        syncMocks.select(columns);
+        return { eq: () => ({ single: syncMocks.single }) };
+      },
       update: (value: unknown) => {
         syncMocks.update(value);
         return { eq: syncMocks.updateEq };
       },
     }),
+    rpc: syncMocks.rpc,
   },
 }));
 
@@ -71,9 +78,11 @@ beforeEach(() => {
   progressMocks.progress = { passedKnowledgePoints: [], stars: {} };
   progressMocks.startLanguageLesson.mockReset();
   progressMocks.completeLanguageLesson.mockReset();
+  syncMocks.select.mockReset();
   syncMocks.single.mockReset();
   syncMocks.update.mockReset();
   syncMocks.updateEq.mockReset().mockResolvedValue({ error: null });
+  syncMocks.rpc.mockReset().mockResolvedValue({ data: {}, error: null });
 });
 
 afterEach(() => {
@@ -354,6 +363,30 @@ describe('progress remote sync gate', () => {
     await act(async () => { resolveRead({ data: { progress: {} }, error: null }); });
 
     await waitFor(() => expect(syncMocks.update).toHaveBeenCalledTimes(1));
+    expect(syncMocks.select).toHaveBeenCalledWith('progress, language_progress');
+  });
+
+  it('restarts the initial sync after the StrictMode effect cleanup', async () => {
+    localStorage.setItem('math-k6-progress', JSON.stringify({
+      passedKnowledgePoints: ['legacy-math'],
+      stars: { 'legacy-math': 2 },
+    }));
+    let resolveFirstRead: (value: { data: { progress: object; language_progress: object }; error: null }) => void = () => undefined;
+    syncMocks.single
+      .mockImplementationOnce(() => new Promise((resolve) => { resolveFirstRead = resolve; }))
+      .mockResolvedValue({ data: { progress: {}, language_progress: {} }, error: null });
+    const actual = await vi.importActual<typeof import('@/context/ProgressContext')>('@/context/ProgressContext');
+
+    function StrictState() {
+      const context = actual.useProgress();
+      return <output data-testid="strict-sync-state">{context.legacyProgressAvailable ? 'ready' : 'waiting'}</output>;
+    }
+
+    render(<StrictMode><actual.ProgressProvider><StrictState /></actual.ProgressProvider></StrictMode>);
+    await waitFor(() => expect(syncMocks.single).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(syncMocks.update).toHaveBeenCalled());
+    await waitFor(() => expect(screen.getByTestId('strict-sync-state')).toHaveTextContent('ready'));
+    await act(async () => resolveFirstRead({ data: { progress: {}, language_progress: {} }, error: null }));
   });
 
   it('merges an in-memory lesson start that happens before the remote read resolves', async () => {
@@ -374,13 +407,8 @@ describe('progress remote sync gate', () => {
     await act(async () => { resolveRead({ data: { progress: {} }, error: null }); });
 
     await waitFor(() => expect(syncMocks.update).toHaveBeenCalled());
-    expect(syncMocks.update.mock.calls[0][0]).toMatchObject({
-      progress: {
-        languageLessons: {
-          chinese: { currentLessonId: 'zh-campus-words' },
-        },
-      },
-    });
+    expect(syncMocks.update.mock.calls[0][0]).toHaveProperty('progress');
+    expect(syncMocks.update.mock.calls[0][0]).not.toHaveProperty('progress.languageLessons');
   });
 
   it('writes a lesson completion that happens while the first merged update is in flight', async () => {
@@ -411,15 +439,13 @@ describe('progress remote sync gate', () => {
     await act(async () => { resolveFirstUpdate({ error: null }); });
 
     await waitFor(() => expect(syncMocks.update).toHaveBeenCalledTimes(2));
-    expect(syncMocks.update.mock.calls[1][0]).toMatchObject({
-      progress: {
-        languageLessons: {
-          chinese: {
-            completedLessonIds: ['zh-campus-words'],
-            currentLessonId: 'zh-campus-reading',
-          },
-        },
-      },
+    expect(syncMocks.update.mock.calls.every(([payload]) => (
+      !(payload as { progress?: ProgressData }).progress?.languageLessons
+    ))).toBe(true);
+    expect(syncMocks.rpc).toHaveBeenCalledWith('complete_language_lesson', {
+      subject_input: 'chinese',
+      lesson_id_input: 'zh-campus-words',
+      user_id_input: 'sync-user',
     });
   });
 
@@ -444,6 +470,235 @@ describe('progress remote sync gate', () => {
     await vi.waitFor(() => expect(syncMocks.updateEq).toHaveBeenCalledTimes(1));
   });
 
+  it('retries local language completions through the atomic RPC after login', async () => {
+    saveProgress({
+      passedKnowledgePoints: [],
+      stars: {},
+      languageLessons: {
+        english: { completedLessonIds: [englishLessonIds[0]], currentLessonId: englishLessonIds[1], updatedAt: 2 },
+      },
+    }, 'sync-user');
+    syncMocks.single.mockResolvedValue({ data: { progress: {}, language_progress: {} }, error: null });
+    const actual = await vi.importActual<typeof import('@/context/ProgressContext')>('@/context/ProgressContext');
+
+    render(<actual.ProgressProvider><div>登录重试</div></actual.ProgressProvider>);
+
+    await waitFor(() => expect(syncMocks.rpc).toHaveBeenCalledWith('complete_language_lesson', {
+      subject_input: 'english',
+      lesson_id_input: englishLessonIds[0],
+      user_id_input: 'sync-user',
+    }));
+    expect(syncMocks.select).toHaveBeenCalledWith('progress, language_progress');
+    expect(syncMocks.update.mock.calls.every(([payload]) => (
+      !(payload as { progress?: ProgressData }).progress?.languageLessons
+    ))).toBe(true);
+  });
+
+  it('ignores an unknown local lesson ID without blocking math sync', async () => {
+    saveProgress({
+      passedKnowledgePoints: ['math-1'],
+      stars: { 'math-1': 2 },
+      languageLessons: {
+        chinese: { completedLessonIds: ['unknown-lesson'], currentLessonId: null, updatedAt: 1 },
+      },
+    }, 'sync-user');
+    syncMocks.single.mockResolvedValue({ data: { progress: {}, language_progress: {} }, error: null });
+    const actual = await vi.importActual<typeof import('@/context/ProgressContext')>('@/context/ProgressContext');
+
+    render(<actual.ProgressProvider><div>脏数据兼容</div></actual.ProgressProvider>);
+
+    await waitFor(() => expect(syncMocks.update).toHaveBeenCalled());
+    expect(syncMocks.rpc).not.toHaveBeenCalled();
+    expect(syncMocks.update.mock.calls[0][0]).toMatchObject({
+      progress: { passedKnowledgePoints: ['math-1'] },
+    });
+    expect(syncMocks.update.mock.calls[0][0]).not.toHaveProperty('progress.languageLessons');
+  });
+
+  it('stops the old account RPC loop after switching accounts', async () => {
+    syncMocks.user = { id: 'user-a' };
+    saveProgress({
+      passedKnowledgePoints: [],
+      stars: {},
+      languageLessons: {
+        chinese: {
+          completedLessonIds: chineseLessonIds.slice(0, 2),
+          currentLessonId: chineseLessonIds[2],
+          updatedAt: 2,
+        },
+      },
+    }, 'user-a');
+    syncMocks.single.mockResolvedValue({ data: { progress: {}, language_progress: {} }, error: null });
+    let resolveFirstRpc: (value: { data: object; error: null }) => void = () => undefined;
+    syncMocks.rpc
+      .mockImplementationOnce(() => new Promise((resolve) => { resolveFirstRpc = resolve; }))
+      .mockResolvedValue({ data: {}, error: null });
+    const actual = await vi.importActual<typeof import('@/context/ProgressContext')>('@/context/ProgressContext');
+
+    function AccountProvider() {
+      return <actual.ProgressProvider key={syncMocks.user.id}><div>{syncMocks.user.id}</div></actual.ProgressProvider>;
+    }
+
+    const { rerender } = render(<AccountProvider />);
+    await waitFor(() => expect(syncMocks.rpc).toHaveBeenCalledTimes(1));
+    expect(syncMocks.rpc).toHaveBeenLastCalledWith('complete_language_lesson', {
+      subject_input: 'chinese',
+      lesson_id_input: expect.any(String),
+      user_id_input: 'user-a',
+    });
+    expect(chineseLessonIds.slice(0, 2)).toContain(syncMocks.rpc.mock.calls[0][1].lesson_id_input);
+
+    syncMocks.user = { id: 'user-b' };
+    rerender(<AccountProvider />);
+    await act(async () => resolveFirstRpc({ data: {}, error: null }));
+    await waitFor(() => expect(screen.getByText('user-b')).toBeVisible());
+    expect(syncMocks.rpc).toHaveBeenCalledTimes(1);
+  });
+
+  it('leaves legacy nested remote progress untouched when its RPC migration fails', async () => {
+    saveProgress({ passedKnowledgePoints: [], stars: {} }, 'sync-user');
+    syncMocks.single.mockResolvedValue({
+      data: {
+        progress: {
+          passedKnowledgePoints: [],
+          stars: {},
+          languageLessons: {
+            english: { completedLessonIds: [englishLessonIds[0]], currentLessonId: null, updatedAt: 1 },
+          },
+        },
+        language_progress: { chinese: ['zh-campus-words'] },
+      },
+      error: null,
+    });
+    const actual = await vi.importActual<typeof import('@/context/ProgressContext')>('@/context/ProgressContext');
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    syncMocks.rpc.mockResolvedValue({ data: null, error: new Error('offline') });
+
+    render(<actual.ProgressProvider><div>旧格式迁移</div></actual.ProgressProvider>);
+
+    await waitFor(() => expect(syncMocks.rpc).toHaveBeenCalledWith('complete_language_lesson', {
+      subject_input: 'english',
+      lesson_id_input: englishLessonIds[0],
+      user_id_input: 'sync-user',
+    }));
+    await waitFor(() => expect(error).toHaveBeenCalled());
+    expect(syncMocks.update).not.toHaveBeenCalled();
+    error.mockRestore();
+  });
+
+  it('pauses remote math writes when RPC fails and resumes after the online retry succeeds', async () => {
+    const lessonIds = ['zh-campus-words', 'zh-campus-reading'];
+    saveProgress({
+      passedKnowledgePoints: [],
+      stars: {},
+      languageLessons: {
+        chinese: { completedLessonIds: [], currentLessonId: lessonIds[0], updatedAt: 1 },
+      },
+    }, 'sync-user');
+    syncMocks.single.mockResolvedValue({ data: { progress: {}, language_progress: {} }, error: null });
+    const actual = await vi.importActual<typeof import('@/context/ProgressContext')>('@/context/ProgressContext');
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    function CompleteControl() {
+      const { progress, completeLanguageLesson } = actual.useProgress();
+      return <><button type="button" onClick={() => completeLanguageLesson('chinese', lessonIds[0], lessonIds)}>完成课程</button><output data-testid="local-completion">{progress.languageLessons?.chinese?.completedLessonIds.join(',') ?? ''}</output></>;
+    }
+
+    render(<actual.ProgressProvider><CompleteControl /></actual.ProgressProvider>);
+    await waitFor(() => expect(syncMocks.update).toHaveBeenCalled());
+    const updateCountBeforeFailure = syncMocks.update.mock.calls.length;
+    syncMocks.rpc.mockResolvedValueOnce({ data: null, error: new Error('offline') });
+    fireEvent.click(screen.getByRole('button', { name: '完成课程' }));
+
+    await waitFor(() => expect(screen.getByTestId('local-completion')).toHaveTextContent(lessonIds[0]));
+    await waitFor(() => expect(syncMocks.rpc).toHaveBeenCalledWith('complete_language_lesson', {
+      subject_input: 'chinese',
+      lesson_id_input: lessonIds[0],
+      user_id_input: 'sync-user',
+    }));
+    expect(error).toHaveBeenCalledWith(
+      '[ProgressSync] Failed to save language completion:',
+      expect.any(Error),
+    );
+    expect(syncMocks.update).toHaveBeenCalledTimes(updateCountBeforeFailure);
+
+    window.dispatchEvent(new Event('online'));
+    await waitFor(() => expect(syncMocks.rpc).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(syncMocks.update).toHaveBeenCalledTimes(updateCountBeforeFailure + 1));
+    const finalUpdate = syncMocks.update.mock.calls.at(-1);
+    expect(finalUpdate).toBeDefined();
+    expect((finalUpdate![0] as { progress?: ProgressData }).progress).not.toHaveProperty('languageLessons');
+    error.mockRestore();
+  });
+
+  it('offers unowned legacy progress only after a successful read and imports on confirmation', async () => {
+    localStorage.setItem('math-k6-progress', JSON.stringify({
+      passedKnowledgePoints: ['legacy-math'],
+      stars: { 'legacy-math': 2 },
+    }));
+    syncMocks.single.mockResolvedValue({ data: { progress: {}, language_progress: {} }, error: null });
+    const actual = await vi.importActual<typeof import('@/context/ProgressContext')>('@/context/ProgressContext');
+
+    function LegacyControl() {
+      const context = actual.useProgress();
+      return <>
+        <output data-testid="legacy-offer">{context.legacyProgressAvailable ? context.legacyCompletedKnowledgePointCount : 'no'}</output>
+        <output data-testid="legacy-imported">{context.progress.passedKnowledgePoints.join(',')}</output>
+        <button type="button" onClick={context.importLegacyProgress}>确认导入</button>
+      </>;
+    }
+
+    render(<actual.ProgressProvider><LegacyControl /></actual.ProgressProvider>);
+    await waitFor(() => expect(screen.getByTestId('legacy-offer')).toHaveTextContent('1'));
+    expect(screen.getByTestId('legacy-imported')).toBeEmptyDOMElement();
+    fireEvent.click(screen.getByRole('button', { name: '确认导入' }));
+    await waitFor(() => expect(screen.getByTestId('legacy-imported')).toHaveTextContent('legacy-math'));
+    expect(screen.getByTestId('legacy-offer')).toHaveTextContent('no');
+    expect(localStorage.getItem('math-k6-progress-owner')).toBe('sync-user');
+  });
+
+  it('restarts the full read and language sync when the browser comes online', async () => {
+    const lessonIds = [chineseLessonIds[0], chineseLessonIds[1]];
+    saveProgress({
+      passedKnowledgePoints: [],
+      stars: {},
+      languageLessons: {
+        chinese: { completedLessonIds: [], currentLessonId: lessonIds[0], updatedAt: 1 },
+      },
+    }, 'sync-user');
+    syncMocks.single
+      .mockResolvedValueOnce({ data: null, error: new Error('offline read') })
+      .mockResolvedValue({ data: { progress: {}, language_progress: {} }, error: null });
+    const actual = await vi.importActual<typeof import('@/context/ProgressContext')>('@/context/ProgressContext');
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    function OfflineCompletion() {
+      const { progress, completeLanguageLesson } = actual.useProgress();
+      return <>
+        <button type="button" onClick={() => completeLanguageLesson('chinese', lessonIds[0], lessonIds)}>离线完成</button>
+        <output data-testid="offline-completion">{progress.languageLessons?.chinese?.completedLessonIds.join(',') ?? ''}</output>
+      </>;
+    }
+
+    render(<actual.ProgressProvider><OfflineCompletion /></actual.ProgressProvider>);
+    await waitFor(() => expect(syncMocks.single).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByRole('button', { name: '离线完成' }));
+    await waitFor(() => expect(screen.getByTestId('offline-completion')).toHaveTextContent(lessonIds[0]));
+    expect(syncMocks.rpc).not.toHaveBeenCalled();
+    expect(syncMocks.update).not.toHaveBeenCalled();
+
+    window.dispatchEvent(new Event('online'));
+    await waitFor(() => expect(syncMocks.single).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(syncMocks.rpc).toHaveBeenCalledWith('complete_language_lesson', {
+      subject_input: 'chinese',
+      lesson_id_input: lessonIds[0],
+      user_id_input: 'sync-user',
+    }));
+    await waitFor(() => expect(syncMocks.update).toHaveBeenCalled());
+    expect(syncMocks.update.mock.calls.at(-1)?.[0]).not.toHaveProperty('progress.languageLessons');
+    error.mockRestore();
+  });
+
   it('never overwrites an unknown remote snapshot after the initial read fails', async () => {
     vi.useFakeTimers();
     saveProgress({
@@ -457,10 +712,18 @@ describe('progress remote sync gate', () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const actual = await vi.importActual<typeof import('@/context/ProgressContext')>('@/context/ProgressContext');
 
-    render(<actual.ProgressProvider><div>失败同步测试</div></actual.ProgressProvider>);
+    localStorage.setItem('math-k6-progress', JSON.stringify({
+      passedKnowledgePoints: ['legacy-math'],
+      stars: { 'legacy-math': 2 },
+    }));
+    function FailedReadState() {
+      return <output data-testid="legacy-after-read-failure">{actual.useProgress().legacyProgressAvailable ? 'yes' : 'no'}</output>;
+    }
+    render(<actual.ProgressProvider><FailedReadState /></actual.ProgressProvider>);
     await act(async () => { await vi.advanceTimersByTimeAsync(600); });
 
     expect(syncMocks.updateEq).not.toHaveBeenCalled();
+    expect(screen.getByTestId('legacy-after-read-failure')).toHaveTextContent('no');
     error.mockRestore();
   });
 });

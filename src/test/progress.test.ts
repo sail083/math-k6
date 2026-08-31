@@ -22,6 +22,11 @@ import {
   completeLanguageLesson,
   mergeLanguageLessonProgress,
   hasMeaningfulProgress,
+  getLegacyProgressForImport,
+  claimLegacyProgress,
+  dismissLegacyProgress,
+  toRemoteMathProgress,
+  parseRemoteLanguageProgress,
 } from '@/lib/progress';
 import type { ProgressData, MasteryRecord } from '@/lib/types';
 
@@ -471,24 +476,47 @@ describe('progress management', () => {
   describe('language lesson progress', () => {
     const lessons = ['zh-campus-words', 'zh-campus-reading', 'zh-campus-speaking'];
 
-    it('keeps legacy storage readable but lets only the first user claim it', () => {
+    it('never auto-claims legacy progress and imports only after explicit confirmation', () => {
       localStorage.setItem('math-k6-progress', JSON.stringify({
         passedKnowledgePoints: ['legacy-math'],
         stars: { 'legacy-math': 2 },
       }));
 
+      expect(loadProgress('user-a').passedKnowledgePoints).toEqual([]);
+      expect(loadProgress('user-b').passedKnowledgePoints).toEqual([]);
+      const legacy = getLegacyProgressForImport('user-a');
+      expect(legacy?.passedKnowledgePoints).toEqual(['legacy-math']);
+      expect(claimLegacyProgress('user-a', legacy!)).toBe(true);
       expect(loadProgress('user-a').passedKnowledgePoints).toEqual(['legacy-math']);
       expect(loadProgress('user-b').passedKnowledgePoints).toEqual([]);
+      expect(getLegacyProgressForImport('user-b')).toBeNull();
+    });
 
-      saveProgress({
-        passedKnowledgePoints: [],
-        stars: {},
+    it('dismisses the offer per account without taking ownership', () => {
+      localStorage.setItem('math-k6-progress', JSON.stringify({
+        passedKnowledgePoints: ['legacy-math'],
+        stars: { 'legacy-math': 2 },
+      }));
+
+      dismissLegacyProgress('user-a');
+      expect(getLegacyProgressForImport('user-a')).toBeNull();
+      expect(getLegacyProgressForImport('user-b')?.passedKnowledgePoints).toEqual(['legacy-math']);
+      expect(localStorage.getItem('math-k6-progress-owner')).toBeNull();
+    });
+
+    it('keeps language progress out of legacy math payloads and parses dedicated arrays', () => {
+      const progress: ProgressData = {
+        passedKnowledgePoints: ['math-1'],
+        stars: { 'math-1': 2 },
         languageLessons: {
           chinese: { completedLessonIds: [lessons[0]], currentLessonId: lessons[1], updatedAt: NOW },
         },
-      }, 'user-b');
-      expect(loadProgress('user-b').languageLessons?.chinese?.currentLessonId).toBe(lessons[1]);
-      expect(loadProgress('user-a').passedKnowledgePoints).toEqual(['legacy-math']);
+      };
+
+      expect(toRemoteMathProgress(progress)).not.toHaveProperty('languageLessons');
+      expect(parseRemoteLanguageProgress({ chinese: [lessons[0], lessons[0], 'unknown-lesson'] })).toEqual({
+        chinese: { completedLessonIds: [lessons[0]], currentLessonId: null, updatedAt: 0 },
+      });
     });
 
     it('filters malformed untrusted language progress without breaking legacy math data', () => {

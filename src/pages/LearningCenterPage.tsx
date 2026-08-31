@@ -6,10 +6,23 @@ interface LearningCenterProps {
   completedCount: number;
   chineseCompletedCount: number;
   englishCompletedCount: number;
+  legacyProgressAvailable: boolean;
+  legacyCompletedCount: number;
+  onImportLegacy: () => void;
+  onDismissLegacy: () => void;
   onLogout: () => void | Promise<void>;
 }
 
-export function LearningCenter({ completedCount, chineseCompletedCount, englishCompletedCount, onLogout }: LearningCenterProps) {
+export function LearningCenter({
+  completedCount,
+  chineseCompletedCount,
+  englishCompletedCount,
+  legacyProgressAvailable,
+  legacyCompletedCount,
+  onImportLegacy,
+  onDismissLegacy,
+  onLogout,
+}: LearningCenterProps) {
   return (
     <div className="app-frame min-h-screen flex flex-col">
       <a
@@ -47,6 +60,23 @@ export function LearningCenter({ completedCount, chineseCompletedCount, englishC
             语文、数学和英语都已经可以学习。
           </p>
         </section>
+
+        {legacyProgressAvailable ? (
+          <section aria-labelledby="legacy-progress-title" className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-950">
+            <h2 id="legacy-progress-title" className="font-bold">发现这台设备上的旧学习进度</h2>
+            <p className="mt-2 text-sm leading-6">
+              其中完成了 {legacyCompletedCount} 个旧数学知识点。请确认属于当前账号后再导入。
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <button type="button" onClick={onImportLegacy} className="min-h-11 rounded-lg bg-amber-700 px-4 text-sm font-bold text-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-200">
+                确认是我的，导入
+              </button>
+              <button type="button" onClick={onDismissLegacy} className="min-h-11 rounded-lg border border-amber-300 bg-white px-4 text-sm font-bold text-amber-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-200">
+                不是我的，不再提示
+              </button>
+            </div>
+          </section>
+        ) : null}
 
         <section aria-labelledby="subjects-title" className="mt-8">
           <h2 id="subjects-title" className="text-lg font-bold text-slate-800">我的学科</h2>
@@ -127,13 +157,23 @@ export function LearningCenter({ completedCount, chineseCompletedCount, englishC
 
 export default function LearningCenterPage() {
   const { logout } = useAuth();
-  const { progress } = useProgress();
+  const {
+    progress,
+    legacyProgressAvailable,
+    legacyCompletedKnowledgePointCount,
+    importLegacyProgress,
+    dismissLegacyProgress,
+  } = useProgress();
 
   return (
     <LearningCenter
       completedCount={progress.passedKnowledgePoints.length}
       chineseCompletedCount={progress.languageLessons?.chinese?.completedLessonIds.length ?? 0}
       englishCompletedCount={progress.languageLessons?.english?.completedLessonIds.length ?? 0}
+      legacyProgressAvailable={legacyProgressAvailable}
+      legacyCompletedCount={legacyCompletedKnowledgePointCount}
+      onImportLegacy={importLegacyProgress}
+      onDismissLegacy={dismissLegacyProgress}
       onLogout={logout}
     />
   );

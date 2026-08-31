@@ -2,6 +2,7 @@ import type { ProgressData, MasteryStatus, MasteryRecord, SkillEvidenceRecord, E
 
 const STORAGE_KEY = 'math-k6-progress';
 const STORAGE_OWNER_KEY = `${STORAGE_KEY}-owner`;
+const LEGACY_DISMISS_KEY = `${STORAGE_KEY}-legacy-dismissed`;
 export const DAY_MS = 86_400_000;
 
 const defaultProgress: ProgressData = {
@@ -13,24 +14,18 @@ function userStorageKey(userId: string): string {
   return `${STORAGE_KEY}:${userId}`;
 }
 
+function legacyDismissKey(userId: string): string {
+  return `${LEGACY_DISMISS_KEY}:${userId}`;
+}
+
 function readStoredProgress(userId?: string): string | null {
   if (!userId) return localStorage.getItem(STORAGE_KEY);
 
-  const legacy = localStorage.getItem(STORAGE_KEY);
-  let owner = localStorage.getItem(STORAGE_OWNER_KEY);
-  if (!owner && legacy) {
-    localStorage.setItem(STORAGE_OWNER_KEY, userId);
-    owner = userId;
-  }
-
-  const scopedKey = userStorageKey(userId);
-  const scoped = localStorage.getItem(scopedKey);
+  const scoped = localStorage.getItem(userStorageKey(userId));
   if (scoped) return scoped;
-  if (legacy && owner === userId) {
-    localStorage.setItem(scopedKey, legacy);
-    return legacy;
-  }
-  return null;
+  return localStorage.getItem(STORAGE_OWNER_KEY) === userId
+    ? localStorage.getItem(STORAGE_KEY)
+    : null;
 }
 
 /** 校验本地或远端的不可信进度对象。 */
@@ -125,16 +120,65 @@ export function loadProgress(userId?: string): ProgressData {
 /** 将进度数据保存到 localStorage */
 export function saveProgress(progress: ProgressData, userId?: string): void {
   try {
-    if (userId && !localStorage.getItem(STORAGE_OWNER_KEY)) {
-      localStorage.setItem(STORAGE_OWNER_KEY, userId);
-    }
     localStorage.setItem(userId ? userStorageKey(userId) : STORAGE_KEY, JSON.stringify(progress));
   } catch (e) {
     console.error('Failed to save progress:', e);
   }
 }
 
+/** Return unowned device progress without mutating ownership or account storage. */
+export function getLegacyProgressForImport(userId: string): ProgressData | null {
+  try {
+    if (localStorage.getItem(STORAGE_OWNER_KEY)) return null;
+    if (localStorage.getItem(legacyDismissKey(userId))) return null;
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return null;
+    const progress = parseProgress(JSON.parse(stored));
+    return hasMeaningfulProgress(progress) ? progress : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Persist an explicitly confirmed legacy merge for one account. */
+export function claimLegacyProgress(userId: string, merged: ProgressData): boolean {
+  try {
+    const owner = localStorage.getItem(STORAGE_OWNER_KEY);
+    if (owner && owner !== userId) return false;
+    localStorage.setItem(STORAGE_OWNER_KEY, userId);
+    localStorage.setItem(userStorageKey(userId), JSON.stringify(merged));
+    localStorage.removeItem(legacyDismissKey(userId));
+    return true;
+  } catch (error) {
+    if (localStorage.getItem(STORAGE_OWNER_KEY) === userId) {
+      localStorage.removeItem(STORAGE_OWNER_KEY);
+    }
+    console.error('Failed to claim legacy progress:', error);
+    return false;
+  }
+}
+
+/** Hide the import offer only for this account; the legacy data stays unowned. */
+export function dismissLegacyProgress(userId: string): void {
+  try {
+    localStorage.setItem(legacyDismissKey(userId), '1');
+  } catch (error) {
+    console.error('Failed to dismiss legacy progress:', error);
+  }
+}
+
+/** Strip the separately-synced language state from every legacy math write. */
+export function toRemoteMathProgress(progress: ProgressData): ProgressData {
+  const mathProgress = { ...progress };
+  delete mathProgress.languageLessons;
+  return mathProgress;
+}
+
 const LANGUAGE_SUBJECTS: LanguageSubject[] = ['chinese', 'english'];
+export const PUBLISHED_LANGUAGE_LESSON_IDS: Record<LanguageSubject, readonly string[]> = {
+  chinese: ['zh-campus-words', 'zh-campus-reading', 'zh-campus-speaking'],
+  english: ['en-park-animals', 'en-park-sentences', 'en-park-listen-read'],
+};
 
 export function parseLanguageLessons(
   raw: unknown,
@@ -159,6 +203,33 @@ export function parseLanguageLessons(
       ? Math.max(0, Math.floor(record.updatedAt))
       : 0;
     result[subject] = { completedLessonIds, currentLessonId, updatedAt };
+  }
+  return result;
+}
+
+/** Convert the dedicated remote subject arrays into the local progress shape. */
+export function parseRemoteLanguageProgress(
+  raw: unknown,
+): Partial<Record<LanguageSubject, LanguageLessonProgress>> {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const source = raw as Record<string, unknown>;
+  const result: Partial<Record<LanguageSubject, LanguageLessonProgress>> = {};
+  for (const subject of LANGUAGE_SUBJECTS) {
+    const allowed = new Set(PUBLISHED_LANGUAGE_LESSON_IDS[subject]);
+    const value = source[subject];
+    const completed = Array.isArray(value)
+      ? value
+      : value && typeof value === 'object' && !Array.isArray(value)
+        ? (value as Record<string, unknown>).completedLessonIds
+        : [];
+    const completedLessonIds = Array.isArray(completed)
+      ? Array.from(new Set(completed.filter(
+        (id: unknown): id is string => typeof id === 'string' && allowed.has(id),
+      ))).sort()
+      : [];
+    if (completedLessonIds.length > 0) {
+      result[subject] = { completedLessonIds, currentLessonId: null, updatedAt: 0 };
+    }
   }
   return result;
 }
