@@ -563,5 +563,28 @@ describe('progress management', () => {
         },
       })).toBe(true);
     });
+
+    it('completes English lessons in order without changing Chinese or math progress', () => {
+      const englishLessons = ['en-park-animals', 'en-park-sentences', 'en-park-listen-read'];
+      const initial: ProgressData = {
+        passedKnowledgePoints: ['math-1'],
+        stars: { 'math-1': 2 },
+        languageLessons: {
+          chinese: { completedLessonIds: [lessons[0]], currentLessonId: lessons[1], updatedAt: NOW },
+        },
+      };
+
+      const started = startLanguageLesson(initial, 'english', englishLessons[0], englishLessons, NOW + 1);
+      const completed = completeLanguageLesson(started, 'english', englishLessons[0], englishLessons, NOW + 2);
+
+      expect(completed.languageLessons?.english).toEqual({
+        completedLessonIds: [englishLessons[0]],
+        currentLessonId: englishLessons[1],
+        updatedAt: NOW + 2,
+      });
+      expect(completed.languageLessons?.chinese).toEqual(initial.languageLessons?.chinese);
+      expect(completed.passedKnowledgePoints).toEqual(['math-1']);
+      expect(completed.stars).toEqual({ 'math-1': 2 });
+    });
   });
 });

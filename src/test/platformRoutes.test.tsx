@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '@/App';
 import { LearningCenter } from '@/pages/LearningCenterPage';
@@ -51,10 +51,10 @@ beforeEach(() => {
 });
 
 describe('integrated learning center', () => {
-  it('shows active math and Chinese cards while English stays non-interactive', () => {
+  it('shows all three subjects as active links with their progress', () => {
     render(
       <MemoryRouter>
-        <LearningCenter completedCount={6} chineseCompletedCount={1} onLogout={authState.logout} />
+        <LearningCenter completedCount={6} chineseCompletedCount={1} englishCompletedCount={0} onLogout={authState.logout} />
       </MemoryRouter>,
     );
 
@@ -64,12 +64,10 @@ describe('integrated learning center', () => {
       .toEqual(['数学', '语文', '英语']);
     expect(screen.getByRole('link', { name: '进入数学' })).toHaveAttribute('href', '/math');
     expect(screen.getByRole('link', { name: '进入语文' })).toHaveAttribute('href', '/chinese');
+    expect(screen.getByRole('link', { name: '进入英语' })).toHaveAttribute('href', '/english');
     expect(screen.getByText('已完成 1 / 3 课')).toBeInTheDocument();
-
-    const englishCard = screen.getByRole('article', { name: '英语' });
-    expect(within(englishCard).queryByRole('link')).not.toBeInTheDocument();
-    expect(within(englishCard).queryByRole('button')).not.toBeInTheDocument();
-    expect(englishCard).not.toHaveAttribute('tabindex');
+    expect(screen.getByText('已完成 0 / 3 课')).toBeInTheDocument();
+    expect(screen.getByText('词汇、句型与听读')).toBeInTheDocument();
   });
 
   it('opens the real Chinese subject route', async () => {
@@ -78,6 +76,14 @@ describe('integrated learning center', () => {
 
     expect(await screen.findByRole('heading', { level: 1, name: '校园里的小发现' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /会观察，也会用词/ })).toHaveAttribute('href', '/chinese/zh-campus-words');
+  });
+
+  it('opens the real English subject route', async () => {
+    window.history.replaceState({}, '', '/english');
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { level: 1, name: '公园里的动物' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /认识公园里的动物/ })).toHaveAttribute('href', '/english/en-park-animals');
   });
 
   it.each([

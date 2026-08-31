@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { chineseLessons } from '@/content/chinese';
-import LanguageSubjectPage, { LessonPractice } from '@/pages/LanguageSubjectPage';
+import { englishLessonIds, englishLessons } from '@/content/english';
+import LanguageSubjectPage, { LessonPractice, ReadAloudButton } from '@/pages/LanguageSubjectPage';
 import type { LanguageLesson, ProgressData } from '@/lib/types';
 import { saveProgress } from '@/lib/progress';
 
@@ -77,6 +78,8 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.useRealTimers();
+  vi.unstubAllGlobals();
+  Reflect.deleteProperty(window, 'speechSynthesis');
 });
 
 describe('Chinese V0.8 content', () => {
@@ -103,10 +106,101 @@ describe('Chinese V0.8 content', () => {
   });
 });
 
+describe('English V0.9 content', () => {
+  it('contains the reviewed three-by-three course with fixed answers and retry guidance', () => {
+    expect(englishLessonIds).toEqual(['en-park-animals', 'en-park-sentences', 'en-park-listen-read']);
+    expect(new Set(englishLessonIds).size).toBe(3);
+    for (const lesson of englishLessons) {
+      expect(lesson.questions).toHaveLength(3);
+      expect(lesson.questions.every((question) => question.points === 10)).toBe(true);
+      expect(lesson.questions.every((question) => question.type === 'choice' || question.type === 'fill-blank')).toBe(true);
+      expect(lesson.questions.every((question) => /[\u4e00-\u9fff]/.test(question.explanation) && question.explanation.includes('再试'))).toBe(true);
+    }
+    expect(englishLessons.map((lesson) => lesson.questions.map((question) => question.correctAnswer))).toEqual([
+      ['兔子', '小鸟', 'dog'],
+      ['I can see a bird.', 'is', 'The dog is brown.'],
+      ['Under a tree.', 'White.', 'small'],
+    ]);
+    expect(englishLessons[1].body).toContain('cat、dog、bird、rabbit 都以辅音音素开头');
+    expect(englishLessons[2].body).toBe('Today I am at the park. I can see a brown dog under a tree. A white rabbit is near the flowers. The bird is yellow and small. The animals are quiet. I like the little rabbit best.');
+    expect(englishLessons[2].speakable).toBe(true);
+    expect(JSON.stringify(englishLessons)).not.toMatch(/中文谐音|口语达标|听力达标/);
+  });
+});
+
+describe('English read-aloud helper', () => {
+  it('speaks the same visible body in en-US at a slower rate and cancels overlap', () => {
+    const cancel = vi.fn();
+    const speak = vi.fn();
+    Object.defineProperty(window, 'speechSynthesis', {
+      configurable: true,
+      value: { cancel, speak },
+    });
+    class MockUtterance {
+      text: string;
+      lang = '';
+      rate = 1;
+      onend: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+
+      constructor(text: string) {
+        this.text = text;
+      }
+    }
+    vi.stubGlobal('SpeechSynthesisUtterance', MockUtterance);
+
+    const body = englishLessons[2].body;
+    const { unmount } = render(<ReadAloudButton text={body} />);
+    fireEvent.click(screen.getByRole('button', { name: '朗读英文正文' }));
+
+    expect(cancel).toHaveBeenCalledTimes(1);
+    expect(speak).toHaveBeenCalledTimes(1);
+    expect(speak.mock.calls[0][0]).toMatchObject({ text: body, lang: 'en-US', rate: 0.85 });
+    fireEvent.click(screen.getByRole('button', { name: '正在朗读' }));
+    expect(cancel).toHaveBeenCalledTimes(2);
+    expect(speak).toHaveBeenCalledTimes(2);
+    expect(speak.mock.calls[1][0]).toMatchObject({ text: body, lang: 'en-US', rate: 0.85 });
+    unmount();
+    expect(cancel).toHaveBeenCalledTimes(3);
+  });
+
+  it('keeps a visible text fallback when speech synthesis is unsupported or errors', () => {
+    vi.stubGlobal('SpeechSynthesisUtterance', undefined);
+    const { unmount } = render(<ReadAloudButton text={englishLessons[2].body} />);
+
+    expect(screen.getByRole('button', { name: '朗读英文正文' })).toBeDisabled();
+    expect(screen.getByRole('status')).toHaveTextContent('当前浏览器不支持朗读，请直接阅读下方英文正文。');
+    unmount();
+
+    const cancel = vi.fn();
+    const speak = vi.fn();
+    Object.defineProperty(window, 'speechSynthesis', {
+      configurable: true,
+      value: { cancel, speak },
+    });
+    class ErrorUtterance {
+      text: string;
+      lang = '';
+      rate = 1;
+      onend: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      constructor(text: string) {
+        this.text = text;
+      }
+    }
+    vi.stubGlobal('SpeechSynthesisUtterance', ErrorUtterance);
+    render(<ReadAloudButton text={englishLessons[2].body} />);
+    fireEvent.click(screen.getByRole('button', { name: '朗读英文正文' }));
+    act(() => (speak.mock.calls[0][0] as ErrorUtterance).onerror?.());
+
+    expect(screen.getByRole('status')).toHaveTextContent('朗读暂时不可用，请直接阅读下方英文正文。');
+  });
+});
+
 describe('language lesson practice', () => {
   it('passes with two correct answers out of three and calls completion once', () => {
     const onPassed = vi.fn();
-    render(<MemoryRouter><LessonPractice lesson={practiceLesson} onPassed={onPassed} nextLessonId="next" /></MemoryRouter>);
+    render(<MemoryRouter><LessonPractice lesson={practiceLesson} onPassed={onPassed} nextLessonId="next" subject="chinese" /></MemoryRouter>);
 
     clickOption('甲对');
     nextQuestion();
@@ -123,7 +217,7 @@ describe('language lesson practice', () => {
 
   it('does not complete a failed lesson and restarts from question one', () => {
     const onPassed = vi.fn();
-    render(<MemoryRouter><LessonPractice lesson={practiceLesson} onPassed={onPassed} nextLessonId={null} /></MemoryRouter>);
+    render(<MemoryRouter><LessonPractice lesson={practiceLesson} onPassed={onPassed} nextLessonId={null} subject="chinese" /></MemoryRouter>);
 
     clickOption('甲对');
     nextQuestion();
@@ -145,7 +239,7 @@ describe('Chinese subject routes', () => {
   it('starts the first lesson and shows the reviewed content', async () => {
     render(
       <MemoryRouter initialEntries={['/chinese/zh-campus-words']}>
-        <Routes><Route path="/chinese/:lessonId" element={<LanguageSubjectPage />} /></Routes>
+        <Routes><Route path="/chinese/:lessonId" element={<LanguageSubjectPage subject="chinese" />} /></Routes>
       </MemoryRouter>,
     );
 
@@ -162,8 +256,8 @@ describe('Chinese subject routes', () => {
     render(
       <MemoryRouter initialEntries={['/chinese/zh-campus-reading']}>
         <Routes>
-          <Route path="/chinese" element={<><LanguageSubjectPage /><LocationPath /></>} />
-          <Route path="/chinese/:lessonId" element={<><LanguageSubjectPage /><LocationPath /></>} />
+          <Route path="/chinese" element={<><LanguageSubjectPage subject="chinese" /><LocationPath /></>} />
+          <Route path="/chinese/:lessonId" element={<><LanguageSubjectPage subject="chinese" /><LocationPath /></>} />
         </Routes>
       </MemoryRouter>,
     );
@@ -171,6 +265,72 @@ describe('Chinese subject routes', () => {
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/chinese'));
     expect(screen.getByRole('heading', { level: 1, name: '校园里的小发现' })).toBeInTheDocument();
     expect(progressMocks.startLanguageLesson).not.toHaveBeenCalled();
+  });
+});
+
+describe('English subject routes', () => {
+  it('starts the first English lesson and keeps its single body visible', async () => {
+    render(
+      <MemoryRouter initialEntries={['/english/en-park-animals']}>
+        <Routes><Route path="/english/:lessonId" element={<LanguageSubjectPage subject="english" />} /></Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('heading', { level: 1, name: '认识公园里的动物' })).toBeInTheDocument();
+    expect(screen.getByText(/cat 是猫，dog 是狗/)).toBeInTheDocument();
+    await waitFor(() => expect(progressMocks.startLanguageLesson).toHaveBeenCalledWith(
+      'english',
+      'en-park-animals',
+      englishLessonIds,
+    ));
+  });
+
+  it('redirects a locked English lesson and shows completion state independently', async () => {
+    const { unmount: unmountLocked } = render(
+      <MemoryRouter initialEntries={['/english/en-park-sentences']}>
+        <Routes>
+          <Route path="/english" element={<><LanguageSubjectPage subject="english" /><LocationPath /></>} />
+          <Route path="/english/:lessonId" element={<><LanguageSubjectPage subject="english" /><LocationPath /></>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/english'));
+    expect(progressMocks.startLanguageLesson).not.toHaveBeenCalled();
+    unmountLocked();
+
+    progressMocks.progress = {
+      passedKnowledgePoints: [],
+      stars: {},
+      languageLessons: {
+        english: { completedLessonIds: [englishLessonIds[0]], currentLessonId: englishLessonIds[1], updatedAt: 1 },
+      },
+    };
+    render(
+      <MemoryRouter initialEntries={['/english']}>
+        <Routes><Route path="/english" element={<LanguageSubjectPage subject="english" />} /></Routes>
+      </MemoryRouter>,
+    );
+    expect(screen.getByText('已完成 1 / 3 课')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /用句子说说动物/ })).toHaveAttribute('href', '/english/en-park-sentences');
+    expect(screen.getByRole('article', { name: /听读公园里的动物，完成前一课后开放/ })).toBeInTheDocument();
+  });
+
+  it('shows the speakable lesson body permanently beside the read-aloud control', () => {
+    progressMocks.progress = {
+      passedKnowledgePoints: [],
+      stars: {},
+      languageLessons: {
+        english: { completedLessonIds: englishLessonIds.slice(0, 2), currentLessonId: englishLessonIds[2], updatedAt: 1 },
+      },
+    };
+    render(
+      <MemoryRouter initialEntries={['/english/en-park-listen-read']}>
+        <Routes><Route path="/english/:lessonId" element={<LanguageSubjectPage subject="english" />} /></Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(englishLessons[2].body)).toBeVisible();
+    expect(screen.getByRole('button', { name: '朗读英文正文' })).toHaveClass('min-h-11');
   });
 });
 

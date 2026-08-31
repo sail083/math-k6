@@ -5,10 +5,11 @@ import { useProgress } from '@/context/ProgressContext';
 interface LearningCenterProps {
   completedCount: number;
   chineseCompletedCount: number;
+  englishCompletedCount: number;
   onLogout: () => void | Promise<void>;
 }
 
-export function LearningCenter({ completedCount, chineseCompletedCount, onLogout }: LearningCenterProps) {
+export function LearningCenter({ completedCount, chineseCompletedCount, englishCompletedCount, onLogout }: LearningCenterProps) {
   return (
     <div className="app-frame min-h-screen flex flex-col">
       <a
@@ -43,7 +44,7 @@ export function LearningCenter({ completedCount, chineseCompletedCount, onLogout
             今天想学哪一科？
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-indigo-100 sm:text-base">
-            语文和数学已经可以学习，英语课程正在准备中。
+            语文、数学和英语都已经可以学习。
           </p>
         </section>
 
@@ -92,17 +93,25 @@ export function LearningCenter({ completedCount, chineseCompletedCount, onLogout
               </span>
             </Link>
 
-            <article aria-labelledby="subject-english-title" className="flex min-h-[220px] flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50 p-6 text-slate-500">
+            <Link
+              to="/english"
+              aria-label="进入英语"
+              className="group flex min-h-[220px] flex-col justify-between rounded-2xl border-2 border-sky-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-sky-400 hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky-200 motion-reduce:transform-none motion-reduce:transition-none"
+            >
               <div>
                 <div className="flex items-center justify-between gap-3">
                   <span className="grid size-12 place-items-center rounded-xl bg-sky-100 text-xl font-bold" aria-hidden="true">Aa</span>
-                  <span className="rounded-full bg-slate-200 px-3 py-1 text-xs font-bold text-slate-600">建设中</span>
+                  <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">可学习</span>
                 </div>
-                <h3 id="subject-english-title" className="mt-5 text-2xl font-bold text-slate-700">英语</h3>
-                <p className="mt-2 text-sm leading-6">词汇、听说与阅读课程正在准备中。</p>
+                <h3 id="subject-english-title" className="mt-5 text-2xl font-bold text-slate-900">英语</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-500">词汇、句型与听读</p>
+                <p className="mt-1 text-sm leading-6 text-slate-500">已完成 {englishCompletedCount} / 3 课</p>
               </div>
-              <p className="mt-6 flex min-h-11 items-center text-sm font-semibold text-slate-400">敬请期待</p>
-            </article>
+              <span className="mt-6 flex min-h-11 items-center justify-between text-sm font-bold text-sky-700">
+                进入英语
+                <span className="transition-transform group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none" aria-hidden="true">→</span>
+              </span>
+            </Link>
           </div>
         </section>
       </main>
@@ -124,6 +133,7 @@ export default function LearningCenterPage() {
     <LearningCenter
       completedCount={progress.passedKnowledgePoints.length}
       chineseCompletedCount={progress.languageLessons?.chinese?.completedLessonIds.length ?? 0}
+      englishCompletedCount={progress.languageLessons?.english?.completedLessonIds.length ?? 0}
       onLogout={logout}
     />
   );

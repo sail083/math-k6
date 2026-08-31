@@ -212,6 +212,7 @@ export interface LanguageLesson {
   title: string;
   summary: string;
   body: string;
+  speakable?: boolean;
   questions: LanguageQuestion[];
 }
 

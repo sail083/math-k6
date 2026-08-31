@@ -59,8 +59,10 @@ export default function App() {
           <Suspense fallback={<SuspenseFallback />}>
             <Routes>
               <Route path="/" element={<ProtectedRoute><LearningCenterPage /></ProtectedRoute>} />
-              <Route path="/chinese" element={<ProtectedRoute><LanguageSubjectPage /></ProtectedRoute>} />
-              <Route path="/chinese/:lessonId" element={<ProtectedRoute><LanguageSubjectPage /></ProtectedRoute>} />
+              <Route path="/chinese" element={<ProtectedRoute><LanguageSubjectPage subject="chinese" /></ProtectedRoute>} />
+              <Route path="/chinese/:lessonId" element={<ProtectedRoute><LanguageSubjectPage subject="chinese" /></ProtectedRoute>} />
+              <Route path="/english" element={<ProtectedRoute><LanguageSubjectPage subject="english" /></ProtectedRoute>} />
+              <Route path="/english/:lessonId" element={<ProtectedRoute><LanguageSubjectPage subject="english" /></ProtectedRoute>} />
               <Route path="/math" element={<MathShell />}>
                 <Route index element={<HomePage />} />
                 <Route path="grade/:grade" element={<GradePage />} />
