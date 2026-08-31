@@ -3,6 +3,7 @@ export type Grade = 3 | 4 | 5 | 6;
 export type TextbookVersion = '人教版' | '北师大版' | '苏教版';
 export type TextbookFilter = '全部' | TextbookVersion;
 export type Semester = '上册' | '下册';
+export type CourseTrack = 'base' | 'extension' | 'challenge';
 
 // 所有可视化组件类型
 export type VizType =
@@ -58,7 +59,7 @@ export interface TextbookRef {
 
 export interface KnowledgePointMeta {
   id: string;                    // 如 'g3-rect-area'
-  track?: 'challenge';           // 缺省为课内课程；challenge 不参与教材编排
+  track?: Exclude<CourseTrack, 'base'>; // 缺省为课内基础；非 base 不参与教材编排
   grade: Grade;
   unit: number;                  // 单元序号
   title: string;                 // 如 '长方形面积'

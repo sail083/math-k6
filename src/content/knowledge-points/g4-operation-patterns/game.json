@@ -1,0 +1,22 @@
+{
+  "knowledgePointId": "g4-operation-patterns",
+  "passThreshold": 0.8,
+  "questions": [
+    {"id":"q1","type":"choice","prompt":"38×99的结果是多少？","options":["3724","3762","3800","3862"],"correctAnswer":"3762","explanation":"38×99=38×(100-1)=3800-38=3762。","points":10},
+    {"id":"q2","type":"choice","prompt":"250×24的结果是多少？","options":["5000","5500","6000","6250"],"correctAnswer":"6000","explanation":"24=4×6，250×4×6=1000×6=6000。","points":10},
+    {"id":"q3","type":"choice","prompt":"47×26+53×26可以改写成哪个算式？","options":["(47+53)×26","47×(26+53)","100×52","47+53×26"],"correctAnswer":"(47+53)×26","explanation":"两个积共用因数26，可以合并为(47+53)×26=2600。","points":10},
+    {"id":"q4","type":"choice","prompt":"245+198+55的最简便顺序是哪一个？","options":["245+55+198","245+200+55","198+55-245","245+198-55"],"correctAnswer":"245+55+198","explanation":"245和55先配成300，再加198得498。","points":10},
+    {"id":"q5","type":"choice","prompt":"下面哪个算式与64×25的值相等？","options":["16×4×25","64×(100÷25)","64×25+1","60×25+4"],"correctAnswer":"16×4×25","explanation":"64=16×4，先算4×25=100，整式得1600。","points":10},
+    {"id":"q6","type":"fill-blank","prompt":"一个队列有36行，每行49人，每行再加1人后共有____人。","correctAnswer":"1800","explanation":"49×36+1×36=(49+1)×36=50×36=1800。这是把公共因数合并迁移到队列情境。","points":10}
+  ],
+  "reviewSets": {
+    "d1": {"questions":[
+      {"id":"d1q1","type":"choice","prompt":"75×16的结果是多少？","options":["1000","1100","1200","1250"],"correctAnswer":"1200","explanation":"16=4×4，75×4×4=300×4=1200。","points":10},
+      {"id":"d1q2","type":"fill-blank","prompt":"28×35+72×35=____。","correctAnswer":"3500","explanation":"(28+72)×35=100×35=3500。","points":10}
+    ]},
+    "d7": {"questions":[
+      {"id":"d7q1","type":"choice","prompt":"商店原有39箱饮料，又到1箱，每箱25瓶。现在共有多少瓶？","options":["975","1000","1025","1100"],"correctAnswer":"1000","explanation":"隐藏的配对是39+1=40，40×25=1000。","points":10},
+      {"id":"d7q2","type":"fill-blank","prompt":"若(□-1)×125+125=2000，那么□=____。","correctAnswer":"16","explanation":"(□-1)×125+1×125=□×125，所以□=2000÷125=16。题目把分配关系换成未知数表征。","points":10}
+    ]}
+  }
+}

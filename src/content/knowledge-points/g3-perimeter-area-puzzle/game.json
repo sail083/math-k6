@@ -1,0 +1,22 @@
+{
+  "knowledgePointId": "g3-perimeter-area-puzzle",
+  "passThreshold": 0.8,
+  "questions": [
+    {"id":"q1","type":"choice","prompt":"两个5×2的长方形沿长为2的边拼成一个10×2长方形，新图形周长是多少？","options":["20","22","24","28"],"correctAnswer":"24","explanation":"新长方形周长是(10+2)×2=24。","points":10},
+    {"id":"q2","type":"choice","prompt":"一个6×4长方形剪去一块2×1的小长方形，剩下面积是多少？","options":["20","22","24","26"],"correctAnswer":"22","explanation":"6×4-2×1=24-2=22。","points":10},
+    {"id":"q3","type":"choice","prompt":"3个边长为1的正方形排成一行，组成图形的周长是多少？","options":["6","8","10","12"],"correctAnswer":"8","explanation":"组成的长方形长3、宽1，周长是(3+1)×2=8。","points":10},
+    {"id":"q4","type":"choice","prompt":"一个6×2长方形和一个2×2正方形沿长2的边拼接，新周长比原周长之和减少多少？","options":["2","4","6","8"],"correctAnswer":"4","explanation":"公共边长2在两个原图形中各算1次，共减少2×2=4。","points":10},
+    {"id":"q5","type":"choice","prompt":"两个图形沿长为5的边完全拼接，新周长应从原周长之和中减去多少？","options":["5","10","15","20"],"correctAnswer":"10","explanation":"拼接边在两个图形中各出现一次，所以减去5×2=10。","points":10},
+    {"id":"q6","type":"fill-blank","prompt":"一块8米×5米的地面中挖去一块3米×2米的长方形，剩下面积是____平方米。","correctAnswer":"34","explanation":"8×5-3×2=40-6=34。这是把切割法迁移到地面情境。","points":10}
+  ],
+  "reviewSets": {
+    "d1": {"questions":[
+      {"id":"d1q1","type":"choice","prompt":"两个4×3长方形沿长3的边拼成8×3长方形，周长是多少？","options":["18","20","22","24"],"correctAnswer":"22","explanation":"(8+3)×2=22。","points":10},
+      {"id":"d1q2","type":"fill-blank","prompt":"9×6长方形剪去2×2的部分，剩下面积是____。","correctAnswer":"50","explanation":"9×6-2×2=54-4=50。","points":10}
+    ]},
+    "d7": {"questions":[
+      {"id":"d7q1","type":"choice","prompt":"一块5×4的板和一块3×2的板沿长2的边拼起来，新图形周长是多少？","options":["20","22","24","28"],"correctAnswer":"24","explanation":"原周长和是18+10=28，隐藏的公共边共减去2×2=4，得24。","points":10},
+      {"id":"d7q2","type":"fill-blank","prompt":"一个L形可以看成10×7大长方形去掉4×3的缺口，它的面积是____。","correctAnswer":"58","explanation":"10×7-4×3=70-12=58。题目用L形文字表征隐藏了切割关系。","points":10}
+    ]}
+  }
+}

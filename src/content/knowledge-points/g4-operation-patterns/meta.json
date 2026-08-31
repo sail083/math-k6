@@ -1,0 +1,16 @@
+{
+  "id": "g4-operation-patterns",
+  "track": "challenge",
+  "grade": 4,
+  "unit": 203,
+  "title": "运算规律推理",
+  "objectives": [
+    "能用分配、配对和拆分改写算式",
+    "能识别改写前后保持不变的总量",
+    "能用原式或逆运算检查改写"
+  ],
+  "prerequisites": ["g3-smart-calculation", "g4-large-numbers", "g4-mult-2digit", "g4-div-2digit", "g4-arith-laws"],
+  "textbookRefs": [],
+  "vizType": "operation-laws",
+  "hasFormula": false
+}

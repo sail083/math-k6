@@ -4,6 +4,9 @@ import {
   getKnowledgePointsByGrade,
   getKnowledgePointById,
   getChallengeCourses,
+  getCourseRelations,
+  getCourseTrack,
+  getTrackCourses,
   loadKnowledgePointDetail,
   getCurriculum,
   getSemester,
@@ -15,9 +18,9 @@ import { buildDiscoveryContent } from '@/lib/learningContent';
 
 describe('content loading', () => {
   describe('getAllKnowledgePoints', () => {
-    it('returns all 52 knowledge points', () => {
+    it('returns all 57 knowledge points', () => {
       const kps = getAllKnowledgePoints();
-      expect(kps).toHaveLength(52);
+      expect(kps).toHaveLength(57);
     });
 
     it('gives every course enough questions and a non-choice mastery check', async () => {
@@ -52,12 +55,12 @@ describe('content loading', () => {
   });
 
   describe('getKnowledgePointsByGrade', () => {
-    it('returns 12 KPs for grade 3 including challenges', () => {
-      expect(getKnowledgePointsByGrade(3)).toHaveLength(12);
+    it('returns 15 KPs for grade 3 including progression courses', () => {
+      expect(getKnowledgePointsByGrade(3)).toHaveLength(15);
     });
 
-    it('returns 14 KPs for grade 4 including challenges', () => {
-      expect(getKnowledgePointsByGrade(4)).toHaveLength(14);
+    it('returns 16 KPs for grade 4 including progression courses', () => {
+      expect(getKnowledgePointsByGrade(4)).toHaveLength(16);
     });
 
     it('returns 14 KPs for grade 5 including challenges', () => {
@@ -69,30 +72,38 @@ describe('content loading', () => {
     });
   });
 
-  describe('challenge track', () => {
+  describe('three-level progression tracks', () => {
+    const extensionIds = [
+      'g3-systematic-enumeration',
+      'g3-smart-calculation',
+      'g3-perimeter-area-puzzle',
+      'g3-fraction-visual-reasoning',
+      'g4-sum-difference',
+    ];
     const challengeIds = [
       'g3-cycle-pattern',
-      'g3-systematic-enumeration',
-      'g4-sum-difference',
       'g4-sum-difference-multiple',
+      'g4-operation-patterns',
+      'g4-angle-shape-reasoning',
       'g5-chicken-rabbit',
     ];
 
-    it('keeps five challenge courses in prerequisite order', () => {
+    it('keeps five extension and five challenge courses in prerequisite order', () => {
+      expect(getTrackCourses('extension').map((kp) => kp.meta.id)).toEqual(extensionIds);
       expect(getChallengeCourses().map((kp) => kp.meta.id)).toEqual(challengeIds);
       const allIds = new Set(getAllKnowledgePoints().map((kp) => kp.meta.id));
-      for (const kp of getChallengeCourses()) {
+      for (const kp of [...getTrackCourses('extension'), ...getChallengeCourses()]) {
         expect(kp.meta.prerequisites.every((id) => allIds.has(id)), kp.meta.id).toBe(true);
       }
     });
 
-    it('does not mix challenges into textbook curricula or fake textbook references', () => {
-      for (const kp of getChallengeCourses()) {
-        expect(kp.meta.track).toBe('challenge');
+    it('does not mix progression courses into textbook curricula or fake textbook references', () => {
+      for (const kp of [...getTrackCourses('extension'), ...getChallengeCourses()]) {
+        expect(getCourseTrack(kp.meta)).not.toBe('base');
         expect(kp.meta.textbookRefs).toEqual([]);
       }
       for (const grade of [3, 4, 5, 6] as const) {
-        expect(getCurriculum(grade).every((kp) => kp.meta.track !== 'challenge')).toBe(true);
+        expect(getCurriculum(grade).every((kp) => getCourseTrack(kp.meta) === 'base')).toBe(true);
       }
       expect(getCurriculum(3)).toHaveLength(10);
       expect(getCurriculum(4)).toHaveLength(12);
@@ -100,14 +111,66 @@ describe('content loading', () => {
       expect(getCurriculum(6)).toHaveLength(12);
     });
 
-    it('ships each challenge with six questions, one constructed transfer, and complete D1/D7 reviews', async () => {
-      for (const kp of getChallengeCourses()) {
+    it('ships each progression course with six questions, one constructed transfer, and complete D1/D7 reviews', async () => {
+      for (const kp of [...getTrackCourses('extension'), ...getChallengeCourses()]) {
         const game = (await loadKnowledgePointDetail(kp.meta.id))?.game;
-        expect(hasCourseSpecificModel(kp.meta.id)).toBe(true);
         expect(game?.questions).toHaveLength(6);
         expect(game?.questions.filter((question) => question.type !== 'choice')).toHaveLength(1);
         expect(game?.reviewSets?.d1?.questions).toHaveLength(2);
         expect(game?.reviewSets?.d7?.questions).toHaveLength(2);
+      }
+    });
+
+    it('derives batch A base relations from prerequisites only', () => {
+      expect(getCourseRelations('g3-smart-calculation').baseCourses.map((kp) => kp.meta.id)).toEqual([
+        'g3-add-sub-10000', 'g3-mult-1digit', 'g3-measurement',
+      ]);
+      expect(getCourseRelations('g3-perimeter-area-puzzle').baseCourses.map((kp) => kp.meta.id)).toEqual([
+        'g3-measurement', 'g3-rect-area', 'g3-rect-perimeter',
+      ]);
+      expect(getCourseRelations('g3-fraction-visual-reasoning').baseCourses.map((kp) => kp.meta.id)).toEqual([
+        'g3-fraction-intro', 'g3-fraction-compare', 'g3-fraction-add-sub',
+      ]);
+      expect(getCourseRelations('g4-sum-difference').challengeNext.map((kp) => kp.meta.id)).toContain('g4-sum-difference-multiple');
+      expect(getCourseRelations('g3-smart-calculation').challengeNext.map((kp) => kp.meta.id)).toContain('g4-operation-patterns');
+    });
+
+    it('keeps dependencies present, acyclic, and non-descending by track', () => {
+      const all = getAllKnowledgePoints();
+      const byId = new Map(all.map((kp) => [kp.meta.id, kp]));
+      const rank = { base: 0, extension: 1, challenge: 2 } as const;
+      const visiting = new Set<string>();
+      const visited = new Set<string>();
+      const visit = (id: string) => {
+        expect(visiting.has(id), `cycle at ${id}`).toBe(false);
+        if (visited.has(id)) return;
+        visiting.add(id);
+        const kp = byId.get(id)!;
+        for (const prerequisiteId of kp.meta.prerequisites) {
+          const prerequisite = byId.get(prerequisiteId);
+          expect(prerequisite, `${id} -> missing ${prerequisiteId}`).toBeDefined();
+          expect(rank[getCourseTrack(prerequisite!.meta)], `${id} track order`).toBeLessThanOrEqual(rank[getCourseTrack(kp.meta)]);
+          visit(prerequisiteId);
+        }
+        visiting.delete(id);
+        visited.add(id);
+      };
+      all.forEach((kp) => visit(kp.meta.id));
+    });
+
+    it('reuses relevant existing visual models for batch A', () => {
+      expect(getKnowledgePointById('g3-smart-calculation')?.meta.vizType).toBe('operation-laws');
+      expect(getKnowledgePointById('g3-perimeter-area-puzzle')?.meta.vizType).toBe('area-grid');
+      expect(getKnowledgePointById('g3-fraction-visual-reasoning')?.meta.vizType).toBe('fraction-pie');
+      expect(getKnowledgePointById('g4-operation-patterns')?.meta.vizType).toBe('operation-laws');
+      expect(getKnowledgePointById('g4-angle-shape-reasoning')?.meta.vizType).toBe('shape-transform');
+      for (const id of [
+        'g3-smart-calculation',
+        'g3-perimeter-area-puzzle',
+        'g3-fraction-visual-reasoning',
+        'g4-angle-shape-reasoning',
+      ]) {
+        expect(hasCourseSpecificModel(id), id).toBe(true);
       }
     });
   });
@@ -293,6 +356,7 @@ describe('content loading', () => {
         '比值是一个数，不带单位',
         '所有柱体的体积都等于底面积 × 高',
         '一个数乘真分数（小于1的分数）',
+        '7×5 - 2×3 = 43',
       ];
 
       for (const kp of allKPs) {
@@ -320,10 +384,10 @@ describe('content loading', () => {
     });
   });
 
-  describe('delayed review sets (all 52 courses)', () => {
-    it('covers all 52 courses — none missing reviewSets', async () => {
+  describe('delayed review sets (all 57 courses)', () => {
+    it('covers all 57 courses — none missing reviewSets', async () => {
       const kps = getAllKnowledgePoints();
-      expect(kps).toHaveLength(52);
+      expect(kps).toHaveLength(57);
       for (const kp of kps) {
         const detail = await loadKnowledgePointDetail(kp.meta.id);
         expect(detail?.game?.reviewSets?.d1, kp.meta.id).toBeDefined();
@@ -455,7 +519,7 @@ describe('content loading', () => {
       }
     });
 
-    it('review-choice correct positions cover positions A, B, and C across all 52 courses', async () => {
+    it('review-choice correct positions cover positions A, B, and C across all 57 courses', async () => {
       const positions = new Set<number>();
       for (const kp of getAllKnowledgePoints()) {
         const detail = await loadKnowledgePointDetail(kp.meta.id);

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
-import type { ProgressData } from '@/lib/types';
+import type { CourseTrack, ProgressData } from '@/lib/types';
 import KnowledgePointPage from '@/pages/KnowledgePointPage';
 
 const mockSetGoal = vi.fn();
@@ -9,7 +9,7 @@ const mockEmitEvent = vi.fn();
 let mockProgress: ProgressData;
 let latestKnowledgePointProps: Record<string, unknown> = {};
 
-const makeCourse = (id: string, title: string, track?: 'challenge') => ({
+const makeCourse = (id: string, title: string, track?: Exclude<CourseTrack, 'base'>) => ({
   meta: {
     id,
     title,
@@ -27,13 +27,15 @@ const makeCourse = (id: string, title: string, track?: 'challenge') => ({
 
 const previousCourse = makeCourse('course-previous', '上一课标题');
 let currentCourse = makeCourse('g3-fraction-intro', '当前课标题');
-const nextCourse = makeCourse('course-next', '下一课标题');
+let nextCourse = makeCourse('course-next', '下一课标题');
 
 vi.mock('@/lib/content', () => ({
   loadKnowledgePointDetail: vi.fn(async () => currentCourse),
   getTextbookRef: vi.fn(() => undefined),
+  getCourseTrack: vi.fn((meta: { track?: 'extension' | 'challenge' }) => meta.track ?? 'base'),
+  getCourseRelations: vi.fn(() => ({ prerequisites: [], baseCourses: [], extensionNext: [], challengeNext: [] })),
   getCurriculum: vi.fn(() => [previousCourse, currentCourse, nextCourse]),
-  getChallengeCourses: vi.fn(() => [currentCourse, nextCourse]),
+  getTrackCourses: vi.fn(() => [currentCourse, nextCourse]),
 }));
 
 vi.mock('@/context/ProgressContext', () => ({
@@ -92,6 +94,7 @@ const homeGoal = {
 describe('KnowledgePointPage goal continuity', () => {
   beforeEach(() => {
     currentCourse = makeCourse('g3-fraction-intro', '当前课标题');
+    nextCourse = makeCourse('course-next', '下一课标题');
     mockSetGoal.mockReset();
     mockEmitEvent.mockReset();
     latestKnowledgePointProps = {};
@@ -193,6 +196,20 @@ describe('KnowledgePointPage goal continuity', () => {
     expect(screen.queryByRole('complementary', { name: '学习目标' })).not.toBeInTheDocument();
     expect(latestKnowledgePointProps.targetSkillId).toBeUndefined();
     expect(latestKnowledgePointProps.nextCourseTitle).toBe('下一课标题');
+    expect(mockEmitEvent).not.toHaveBeenCalled();
+  });
+
+  it('keeps extension courses isolated and continues on the extension track', async () => {
+    currentCourse = makeCourse('g3-systematic-enumeration', '分类枚举', 'extension');
+    nextCourse = makeCourse('course-next', '下一课标题', 'extension');
+    renderPage('?track=extension', homeGoal);
+    await screen.findByTestId('knowledge-point');
+
+    expect(screen.queryByRole('complementary', { name: '学习目标' })).not.toBeInTheDocument();
+    expect(latestKnowledgePointProps.targetSkillId).toBeUndefined();
+    expect(latestKnowledgePointProps.nextCourseTitle).toBe('下一课标题');
+    fireEvent.click(screen.getByRole('button', { name: 'mocked-next' }));
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/kp/course-next?track=extension'));
     expect(mockEmitEvent).not.toHaveBeenCalled();
   });
 });

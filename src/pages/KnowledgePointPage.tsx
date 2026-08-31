@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { getChallengeCourses, getCurriculum, getTextbookRef, loadKnowledgePointDetail } from '@/lib/content';
-import type { KnowledgePoint as KnowledgePointType, TextbookFilter } from '@/lib/types';
+import { getCourseRelations, getCourseTrack, getCurriculum, getTextbookRef, getTrackCourses, loadKnowledgePointDetail } from '@/lib/content';
+import type { CourseTrack, KnowledgePoint as KnowledgePointType, TextbookFilter } from '@/lib/types';
 import KnowledgePoint from '@/components/KnowledgePoint';
 import GoalContextBar from '@/components/GoalContextBar';
 import UiIcon from '@/components/UiIcon';
@@ -12,6 +12,12 @@ function isValidPublishedTarget(skillId: string | null | undefined): skillId is 
   if (!skillId) return false;
   return getSkillById(skillId)?.status === 'published';
 }
+
+const trackLabels: Record<CourseTrack, string> = {
+  base: '课内基础',
+  extension: '能力拓展',
+  challenge: '浅奥挑战',
+};
 
 export default function KnowledgePointPage() {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +31,7 @@ export default function KnowledgePointPage() {
 
   const urlTarget = searchParams.get('target');
   const storedGoalSkillId = progress.learningGoal?.skillId;
-  const acceptsLearningGoal = kp !== null && kp.meta.track !== 'challenge';
+  const acceptsLearningGoal = kp !== null && getCourseTrack(kp.meta) === 'base';
   const validUrlTarget = acceptsLearningGoal && isValidPublishedTarget(urlTarget) ? urlTarget : null;
   const validStoredTarget = acceptsLearningGoal && isValidPublishedTarget(storedGoalSkillId) ? storedGoalSkillId : null;
   const targetSkillId = validUrlTarget ?? validStoredTarget ?? undefined;
@@ -119,12 +125,24 @@ export default function KnowledgePointPage() {
     ? rawVersion
     : '全部';
   const displayGrade = getTextbookRef(meta, version)?.grade ?? meta.grade;
-  const isChallenge = meta.track === 'challenge';
-  const curriculum = isChallenge ? getChallengeCourses() : getCurriculum(displayGrade, version);
+  const track = getCourseTrack(meta);
+  const isBase = track === 'base';
+  const curriculum = isBase ? getCurriculum(displayGrade, version) : getTrackCourses(track);
   const currentIndex = curriculum.findIndex((item) => item.meta.id === meta.id);
   const previous = currentIndex > 0 ? curriculum[currentIndex - 1] : undefined;
   const next = currentIndex >= 0 && currentIndex < curriculum.length - 1 ? curriculum[currentIndex + 1] : undefined;
-  const queryString = `?${isChallenge ? 'track=challenge' : `version=${encodeURIComponent(version)}`}${targetSkillId ? `&target=${encodeURIComponent(targetSkillId)}` : ''}`;
+  const queryString = `?${isBase ? `version=${encodeURIComponent(version)}` : `track=${track}`}${targetSkillId ? `&target=${encodeURIComponent(targetSkillId)}` : ''}`;
+  const relations = getCourseRelations(meta.id);
+  const passedIds = new Set(progress.passedKnowledgePoints);
+  const nextTier = track === 'base' ? relations.extensionNext : track === 'extension' ? relations.challengeNext : [];
+  const recommendedNext = nextTier.find((course) =>
+    course.meta.prerequisites.every((id) => id === meta.id || passedIds.has(id)),
+  );
+  const resultNext = recommendedNext ?? next;
+  const resultNextTrack = resultNext ? getCourseTrack(resultNext.meta) : track;
+  const resultNextQuery = resultNext
+    ? `?${resultNextTrack === 'base' ? `version=${encodeURIComponent(version)}` : `track=${resultNextTrack}`}`
+    : '';
   const handleCoursePassed = activeGoal && targetSkillId && goalUpdatedAt !== undefined
     ? () => emitEvent?.({
       clientEventId: `tlc:${meta.id}:${targetSkillId}:${goalUpdatedAt}`,
@@ -140,7 +158,7 @@ export default function KnowledgePointPage() {
       {/* 面包屑导航 */}
       <div className="lesson-breadcrumb">
         <Link to={`/grade/${displayGrade}${queryString}`}>
-          <UiIcon name="arrow-left" size={17}/> {isChallenge ? '思维挑战' : `${displayGrade}年级课程`}
+          <UiIcon name="arrow-left" size={17}/> {isBase ? `${displayGrade}年级课程` : trackLabels[track]}
         </Link>
         <span className="text-slate-300">/</span>
         <span className="text-slate-600 font-medium">{meta.title}</span>
@@ -156,16 +174,48 @@ export default function KnowledgePointPage() {
         />
       ) : null}
 
+      {(!isBase || relations.extensionNext.length > 0 || relations.challengeNext.length > 0) ? (
+        <aside className="rounded-xl border border-slate-200 bg-white p-4" aria-label="能力阶梯">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div>
+              <p className="text-xs font-semibold text-slate-400">相关基础</p>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {(isBase ? [kp] : relations.baseCourses).map((course) => (
+                  <Link key={course.meta.id} to={`/kp/${course.meta.id}?version=${encodeURIComponent(version)}`} className="rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700">
+                    {passedIds.has(course.meta.id) ? '✓ ' : ''}{course.meta.title}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-400">当前层级</p>
+              <p className="mt-2 text-sm font-bold text-slate-800" aria-current="step">{trackLabels[track]}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-400">下一步</p>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {[...relations.extensionNext, ...relations.challengeNext].map((course) => (
+                  <Link key={course.meta.id} to={`/kp/${course.meta.id}?track=${getCourseTrack(course.meta)}`} className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700">
+                    {trackLabels[getCourseTrack(course.meta)]} · {course.meta.title}
+                  </Link>
+                ))}
+                {relations.extensionNext.length + relations.challengeNext.length === 0 ? <span className="text-xs text-slate-400">继续完成当前层级</span> : null}
+              </div>
+            </div>
+          </div>
+        </aside>
+      ) : null}
+
       {/* 知识点内容（3-tab：讲解 / 原理 / 闯关） */}
       <KnowledgePoint
         key={kp.meta.id}
         knowledgePoint={kp}
         targetSkillId={targetSkillId}
-        nextCourseTitle={activeGoal ? undefined : next?.meta.title}
-        nextActionLabel={activeGoal ? '继续我的目标' : undefined}
+        nextCourseTitle={activeGoal ? undefined : resultNext?.meta.title}
+        nextActionLabel={activeGoal ? '继续我的目标' : recommendedNext ? `进入${trackLabels[resultNextTrack]}：${recommendedNext.meta.title}` : undefined}
         onNextCourse={activeGoal && targetSkillId
           ? () => navigate(`/map?target=${encodeURIComponent(targetSkillId)}`)
-          : next ? () => navigate(`/kp/${next.meta.id}${queryString}`) : undefined}
+          : resultNext ? () => navigate(`/kp/${resultNext.meta.id}${resultNextQuery}`) : undefined}
         onCoursePassed={handleCoursePassed}
       />
 
@@ -180,7 +230,7 @@ export default function KnowledgePointPage() {
             <div className="next-course-card__label"><UiIcon name="spark" size={18}/><span>下一课</span></div>
             <div className="next-course-card__content"><div><h2>{next.meta.title}</h2><p>预计 8 分钟 · 待学习</p></div><span className="next-course-card__arrow"><UiIcon name="arrow-right"/></span></div>
           </Link>
-        ) : <div className="next-course-card is-complete"><div className="next-course-card__label"><UiIcon name="check" size={18}/><span>{isChallenge ? '本条挑战路径已完成' : '本册课程已完成'}</span></div><div className="next-course-card__content"><div><h2>继续复习已经学过的知识</h2><p>回到课程列表查看学习记录</p></div></div></div>}
+        ) : <div className="next-course-card is-complete"><div className="next-course-card__label"><UiIcon name="check" size={18}/><span>{isBase ? '本册课程已完成' : `本条${trackLabels[track]}路径已完成`}</span></div><div className="next-course-card__content"><div><h2>继续复习已经学过的知识</h2><p>回到课程列表查看学习记录</p></div></div></div>}
       </nav>
     </div>
   );

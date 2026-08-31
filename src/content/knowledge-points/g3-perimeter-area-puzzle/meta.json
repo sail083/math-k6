@@ -1,0 +1,16 @@
+{
+  "id": "g3-perimeter-area-puzzle",
+  "track": "extension",
+  "grade": 3,
+  "unit": 104,
+  "title": "周长面积拼割",
+  "objectives": [
+    "能追踪图形拼接后消失的公共边",
+    "能用切割和补形求不规则图形面积",
+    "能用方格或边界检查结果"
+  ],
+  "prerequisites": ["g3-measurement", "g3-rect-perimeter", "g3-rect-area"],
+  "textbookRefs": [],
+  "vizType": "area-grid",
+  "hasFormula": false
+}

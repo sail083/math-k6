@@ -1,0 +1,22 @@
+{
+  "knowledgePointId": "g3-fraction-visual-reasoning",
+  "passThreshold": 0.8,
+  "questions": [
+    {"id":"q1","type":"choice","prompt":"一个正方形平均分成8份，涂了4份，涂色部分是多少？","options":["1/4","1/2","3/4","4/4"],"correctAnswer":"1/2","explanation":"4/8和1/2表示同样的一半。","points":10},
+    {"id":"q2","type":"choice","prompt":"同一个整体的3/8和5/8，哪一个更大？","options":["3/8","5/8","一样大","无法比较"],"correctAnswer":"5/8","explanation":"分母相同，5份比3份多。","points":10},
+    {"id":"q3","type":"choice","prompt":"同一个整体的3/4和3/7，哪一个更大？","options":["3/4","3/7","一样大","无法比较"],"correctAnswer":"3/4","explanation":"分子相同，分母越小每份越大，所以3/4更大。","points":10},
+    {"id":"q4","type":"choice","prompt":"0到1平均分成6份，第4个分点表示哪个分数？","options":["1/6","2/6","4/6","5/6"],"correctAnswer":"4/6","explanation":"从0开始向右走4个等份，位置是4/6，也是2/3。","points":10},
+    {"id":"q5","type":"choice","prompt":"一个大圆的1/2和一个小圆的3/4，能否只根据分数判断实际面积谁大？","options":["能，3/4大","能，1/2大","不能，整体不同","一定一样大"],"correctAnswer":"不能，整体不同","explanation":"整体大小不同，分数只说明各自整体中的占比。","points":10},
+    {"id":"q6","type":"fill-blank","prompt":"一条12米长的彩带平均分成3份，其中1份长____米。","correctAnswer":"4","explanation":"12÷3=4。图中的1/3迁移到真实长度时，要先平均分整体。","points":10}
+  ],
+  "reviewSets": {
+    "d1": {"questions":[
+      {"id":"d1q1","type":"choice","prompt":"同一个整体的5/10和哪个分数表示相同大小？","options":["1/5","1/2","2/5","5/5"],"correctAnswer":"1/2","explanation":"5/10和1/2都表示整体的一半。","points":10},
+      {"id":"d1q2","type":"fill-blank","prompt":"15个点平均分成5组，涂其中2组，一共涂____个点。","correctAnswer":"6","explanation":"每组15÷5=3个，2组是3×2=6个。","points":10}
+    ]},
+    "d7": {"questions":[
+      {"id":"d7q1","type":"choice","prompt":"0到1平均分成8份，第6个分点还可以写成哪个分数？","options":["1/4","1/2","3/4","7/8"],"correctAnswer":"3/4","explanation":"第6个分点是6/8，等于3/4。题目把图形表征换成了数轴。","points":10},
+      {"id":"d7q2","type":"fill-blank","prompt":"18个相同方格表示一个整体，涂出其中的7/9，应涂____个方格。","correctAnswer":"14","explanation":"18÷9=2，7份是2×7=14。需先发现每一份含2个方格。","points":10}
+    ]}
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "knowledgePointId": "g3-smart-calculation",
+  "passThreshold": 0.8,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "choice",
+      "prompt": "397 + 258 用凑整法计算，结果是多少？",
+      "options": ["653", "655", "657", "665"],
+      "correctAnswer": "655",
+      "explanation": "397 看成 400 多加了 3，所以 400 + 258 - 3 = 655。",
+      "points": 10
+    },
+    {
+      "id": "q2",
+      "type": "choice",
+      "prompt": "815 - 299 最简便的改写是哪一个？",
+      "options": ["815 - 300 - 1", "815 - 300 + 1", "815 - 290 - 9", "815 - 200 - 99"],
+      "correctAnswer": "815 - 300 + 1",
+      "explanation": "先减 300 比原来多减 1，需要加回 1。",
+      "points": 10
+    },
+    {
+      "id": "q3",
+      "type": "choice",
+      "prompt": "25 × 28 怎样拆分更容易凑成整百？",
+      "options": ["25 × 4 × 7", "25 × 20 + 8", "25 × 14", "25 + 28"],
+      "correctAnswer": "25 × 4 × 7",
+      "explanation": "28 = 4 × 7，先算 25 × 4 = 100，再算 100 × 7。",
+      "points": 10
+    },
+    {
+      "id": "q4",
+      "type": "choice",
+      "prompt": "48 × 125 的结果是多少？",
+      "options": ["5000", "5500", "6000", "6250"],
+      "correctAnswer": "6000",
+      "explanation": "48 = 6 × 8，125 × 8 = 1000，所以 48 × 125 = 6 × 1000 = 6000。",
+      "points": 10
+    },
+    {
+      "id": "q5",
+      "type": "choice",
+      "prompt": "要用加法验算 726 - 348 = 378，应选哪个算式？",
+      "options": ["378 + 348", "726 + 348", "726 - 378", "378 - 348"],
+      "correctAnswer": "378 + 348",
+      "explanation": "差 + 减数应等于被减数，378 + 348 = 726。",
+      "points": 10
+    },
+    {
+      "id": "q6",
+      "type": "fill-blank",
+      "prompt": "四个相同纸盒，每个装98张卡片，一共有____张卡片。",
+      "correctAnswer": "392",
+      "explanation": "98 × 4 = (100 - 2) × 4 = 400 - 8 = 392。这是把凑整补偿迁移到实际情境。",
+      "points": 10
+    }
+  ],
+  "reviewSets": {
+    "d1": {
+      "questions": [
+        {
+          "id": "d1q1",
+          "type": "choice",
+          "prompt": "497 + 286 的结果是多少？",
+          "options": ["773", "783", "793", "883"],
+          "correctAnswer": "783",
+          "explanation": "497 + 286 = 500 + 286 - 3 = 783。",
+          "points": 10
+        },
+        {
+          "id": "d1q2",
+          "type": "fill-blank",
+          "prompt": "84 × 25 = ____。",
+          "correctAnswer": "2100",
+          "explanation": "84 = 21 × 4，25 × 4 = 100，所以结果是 21 × 100 = 2100。",
+          "points": 10
+        }
+      ]
+    },
+    "d7": {
+      "questions": [
+        {
+          "id": "d7q1",
+          "type": "choice",
+          "prompt": "图书室有24包书，每包49本。如果先按每包50本估算再补偿，实际共有多少本？",
+          "options": ["1152", "1176", "1200", "1224"],
+          "correctAnswer": "1176",
+          "explanation": "24 × 49 = 24 × 50 - 24 = 1200 - 24 = 1176。49比50少1，所以每包补偿减去1本。",
+          "points": 10
+        },
+        {
+          "id": "d7q2",
+          "type": "fill-blank",
+          "prompt": "用逆运算找数：□ - 297 = 408，□ = ____。",
+          "correctAnswer": "705",
+          "explanation": "被减数 = 差 + 减数，所以 408 + 297 = 705。这题把验算关系换成了未知数表征。",
+          "points": 10
+        }
+      ]
+    }
+  }
+}

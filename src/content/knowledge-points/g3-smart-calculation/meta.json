@@ -1,0 +1,16 @@
+{
+  "id": "g3-smart-calculation",
+  "track": "extension",
+  "grade": 3,
+  "unit": 103,
+  "title": "巧算与验算",
+  "objectives": [
+    "能识别接近整十、整百的数并进行凑整补偿",
+    "能用拆分与分配的方法简化计算",
+    "能用逆运算独立验算结果"
+  ],
+  "prerequisites": ["g3-add-sub-10000", "g3-mult-1digit", "g3-measurement"],
+  "textbookRefs": [],
+  "vizType": "operation-laws",
+  "hasFormula": false
+}

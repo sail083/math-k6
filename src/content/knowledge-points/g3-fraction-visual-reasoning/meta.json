@@ -1,0 +1,16 @@
+{
+  "id": "g3-fraction-visual-reasoning",
+  "track": "extension",
+  "grade": 3,
+  "unit": 105,
+  "title": "分数图形推理",
+  "objectives": [
+    "能在同一整体上识别等分关系",
+    "能联系图形、分数和数轴位置",
+    "能识别整体不同时不能直接比较"
+  ],
+  "prerequisites": ["g3-fraction-intro", "g3-fraction-compare", "g3-fraction-add-sub"],
+  "textbookRefs": [],
+  "vizType": "fraction-pie",
+  "hasFormula": false
+}

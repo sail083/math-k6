@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import GoalContextBar from '@/components/GoalContextBar';
-import { getGrades, getCurriculum, getChallengeCourses, getAllKnowledgePoints, getKnowledgePointById } from '@/lib/content';
+import { getCourseTrack, getGrades, getCurriculum, getTrackCourses, getAllKnowledgePoints, getKnowledgePointById } from '@/lib/content';
 import { getCourseMapping, getSkillById } from '@/lib/knowledgeGraph';
 import { useProgress } from '@/context/ProgressContext';
 import { useAuth } from '@/context/AuthContext';
@@ -88,7 +88,8 @@ export default function HomePage() {
 
   // Compute task list (priority-based)
   const allKPs = getAllKnowledgePoints();
-  const challengeCourses = getChallengeCourses();
+  const extensionCourses = getTrackCourses('extension');
+  const challengeCourses = getTrackCourses('challenge');
   const dueReviews = getDueReviewIds();
   const dueSkillReviewCount = getDueSkillReviews().length;
   const tasks = getHomeTasks().filter(
@@ -132,11 +133,11 @@ export default function HomePage() {
   let fallbackTask: { link: string; title: string; description: string } | null = null;
   if (!primaryTask) {
     const firstRecommended = allKPs.find(
-      (kp) => kp.meta.track !== 'challenge'
+      (kp) => getCourseTrack(kp.meta) === 'base'
         && !isPassed(kp.meta.id)
         && kp.meta.prerequisites.every((p) => isPassed(p)),
     );
-    const target = firstRecommended ?? allKPs.find((kp) => kp.meta.track !== 'challenge' && !isPassed(kp.meta.id));
+    const target = firstRecommended ?? allKPs.find((kp) => getCourseTrack(kp.meta) === 'base' && !isPassed(kp.meta.id));
     if (target) {
       const hasUnmetPrereqs = target.meta.prerequisites.some((p) => !isPassed(p));
       fallbackTask = {
@@ -246,6 +247,11 @@ export default function HomePage() {
                     {primaryTask.title}
                     {primaryTask.duration && ` · ${primaryTask.duration}`}
                   </p>
+                  {primaryTask.courseId && getKnowledgePointById(primaryTask.courseId) ? (
+                    <p className="mt-1 text-xs font-medium text-slate-400">
+                      {getCourseTrack(getKnowledgePointById(primaryTask.courseId)!.meta) === 'extension' ? '能力拓展' : getCourseTrack(getKnowledgePointById(primaryTask.courseId)!.meta) === 'challenge' ? '浅奥挑战' : '课内基础'}
+                    </p>
+                  ) : null}
                   {primaryPath && (
                     <p className="text-xs text-indigo-500 mt-1">📍 {primaryPath}</p>
                   )}
@@ -316,19 +322,18 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* 思维挑战入口 */}
-      <section>
-        <Link
-          to="/grade/3?track=challenge"
-          className="flex items-center justify-between gap-4 rounded-xl border border-amber-200 bg-amber-50/70 p-4 transition-all hover:border-amber-400 hover:shadow-md"
-        >
-          <div>
-            <p className="text-xs font-semibold text-amber-600">数学思维挑战</p>
-            <p className="mt-0.5 text-base font-bold text-slate-800">把课内知识用到新问题里</p>
-            <p className="mt-0.5 text-xs text-slate-500">周期、枚举、和差倍、鸡兔同笼 · {challengeCourses.length} 课连续路径</p>
-          </div>
-          <span className="shrink-0 text-xl text-amber-500">→</span>
-        </Link>
+      {/* 数学进阶入口 */}
+      <section className="rounded-xl border border-sky-200 bg-gradient-to-br from-sky-50 to-amber-50 p-4">
+        <p className="text-xs font-semibold text-sky-700">数学进阶</p>
+        <p className="mt-0.5 text-base font-bold text-slate-800">从课内方法走向拓展与浅奥</p>
+        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <Link to={`/grade/${extensionCourses[0]?.meta.grade ?? 3}?track=extension`} className="flex min-h-11 items-center justify-between rounded-lg border border-sky-200 bg-white px-4 text-sm font-semibold text-sky-700 hover:border-sky-400">
+            <span>能力拓展 · {extensionCourses.length} 课</span><span aria-hidden="true">→</span>
+          </Link>
+          <Link to={`/grade/${challengeCourses[0]?.meta.grade ?? 3}?track=challenge`} className="flex min-h-11 items-center justify-between rounded-lg border border-amber-200 bg-white px-4 text-sm font-semibold text-amber-700 hover:border-amber-400">
+            <span>浅奥挑战 · {challengeCourses.length} 课</span><span aria-hidden="true">→</span>
+          </Link>
+        </div>
       </section>
 
       {/* 知识地图入口 */}

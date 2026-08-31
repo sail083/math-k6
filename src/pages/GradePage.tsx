@@ -1,11 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { getChallengeCourses, getCurriculum, getKnowledgePointById, getSemester, getTextbookRef, getTextbookUnit } from '@/lib/content';
+import { getCourseTrack, getCurriculum, getKnowledgePointById, getSemester, getTextbookRef, getTextbookUnit, getTrackCourses } from '@/lib/content';
 import { useProgress } from '@/context/ProgressContext';
-import type { Grade, Semester, TextbookFilter, MasteryStatus } from '@/lib/types';
+import type { CourseTrack, Grade, Semester, TextbookFilter, MasteryStatus } from '@/lib/types';
 
 const gradeLabels: Record<number, string> = { 3: '三年级', 4: '四年级', 5: '五年级', 6: '六年级' };
 const versions: TextbookFilter[] = ['全部', '人教版', '北师大版', '苏教版'];
+const trackLabels: Record<CourseTrack, string> = {
+  base: '课内基础',
+  extension: '能力拓展',
+  challenge: '浅奥挑战',
+};
 
 function Stars({ count }: { count: number }) {
   return <span className="text-sm text-amber-400" aria-label={`${count} 星`}>{'★'.repeat(count)}{'☆'.repeat(3 - count)}</span>;
@@ -36,14 +41,20 @@ export default function GradePage() {
   const gradeNum = Number(grade) as Grade;
   const isValidGrade = [3, 4, 5, 6].includes(gradeNum);
   const requestedVersion = searchParams.get('version');
-  const isChallenge = searchParams.get('track') === 'challenge';
+  const rawTrack = searchParams.get('track');
+  const requestedTrack: CourseTrack = rawTrack === 'extension' || rawTrack === 'challenge' ? rawTrack : 'base';
+  const availableTracks = useMemo(() => (['base', 'extension', 'challenge'] as CourseTrack[]).filter(
+    (item) => item === 'base' || (isValidGrade && getTrackCourses(item, gradeNum).length > 0),
+  ), [gradeNum, isValidGrade]);
+  const track: CourseTrack = availableTracks.includes(requestedTrack) ? requestedTrack : 'base';
+  const isBase = track === 'base';
   const version: TextbookFilter = versions.includes(requestedVersion as TextbookFilter)
     ? requestedVersion as TextbookFilter
     : '全部';
 
   const curriculum = useMemo(
-    () => isValidGrade ? (isChallenge ? getChallengeCourses(gradeNum) : getCurriculum(gradeNum, version)) : [],
-    [gradeNum, isChallenge, isValidGrade, version],
+    () => isValidGrade ? (isBase ? getCurriculum(gradeNum, version) : getTrackCourses(track, gradeNum)) : [],
+    [gradeNum, isBase, isValidGrade, track, version],
   );
   const visibleCourses = curriculum.filter((kp) =>
     `${kp.meta.title} ${kp.meta.objectives.join(' ')}`.toLowerCase().includes(query.trim().toLowerCase()),
@@ -58,6 +69,13 @@ export default function GradePage() {
   const passedCount = curriculum.filter((kp) => progress.passedKnowledgePoints.includes(kp.meta.id)).length;
   const completion = curriculum.length ? Math.round((passedCount / curriculum.length) * 100) : 0;
 
+  useEffect(() => {
+    if (!rawTrack || rawTrack === track) return;
+    const next = new URLSearchParams(searchParams);
+    next.delete('track');
+    setSearchParams(next, { replace: true });
+  }, [rawTrack, searchParams, setSearchParams, track]);
+
   if (!isValidGrade) {
     return <div className="py-12 text-center"><p className="text-slate-500">年级不存在，请从首页选择年级。</p><Link to="/" className="mt-2 inline-block text-indigo-600 hover:underline">返回首页</Link></div>;
   }
@@ -65,8 +83,11 @@ export default function GradePage() {
   const setVersion = (next: TextbookFilter) => {
     setSearchParams(next === '全部' ? {} : { version: next });
   };
-  const setTrack = (challenge: boolean) => {
-    setSearchParams(challenge ? { track: 'challenge' } : {});
+  const setTrack = (nextTrack: CourseTrack) => {
+    const next = new URLSearchParams(searchParams);
+    if (nextTrack === 'base') next.delete('track');
+    else next.set('track', nextTrack);
+    setSearchParams(next);
     setQuery('');
   };
 
@@ -81,8 +102,8 @@ export default function GradePage() {
       <section className="border-b border-slate-200 pb-5">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{gradeLabels[gradeNum]}{isChallenge ? '思维挑战' : '课程'}</h1>
-            <p className="mt-1 text-sm text-slate-500">{isChallenge ? '用课内知识解决新问题' : version === '全部' ? '所有版本合并知识点' : `${version}编排`} · {curriculum.length} 课</p>
+            <h1 className="text-2xl font-bold text-slate-900">{gradeLabels[gradeNum]}{isBase ? '课程' : trackLabels[track]}</h1>
+            <p className="mt-1 text-sm text-slate-500">{isBase ? version === '全部' ? '所有版本合并知识点' : `${version}编排` : track === 'extension' ? '把课内方法用到更灵活的问题里' : '组合多个基础方法解决浅奥问题'} · {curriculum.length} 课</p>
           </div>
           <div className="min-w-36 text-right">
             <p className="text-sm font-semibold text-slate-700">已完成 {passedCount} / {curriculum.length}</p>
@@ -92,11 +113,12 @@ export default function GradePage() {
       </section>
 
       <div className="space-y-3">
-        <div className="flex gap-2" aria-label="课程类型">
-          <button type="button" onClick={() => setTrack(false)} className={`min-h-11 rounded-lg border px-4 text-sm font-semibold ${!isChallenge ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-200 bg-white text-slate-600'}`}>课内基础</button>
-          <button type="button" onClick={() => setTrack(true)} className={`min-h-11 rounded-lg border px-4 text-sm font-semibold ${isChallenge ? 'border-amber-500 bg-amber-500 text-white' : 'border-slate-200 bg-white text-slate-600'}`}>思维挑战</button>
+        <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${availableTracks.length}, minmax(0, 1fr))` }} role="tablist" aria-label="课程层级">
+          {availableTracks.map((item) => (
+            <button key={item} type="button" role="tab" aria-selected={track === item} onClick={() => setTrack(item)} className={`min-h-11 min-w-0 rounded-lg border px-2 text-xs font-semibold sm:px-4 sm:text-sm ${track === item ? item === 'base' ? 'border-indigo-600 bg-indigo-600 text-white' : item === 'extension' ? 'border-sky-600 bg-sky-600 text-white' : 'border-amber-500 bg-amber-500 text-white' : 'border-slate-200 bg-white text-slate-600'}`}>{trackLabels[item]}</button>
+          ))}
         </div>
-        {!isChallenge ? <div className="flex gap-2 overflow-x-auto pb-1" aria-label="教材版本">
+        {isBase ? <div className="flex gap-2 overflow-x-auto pb-1" aria-label="教材版本">
           {versions.map((item) => <button key={item} type="button" onClick={() => setVersion(item)} className={`min-h-11 shrink-0 rounded-lg border px-4 text-sm font-medium ${version === item ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-400'}`}>{item === '全部' ? '所有版本' : item}</button>)}
         </div> : null}
         <label className="relative block">
@@ -116,10 +138,13 @@ export default function GradePage() {
             </button>
           </div>
         ) : (
-          <div className="py-14 text-center text-slate-500">没有找到匹配的课程。</div>
+          <div className="py-14 text-center">
+            <p className="text-slate-500">{gradeLabels[gradeNum]}暂无{trackLabels[track]}课程。</p>
+            {!isBase ? <button type="button" onClick={() => setTrack('base')} className="mt-4 min-h-11 rounded-lg bg-indigo-600 px-5 text-sm font-semibold text-white">返回课内基础</button> : null}
+          </div>
         )
       ) : (
-        (isChallenge ? [{ label: '思维挑战路径', courses: visibleCourses }] : (['上册', '下册'] as Semester[]).map((semester) => ({ label: semester, courses: grouped[semester] }))).map((section) => section.courses.length > 0 ? (
+        (!isBase ? [{ label: `${trackLabels[track]}路径`, courses: visibleCourses }] : (['上册', '下册'] as Semester[]).map((semester) => ({ label: semester, courses: grouped[semester] }))).map((section) => section.courses.length > 0 ? (
           <section key={section.label} className="space-y-3">
             <div className="flex items-center justify-between border-b border-slate-200 pb-2">
               <h2 className="font-bold text-slate-800">{section.label}</h2>
@@ -127,7 +152,7 @@ export default function GradePage() {
             </div>
             <div className="divide-y divide-slate-100 overflow-hidden rounded-lg border border-slate-200 bg-white">
               {section.courses.map((kp) => {
-                const ref = getTextbookRef(kp.meta, version);
+                const ref = isBase ? getTextbookRef(kp.meta, version) : undefined;
                 const passed = isPassed(kp.meta.id);
                 const masteryStatus = getMasteryStatus(kp.meta.id);
                 const missingPrerequisites = kp.meta.prerequisites.filter(
@@ -137,10 +162,10 @@ export default function GradePage() {
                   .map((id) => getKnowledgePointById(id)?.meta.title)
                   .filter((title): title is string => Boolean(title));
                 return (
-                  <Link key={kp.meta.id} to={`/kp/${kp.meta.id}?${isChallenge ? 'track=challenge' : `version=${encodeURIComponent(version)}`}`} className="flex min-h-[78px] items-center gap-3 p-4 transition-colors hover:bg-indigo-50/60">
-                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-sm font-bold ${passed ? 'bg-emerald-100 text-emerald-700' : isChallenge ? 'bg-amber-100 text-amber-700' : 'bg-indigo-100 text-indigo-700'}`}>{isChallenge ? curriculum.findIndex((course) => course.meta.id === kp.meta.id) + 1 : version === '全部' ? kp.meta.unit : getTextbookUnit(ref)}</span>
+                  <Link key={kp.meta.id} to={`/kp/${kp.meta.id}?${isBase ? `version=${encodeURIComponent(version)}` : `track=${track}`}`} className="flex min-h-[78px] items-center gap-3 p-4 transition-colors hover:bg-indigo-50/60">
+                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-sm font-bold ${passed ? 'bg-emerald-100 text-emerald-700' : track === 'challenge' ? 'bg-amber-100 text-amber-700' : track === 'extension' ? 'bg-sky-100 text-sky-700' : 'bg-indigo-100 text-indigo-700'}`}>{!isBase ? curriculum.findIndex((course) => course.meta.id === kp.meta.id) + 1 : version === '全部' ? kp.meta.unit : getTextbookUnit(ref)}</span>
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1"><h3 className="font-semibold text-slate-800">{kp.meta.title}</h3>{ref ? <span className="text-xs text-slate-400">{ref.chapter}</span> : null}{passed ? <StatusBadge status={masteryStatus} /> : progress.currentLearning === kp.meta.id ? <LearningBadge /> : null}</div>
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1"><h3 className="font-semibold text-slate-800">{kp.meta.title}</h3>{ref ? <span className="text-xs text-slate-400">{ref.chapter}</span> : null}{!isBase ? <span className="text-[10px] font-semibold text-slate-400">{trackLabels[getCourseTrack(kp.meta)]}</span> : null}{passed ? <StatusBadge status={masteryStatus} /> : progress.currentLearning === kp.meta.id ? <LearningBadge /> : null}</div>
                       <p className="mt-1 truncate text-xs text-slate-500">
                         {prerequisiteTitles.length > 0
                           ? `建议先学：${prerequisiteTitles.join('、')}`

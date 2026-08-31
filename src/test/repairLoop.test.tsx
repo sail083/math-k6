@@ -59,6 +59,7 @@ import {
   type HomeTask,
 } from '@/lib/progress';
 import { getNextActionableSkill } from '@/lib/knowledgeGraph';
+import { getAllKnowledgePoints, getCourseTrack } from '@/lib/content';
 import { supabase, logLearningEvent } from '@/lib/supabase';
 
 const DAY = 86_400_000;
@@ -76,7 +77,7 @@ const mockGetSkillDisplayStatus = vi.fn<(id: string) => SkillDisplayStatus>(() =
 const mockIsSkillReadyForPath = vi.fn(() => false);
 const mockSetGoal = vi.fn();
 const mockGetDueReviewIds = vi.fn<() => string[]>(() => []);
-const mockIsPassed = vi.fn(() => false);
+const mockIsPassed = vi.fn((_id: string) => false);
 const mockScheduleSkillReview = vi.fn();
 const mockResolveSkillReview = vi.fn();
 const mockGetSkillReviewSchedule = vi.fn<() => SkillReviewSchedule | undefined>(() => undefined);
@@ -963,6 +964,23 @@ describe('HomePage: recommended action priority', () => {
     expect(screen.getByText(/一次讲透小学数学/)).toBeInTheDocument();
   });
 
+  it('keeps progression courses out of the generic new-course fallback', () => {
+    const baseIds = new Set(
+      getAllKnowledgePoints()
+        .filter((kp) => getCourseTrack(kp.meta) === 'base')
+        .map((kp) => kp.meta.id),
+    );
+    mockIsPassed.mockImplementation((id) => baseIds.has(id));
+
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByText('开始学习')).not.toBeInTheDocument();
+  });
+
   it('shows three goal choices and navigates with source=home when one is selected', () => {
     render(
       <MemoryRouter>
@@ -1396,8 +1414,8 @@ describe('R4: Repair questions vs existing game.json dedup', () => {
     import: 'default',
   }) as Record<string, { questions: Array<{ prompt: string; correctAnswer: string | string[] }>; reviewSets?: { d1?: { questions: Array<{ prompt: string; correctAnswer: string | string[] }> }; d7?: { questions: Array<{ prompt: string; correctAnswer: string | string[] }> } } }>;
 
-  it('loads all 52 game.json files', () => {
-    expect(Object.keys(gameModules).length).toBe(52);
+  it('loads all 57 game.json files', () => {
+    expect(Object.keys(gameModules).length).toBe(57);
   });
 
   it('36 repair questions have no exact prompt+answer match with existing initial/D1/D7 questions', () => {

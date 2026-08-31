@@ -1,0 +1,16 @@
+{
+  "id": "g4-angle-shape-reasoning",
+  "track": "challenge",
+  "grade": 4,
+  "unit": 204,
+  "title": "角与图形推理",
+  "objectives": [
+    "能用平角、三角形和四边形角度关系推理",
+    "能在平行、剪拼与分类中识别不变量",
+    "能用反例检查图形结论的边界"
+  ],
+  "prerequisites": ["g3-perimeter-area-puzzle", "g4-angle-measure", "g4-parallel-perpendicular", "g4-parallelogram-trapezoid", "g4-triangle"],
+  "textbookRefs": [],
+  "vizType": "shape-transform",
+  "hasFormula": false
+}

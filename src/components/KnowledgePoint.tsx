@@ -32,6 +32,11 @@ function getExploreMission(meta: KnowledgePointType['meta']) {
     'g4-sum-difference': { title: '知道总和与相差，怎样把两个量分出来？', hint: '把多出的差先拿开，观察剩下的两份为什么同样多。' },
     'g4-sum-difference-multiple': { title: '“大数是小数的几倍”到底表示几份？', hint: '把小数看作一份，改变倍数，观察和与差由多少份组成。' },
     'g5-chicken-rabbit': { title: '只知道头和脚，怎样知道鸡兔各有多少只？', hint: '先假设全是鸡，再观察每换成一只兔会多出几只脚。' },
+    'g3-smart-calculation': { title: '怎样把难算的数变好算，又不改变结果？', hint: '同时改变凑整的数和补偿量，再用逆运算验算。' },
+    'g3-perimeter-area-puzzle': { title: '图形拼接或切割后，哪些边会消失？', hint: '改变长、宽和拼接方式，分别追踪外边界和内部方格。' },
+    'g3-fraction-visual-reasoning': { title: '分数画法不同时，怎样判断它们是不是同一个量？', hint: '先确认整体相同，再对齐等分、图形和数轴位置。' },
+    'g4-operation-patterns': { title: '算式外形变了，怎样保证总量不变？', hint: '切换分配、配对和拆分方式，每次都用原式验证。' },
+    'g4-angle-shape-reasoning': { title: '图形剪拼后，哪些角度关系一直不变？', hint: '比较平行、转角和内角，再用反例检查结论边界。' },
   };
   if (challengeMissions[meta.id]) return challengeMissions[meta.id];
   if (meta.id === 'g3-add-sub-10000') {

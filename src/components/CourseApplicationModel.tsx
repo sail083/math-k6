@@ -8,7 +8,11 @@ export type ApplicationModelType =
   | 'g3-systematic-enumeration'
   | 'g4-sum-difference'
   | 'g4-sum-difference-multiple'
-  | 'g5-chicken-rabbit';
+  | 'g5-chicken-rabbit'
+  | 'g3-smart-calculation'
+  | 'g3-perimeter-area-puzzle'
+  | 'g3-fraction-visual-reasoning'
+  | 'g4-angle-shape-reasoning';
 
 interface Props { type: ApplicationModelType; onInteract?: () => void }
 
@@ -16,11 +20,13 @@ const modelIds = new Set<string>([
   'g4-bar-chart', 'g5-position', 'g5-tree-planting',
   'g3-cycle-pattern', 'g3-systematic-enumeration',
   'g4-sum-difference', 'g4-sum-difference-multiple', 'g5-chicken-rabbit',
+  'g3-smart-calculation', 'g3-perimeter-area-puzzle',
+  'g3-fraction-visual-reasoning', 'g4-angle-shape-reasoning',
 ]);
 export function isApplicationModelType(id: string): id is ApplicationModelType { return modelIds.has(id); }
 
 function Shell({ title, result, controls, children }: { title: string; result: string; controls: ReactNode; children: ReactNode }) {
-  return <div className="math-model application-model"><div className="math-model__head"><span><i className="signal-dot is-live" />数据实验</span><strong>{result}</strong></div><div className="math-model__canvas"><h3>{title}</h3>{children}</div><div className="model-controls">{controls}</div></div>;
+  return <div className="math-model application-model"><div className="math-model__head"><span><i className="signal-dot is-live" />数据实验</span><strong data-testid="application-result" aria-live="polite">{result}</strong></div><div className="math-model__canvas"><h3>{title}</h3>{children}</div><div className="model-controls">{controls}</div></div>;
 }
 
 function BarChartBuild({ onInteract }: Pick<Props, 'onInteract'>) {
@@ -114,6 +120,58 @@ function QuantityBars({ type, onInteract }: Pick<Props, 'onInteract'> & { type: 
   </Shell>;
 }
 
+type ProgressionMode = 'smart' | 'perimeter-area' | 'fraction-visual' | 'angle-shape';
+function ProgressionLab({ mode, onInteract }: Pick<Props, 'onInteract'> & { mode: ProgressionMode }) {
+  const [first, setFirst] = useState(mode === 'smart' ? 97 : mode === 'perimeter-area' ? 6 : mode === 'fraction-visual' ? 4 : 48);
+  const [second, setSecond] = useState(mode === 'smart' ? 38 : mode === 'perimeter-area' ? 3 : mode === 'fraction-visual' ? 2 : 67);
+  const [variant, setVariant] = useState<'join' | 'cut' | 'same' | 'different' | 'triangle' | 'line' | 'counterexample'>(mode === 'perimeter-area' ? 'join' : mode === 'fraction-visual' ? 'same' : 'triangle');
+
+  if (mode === 'smart') {
+    const adjustment = 100 - first;
+    const result = first + second;
+    return <Shell title="凑成整百后，把多加的补偿回去" result={`${first} + ${second} = 100 + ${second} - ${adjustment} = ${result}`} controls={<><label>接近整百的数 <output>{first}</output><input aria-label="接近整百的数" type="range" min="94" max="99" value={first} onChange={e => { setFirst(Number(e.target.value)); onInteract?.(); }}/></label><label>加数 <output>{second}</output><input aria-label="加数" type="range" min="20" max="80" value={second} onChange={e => { setSecond(Number(e.target.value)); onInteract?.(); }}/></label></>}>
+      <div className="grid gap-3 py-8 text-center sm:grid-cols-3"><span className="rounded-lg bg-sky-100 p-4 font-bold text-sky-800">原数 {first}</span><span className="rounded-lg bg-indigo-100 p-4 font-bold text-indigo-800">凑整 100</span><span className="rounded-lg bg-amber-100 p-4 font-bold text-amber-800">补偿 -{adjustment}</span></div>
+      <div className="model-proof is-valid"><strong>凑整多加 {adjustment}，最后必须减回 {adjustment}</strong></div>
+    </Shell>;
+  }
+
+  if (mode === 'perimeter-area') {
+    const joinedPerimeter = 2 * (first * 2 + second);
+    const separatePerimeter = 4 * (first + second);
+    const cutArea = first * second - second;
+    const result = variant === 'join'
+      ? `原周长和 ${separatePerimeter} - 公共边 ${second}×2 = ${joinedPerimeter}`
+      : `原面积 ${first}×${second} - 切去 1×${second} = ${cutArea}`;
+    return <Shell title="拼接看消失边，切割看剩余方格" result={result} controls={<><div className="segmented-control"><button type="button" aria-pressed={variant === 'join'} className={variant === 'join' ? 'is-active' : ''} onClick={() => { setVariant('join'); onInteract?.(); }}>拼接</button><button type="button" aria-pressed={variant === 'cut'} className={variant === 'cut' ? 'is-active' : ''} onClick={() => { setVariant('cut'); onInteract?.(); }}>切割</button></div><label>长 <output>{first}</output><input aria-label="图形的长" type="range" min="4" max="8" value={first} onChange={e => { setFirst(Number(e.target.value)); onInteract?.(); }}/></label><label>宽 <output>{second}</output><input aria-label="图形的宽" type="range" min="2" max="5" value={second} onChange={e => { setSecond(Number(e.target.value)); onInteract?.(); }}/></label></>}>
+      <div className="flex items-center justify-center py-8" role="img" aria-label={result}><span className="rounded bg-sky-300" style={{ width: `${(variant === 'cut' ? first - 1 : first) * 24}px`, height: `${second * 24}px` }}/><span className={`rounded ${variant === 'join' ? 'bg-indigo-300' : 'ml-1 border-4 border-dashed border-amber-400 bg-amber-50'}`} style={{ width: `${variant === 'join' ? first * 24 : 24}px`, height: `${second * 24}px` }}/></div>
+      <div className="model-proof is-valid"><strong>{variant === 'join' ? `长 ${second} 的公共边在两个原图形中各算一次` : `切去的窄条面积是 1×${second}`}</strong></div>
+    </Shell>;
+  }
+
+  if (mode === 'fraction-visual') {
+    const denominator = first;
+    const numerator = Math.min(second, denominator - 1);
+    const result = variant === 'same'
+      ? `${numerator}/${denominator} = ${numerator * 2}/${denominator * 2}（同一整体）`
+      : `整体不同：不能只用 ${numerator}/${denominator} 判断实际量`;
+    return <Shell title="先对齐整体，再比较等分和位置" result={result} controls={<><div className="segmented-control"><button type="button" aria-pressed={variant === 'same'} className={variant === 'same' ? 'is-active' : ''} onClick={() => { setVariant('same'); onInteract?.(); }}>同一整体</button><button type="button" aria-pressed={variant === 'different'} className={variant === 'different' ? 'is-active' : ''} onClick={() => { setVariant('different'); onInteract?.(); }}>不同整体</button></div><label>分母 <output>{denominator}</output><input aria-label="分母" type="range" min="3" max="8" value={denominator} onChange={e => { const value = Number(e.target.value); setFirst(value); setSecond(current => Math.min(current, value - 1)); onInteract?.(); }}/></label><label>分子 <output>{numerator}</output><input aria-label="分子" type="range" min="1" max={denominator - 1} value={numerator} onChange={e => { setSecond(Number(e.target.value)); onInteract?.(); }}/></label></>}>
+      <div className="grid gap-4 py-8 sm:grid-cols-2" role="img" aria-label={result}>{[denominator, denominator * 2].map((parts, row) => <div key={parts} className="grid h-16 overflow-hidden rounded-lg border border-indigo-200" style={{ gridTemplateColumns: `repeat(${parts}, minmax(0,1fr))`, width: variant === 'different' && row === 1 ? '70%' : '100%' }}>{Array.from({ length: parts }, (_, index) => <i key={index} className={index < numerator * (row + 1) ? 'bg-indigo-400' : 'bg-white'}/>)}</div>)}</div>
+      <div className="model-proof is-valid"><strong>{variant === 'same' ? '切得更细，涂色总量没有变' : '整体大小不同时，分数只能说明各自占比'}</strong></div>
+    </Shell>;
+  }
+
+  const third = 180 - first - second;
+  const result = variant === 'triangle'
+    ? `${first}° + ${second}° + ${third}° = 180°`
+    : variant === 'line'
+      ? `${first}° + ${second}° = ${first + second}°，距平角还差 ${180 - first - second}°`
+      : `${first}°、${first}°、${180 - first * 2}°：两角相等但不是等边三角形`;
+  return <Shell title="用角和与反例检查图形结论" result={result} controls={<><div className="segmented-control"><button type="button" aria-pressed={variant === 'triangle'} className={variant === 'triangle' ? 'is-active' : ''} onClick={() => { setVariant('triangle'); onInteract?.(); }}>三角形</button><button type="button" aria-pressed={variant === 'line'} className={variant === 'line' ? 'is-active' : ''} onClick={() => { setVariant('line'); onInteract?.(); }}>相邻平角</button><button type="button" aria-pressed={variant === 'counterexample'} className={variant === 'counterexample' ? 'is-active' : ''} onClick={() => { setVariant('counterexample'); onInteract?.(); }}>反例</button></div><label>角 A <output>{first}°</output><input aria-label="角 A" type="range" min="30" max="55" value={first} onChange={e => { setFirst(Number(e.target.value)); onInteract?.(); }}/></label><label>角 B <output>{second}°</output><input aria-label="角 B" type="range" min="40" max="90" value={second} onChange={e => { setSecond(Number(e.target.value)); onInteract?.(); }}/></label></>}>
+    <div className="flex items-end justify-center gap-3 py-8" role="img" aria-label={result}><span className="rounded-lg bg-sky-100 p-4 font-bold text-sky-800">A {first}°</span><span className="rounded-lg bg-indigo-100 p-4 font-bold text-indigo-800">B {variant === 'counterexample' ? first : second}°</span><span className="rounded-lg bg-amber-100 p-4 font-bold text-amber-800">剩余 {variant === 'counterexample' ? 180 - first * 2 : third}°</span></div>
+    <div className="model-proof is-valid"><strong>{variant === 'counterexample' ? '两个角相等只能证明等腰，不能证明等边' : '先用 180° 检查已知角和剩余角'}</strong></div>
+  </Shell>;
+}
+
 export default function CourseApplicationModel({ type, onInteract }: Props) {
   switch (type) {
     case 'g4-bar-chart': return <BarChartBuild onInteract={onInteract}/>;
@@ -124,5 +182,9 @@ export default function CourseApplicationModel({ type, onInteract }: Props) {
     case 'g4-sum-difference': return <QuantityBars type="sum-difference" onInteract={onInteract}/>;
     case 'g4-sum-difference-multiple': return <QuantityBars type="multiple" onInteract={onInteract}/>;
     case 'g5-chicken-rabbit': return <QuantityBars type="chicken-rabbit" onInteract={onInteract}/>;
+    case 'g3-smart-calculation': return <ProgressionLab mode="smart" onInteract={onInteract}/>;
+    case 'g3-perimeter-area-puzzle': return <ProgressionLab mode="perimeter-area" onInteract={onInteract}/>;
+    case 'g3-fraction-visual-reasoning': return <ProgressionLab mode="fraction-visual" onInteract={onInteract}/>;
+    case 'g4-angle-shape-reasoning': return <ProgressionLab mode="angle-shape" onInteract={onInteract}/>;
   }
 }

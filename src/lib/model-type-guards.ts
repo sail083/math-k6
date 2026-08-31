@@ -164,12 +164,18 @@ type ApplicationModelType =
   | 'g3-systematic-enumeration'
   | 'g4-sum-difference'
   | 'g4-sum-difference-multiple'
-  | 'g5-chicken-rabbit';
+  | 'g5-chicken-rabbit'
+  | 'g3-smart-calculation'
+  | 'g3-perimeter-area-puzzle'
+  | 'g3-fraction-visual-reasoning'
+  | 'g4-angle-shape-reasoning';
 
 const applicationModelIds = new Set<string>([
   'g4-bar-chart', 'g5-position', 'g5-tree-planting',
   'g3-cycle-pattern', 'g3-systematic-enumeration',
   'g4-sum-difference', 'g4-sum-difference-multiple', 'g5-chicken-rabbit',
+  'g3-smart-calculation', 'g3-perimeter-area-puzzle',
+  'g3-fraction-visual-reasoning', 'g4-angle-shape-reasoning',
 ]);
 
 export function isApplicationModelType(id: string): id is ApplicationModelType {

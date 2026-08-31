@@ -4,6 +4,7 @@ import type {
   Derivation,
   GameConfig,
   Grade,
+  CourseTrack,
   Semester,
   TextbookFilter,
   TextbookRef,
@@ -89,6 +90,10 @@ export function getTextbookUnit(ref?: TextbookRef): number {
   return Number(ref.chapter.match(CHAPTER_PATTERN)?.[2] ?? Number.MAX_SAFE_INTEGER);
 }
 
+export function getCourseTrack(meta: KnowledgePointMeta): CourseTrack {
+  return meta.track ?? 'base';
+}
+
 /**
  * 在同一组内按直接/传递前置依赖做拓扑排序（Kahn 算法）。
  * 只考虑同组内的前置依赖，保持原有顺序作为平局决胜。
@@ -136,11 +141,57 @@ function topologicalSort(courses: KnowledgePoint[]): KnowledgePoint[] {
   return result;
 }
 
-/** 获取思维挑战路径；复用课程前置关系，不混入教材版本。 */
-export function getChallengeCourses(grade?: Grade): KnowledgePoint[] {
+/** 获取指定能力层课程；非 base 复用前置关系排序，不混入教材版本。 */
+export function getTrackCourses(track: CourseTrack, grade?: Grade): KnowledgePoint[] {
   return topologicalSort(getAllKnowledgePoints().filter((kp) =>
-    kp.meta.track === 'challenge' && (grade === undefined || kp.meta.grade === grade),
+    getCourseTrack(kp.meta) === track && (grade === undefined || kp.meta.grade === grade),
   ));
+}
+
+/** v0.5 兼容入口。 */
+export function getChallengeCourses(grade?: Grade): KnowledgePoint[] {
+  return getTrackCourses('challenge', grade);
+}
+
+export interface CourseRelations {
+  prerequisites: KnowledgePoint[];
+  baseCourses: KnowledgePoint[];
+  extensionNext: KnowledgePoint[];
+  challengeNext: KnowledgePoint[];
+}
+
+/** 从 prerequisites 单一事实源派生基础课与直接下游，不持久化第二份关系。 */
+export function getCourseRelations(courseId: string): CourseRelations {
+  const course = getKnowledgePointById(courseId);
+  if (!course) return { prerequisites: [], baseCourses: [], extensionNext: [], challengeNext: [] };
+
+  const prerequisites = course.meta.prerequisites
+    .map(getKnowledgePointById)
+    .filter((item): item is KnowledgePoint => Boolean(item));
+  const baseIds = new Set<string>();
+  const visited = new Set<string>();
+  const visit = (id: string) => {
+    if (visited.has(id)) return;
+    visited.add(id);
+    const item = getKnowledgePointById(id);
+    if (!item) return;
+    if (getCourseTrack(item.meta) === 'base') {
+      baseIds.add(id);
+      return;
+    }
+    item.meta.prerequisites.forEach(visit);
+  };
+  course.meta.prerequisites.forEach(visit);
+
+  const dependents = getAllKnowledgePoints().filter((item) =>
+    item.meta.prerequisites.includes(courseId),
+  );
+  return {
+    prerequisites,
+    baseCourses: getAllKnowledgePoints().filter((item) => baseIds.has(item.meta.id)),
+    extensionNext: dependents.filter((item) => getCourseTrack(item.meta) === 'extension'),
+    challengeNext: dependents.filter((item) => getCourseTrack(item.meta) === 'challenge'),
+  };
 }
 
 /** 按教材的实际册别和单元顺序返回课程，避免为不同版本复制知识点。 */
@@ -149,9 +200,9 @@ export function getCurriculum(
   version: TextbookFilter = '全部',
 ): KnowledgePoint[] {
   const candidates = version === '全部'
-    ? getKnowledgePointsByGrade(grade).filter((kp) => kp.meta.track !== 'challenge')
+    ? getKnowledgePointsByGrade(grade).filter((kp) => getCourseTrack(kp.meta) === 'base')
     : getAllKnowledgePoints().filter((kp) =>
-        kp.meta.track !== 'challenge'
+        getCourseTrack(kp.meta) === 'base'
         && kp.meta.textbookRefs.some((ref) => ref.version === version && ref.grade === grade),
       );
 
