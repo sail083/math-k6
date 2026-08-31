@@ -3488,8 +3488,8 @@ describe('F10–F16 focused regression suite', () => {
       first_try: null,
       duration_ms: null,
       due_at: null,
-      app_version: '0.4.0',
-      content_version: '0.3.0',
+      app_version: '1.0.0',
+      content_version: '1.0.0',
       properties: {},
     });
     expect(consoleSpy).not.toHaveBeenCalled();

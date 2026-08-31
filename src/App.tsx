@@ -2,9 +2,9 @@ import { lazy, Suspense, type ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { ProgressProvider } from '@/context/ProgressContext';
-import Layout from '@/components/Layout';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
+const Layout = lazy(() => import('@/components/Layout'));
 const LearningCenterPage = lazy(() => import('@/pages/LearningCenterPage'));
 const LanguageSubjectPage = lazy(() => import('@/pages/LanguageSubjectPage'));
 const HomePage = lazy(() => import('@/pages/HomePage'));

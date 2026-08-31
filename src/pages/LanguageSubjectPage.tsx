@@ -275,6 +275,11 @@ export default function LanguageSubjectPage({ subject }: { subject: LanguageSubj
   const isLocked = !!lesson && !completed.has(lesson.id) && nextLessonId !== lesson.id;
 
   useEffect(() => {
+    document.title = `${config.label}学习 · 语数英综合学习平台`;
+    return () => { document.title = '语数英综合学习平台'; };
+  }, [config.label]);
+
+  useEffect(() => {
     if (!lesson || isLocked || completed.has(lesson.id)) return;
     startLanguageLesson(subject, lesson.id, config.lessonIds);
   }, [completed, config.lessonIds, isLocked, lesson, startLanguageLesson, subject]);

@@ -56,8 +56,8 @@ export function logLearningEvent(params: {
         first_try: params.firstTry ?? null,
         duration_ms: params.durationMs ?? null,
         due_at: params.dueAt ?? null,
-        app_version: '0.4.0',
-        content_version: '0.3.0',
+        app_version: '1.0.0',
+        content_version: '1.0.0',
         properties: params.properties ?? {},
       })
       .then(({ error }) => {

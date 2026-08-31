@@ -4,6 +4,18 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '@/App';
 import { LearningCenter } from '@/pages/LearningCenterPage';
+import type { PrimaryTask } from '@/lib/platformTasks';
+
+const primaryTask: PrimaryTask = {
+  id: 'chinese:resume:zh-campus-words',
+  subject: 'chinese',
+  phase: 'resume',
+  title: '会观察，也会用词',
+  reason: '按顺序继续语文课程',
+  duration: '约5分钟',
+  cta: '继续学习',
+  link: '/chinese/zh-campus-words',
+};
 
 const authState = vi.hoisted(() => ({
   user: { id: 'student-1', user_metadata: { username: '小航' } } as {
@@ -59,7 +71,9 @@ describe('integrated learning center', () => {
     render(
       <MemoryRouter>
         <LearningCenter
+          primaryTask={primaryTask}
           completedCount={6}
+          mathTotalCount={47}
           chineseCompletedCount={1}
           englishCompletedCount={0}
           legacyProgressAvailable={false}
@@ -74,10 +88,16 @@ describe('integrated learning center', () => {
     expect(screen.getByRole('heading', { level: 1, name: '今天想学哪一科？' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '跳到主要内容' })).toHaveAttribute('href', '#main-content');
     expect(screen.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent))
-      .toEqual(['数学', '语文', '英语']);
+      .toEqual(['会观察，也会用词', '数学', '语文', '英语']);
     expect(screen.getByRole('link', { name: '进入数学' })).toHaveAttribute('href', '/math');
     expect(screen.getByRole('link', { name: '进入语文' })).toHaveAttribute('href', '/chinese');
     expect(screen.getByRole('link', { name: '进入英语' })).toHaveAttribute('href', '/english');
+    expect(screen.getByRole('link', { name: '继续学习：会观察，也会用词' })).toHaveAttribute('href', '/chinese/zh-campus-words');
+    expect(screen.getByText('按顺序继续语文课程 · 约5分钟')).toBeVisible();
+    expect(screen.getAllByRole('progressbar')).toHaveLength(3);
+    expect(screen.getByRole('progressbar', { name: '数学学习进度' })).toHaveAttribute('aria-valuenow', '6');
+    expect(screen.getByRole('progressbar', { name: '语文学习进度' })).toHaveAttribute('aria-valuenow', '1');
+    expect(screen.getByRole('progressbar', { name: '英语学习进度' })).toHaveAttribute('aria-valuenow', '0');
     expect(screen.getByText('已完成 1 / 3 课')).toBeInTheDocument();
     expect(screen.getByText('已完成 0 / 3 课')).toBeInTheDocument();
     expect(screen.getByText('词汇、句型与听读')).toBeInTheDocument();
@@ -89,7 +109,9 @@ describe('integrated learning center', () => {
     render(
       <MemoryRouter>
         <LearningCenter
+          primaryTask={primaryTask}
           completedCount={0}
+          mathTotalCount={47}
           chineseCompletedCount={0}
           englishCompletedCount={0}
           legacyProgressAvailable
@@ -108,20 +130,48 @@ describe('integrated learning center', () => {
     expect(onDismissLegacy).toHaveBeenCalledTimes(1);
   });
 
+  it('shows a completion state instead of inventing another task', () => {
+    render(
+      <MemoryRouter>
+        <LearningCenter
+          primaryTask={null}
+          completedCount={47}
+          mathTotalCount={47}
+          chineseCompletedCount={3}
+          englishCompletedCount={3}
+          legacyProgressAvailable={false}
+          legacyCompletedCount={0}
+          onImportLegacy={vi.fn()}
+          onDismissLegacy={vi.fn()}
+          onLogout={authState.logout}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('status')).toHaveTextContent('本阶段学习已完成');
+    expect(screen.queryByText('最近学习')).not.toBeInTheDocument();
+  });
+
   it('opens the real Chinese subject route', async () => {
     window.history.replaceState({}, '', '/chinese');
-    render(<App />);
+    const view = render(<App />);
 
     expect(await screen.findByRole('heading', { level: 1, name: '校园里的小发现' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /会观察，也会用词/ })).toHaveAttribute('href', '/chinese/zh-campus-words');
+    expect(document.title).toBe('语文学习 · 语数英综合学习平台');
+    view.unmount();
+    expect(document.title).toBe('语数英综合学习平台');
   });
 
   it('opens the real English subject route', async () => {
     window.history.replaceState({}, '', '/english');
-    render(<App />);
+    const view = render(<App />);
 
     expect(await screen.findByRole('heading', { level: 1, name: '公园里的动物' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /认识公园里的动物/ })).toHaveAttribute('href', '/english/en-park-animals');
+    expect(document.title).toBe('英语学习 · 语数英综合学习平台');
+    view.unmount();
+    expect(document.title).toBe('语数英综合学习平台');
   });
 
   it.each([

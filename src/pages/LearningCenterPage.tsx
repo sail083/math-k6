@@ -1,9 +1,17 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useProgress } from '@/context/ProgressContext';
+import { getAllKnowledgePoints, getCourseTrack } from '@/lib/content';
+import { getPrimaryLearningTask, type PrimaryTask } from '@/lib/platformTasks';
+
+const mathCourses = getAllKnowledgePoints().filter((course) => getCourseTrack(course.meta) === 'base');
+const subjectLabels: Record<PrimaryTask['subject'], string> = { math: '数学', chinese: '语文', english: '英语' };
+const phaseLabels: Record<PrimaryTask['phase'], string> = { review: '待复习', resume: '继续学习', next: '下一课' };
 
 interface LearningCenterProps {
+  primaryTask: PrimaryTask | null;
   completedCount: number;
+  mathTotalCount: number;
   chineseCompletedCount: number;
   englishCompletedCount: number;
   legacyProgressAvailable: boolean;
@@ -14,7 +22,9 @@ interface LearningCenterProps {
 }
 
 export function LearningCenter({
+  primaryTask,
   completedCount,
+  mathTotalCount,
   chineseCompletedCount,
   englishCompletedCount,
   legacyProgressAvailable,
@@ -23,6 +33,15 @@ export function LearningCenter({
   onDismissLegacy,
   onLogout,
 }: LearningCenterProps) {
+  const mathDone = Math.max(0, Math.min(completedCount, mathTotalCount));
+  const chineseDone = Math.max(0, Math.min(chineseCompletedCount, 3));
+  const englishDone = Math.max(0, Math.min(englishCompletedCount, 3));
+  const mathProgress = mathTotalCount > 0 ? Math.round(mathDone / mathTotalCount * 100) : 0;
+  const chineseProgress = Math.round(chineseDone / 3 * 100);
+  const englishProgress = Math.round(englishDone / 3 * 100);
+  const subjectLabel = primaryTask ? subjectLabels[primaryTask.subject] : '';
+  const phaseLabel = primaryTask ? phaseLabels[primaryTask.phase] : '';
+
   return (
     <div className="app-frame min-h-screen flex flex-col">
       <a
@@ -78,6 +97,51 @@ export function LearningCenter({
           </section>
         ) : null}
 
+        <section aria-labelledby="next-step-title" className="mt-8">
+          <h2 id="next-step-title" className="text-lg font-bold text-slate-800">今天下一步</h2>
+          {primaryTask ? (
+            <Link
+              to={primaryTask.link}
+              aria-label={`${primaryTask.cta}：${primaryTask.title}`}
+              className={`group mt-4 block rounded-2xl border-2 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 motion-reduce:transform-none motion-reduce:transition-none sm:p-6 ${
+                primaryTask.phase === 'review'
+                  ? 'border-amber-300 focus-visible:ring-amber-200'
+                  : primaryTask.phase === 'resume'
+                    ? 'border-indigo-200 focus-visible:ring-indigo-200'
+                    : 'border-emerald-200 focus-visible:ring-emerald-200'
+              }`}
+            >
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className={`text-xs font-bold ${
+                    primaryTask.phase === 'review'
+                      ? 'text-amber-700'
+                      : primaryTask.phase === 'resume'
+                        ? 'text-indigo-700'
+                        : 'text-emerald-700'
+                  }`}>
+                    {subjectLabel} · {phaseLabel}
+                  </p>
+                  <h3 className="mt-2 text-xl font-bold text-slate-900 sm:text-2xl">{primaryTask.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {primaryTask.reason} · {primaryTask.duration}
+                  </p>
+                </div>
+                <span className="inline-flex min-h-11 shrink-0 items-center font-bold text-indigo-700">
+                  {primaryTask.cta}
+                  <span className="ml-2 transition-transform group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none" aria-hidden="true">→</span>
+                </span>
+              </div>
+            </Link>
+          ) : (
+            <div role="status" className="mt-4 rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-5 sm:p-6">
+              <p className="text-xs font-bold text-emerald-700">已完成</p>
+              <h3 className="mt-2 text-xl font-bold text-slate-900 sm:text-2xl">本阶段学习已完成</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">语文、数学、英语当前课程都已完成，没有待复习任务。</p>
+            </div>
+          )}
+        </section>
+
         <section aria-labelledby="subjects-title" className="mt-8">
           <h2 id="subjects-title" className="text-lg font-bold text-slate-800">我的学科</h2>
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -93,8 +157,19 @@ export function LearningCenter({
                 </div>
                 <h3 id="subject-math-title" className="mt-5 text-2xl font-bold text-slate-900">数学</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-500">
-                  {completedCount > 0 ? `已完成 ${completedCount} 个知识点` : '从第一课开始学习'}
+                  已完成 {mathDone} / {mathTotalCount} 课
                 </p>
+                <div
+                  role="progressbar"
+                  aria-label="数学学习进度"
+                  aria-valuemin={0}
+                  aria-valuemax={Math.max(mathTotalCount, 1)}
+                  aria-valuenow={mathDone}
+                  aria-valuetext={`已完成 ${mathDone} / ${mathTotalCount} 课`}
+                  className="mt-3 h-2 overflow-hidden rounded-full bg-indigo-100"
+                >
+                  <span className="block h-full rounded-full bg-indigo-600" style={{ width: `${mathProgress}%` }} />
+                </div>
               </div>
               <span className="mt-6 flex min-h-11 items-center justify-between text-sm font-bold text-indigo-600">
                 进入数学
@@ -114,8 +189,19 @@ export function LearningCenter({
                 </div>
                 <h3 id="subject-chinese-title" className="mt-5 text-2xl font-bold text-slate-900">语文</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-500">
-                  {chineseCompletedCount > 0 ? `已完成 ${chineseCompletedCount} / 3 课` : '从第一课开始学习'}
+                  已完成 {chineseDone} / 3 课
                 </p>
+                <div
+                  role="progressbar"
+                  aria-label="语文学习进度"
+                  aria-valuemin={0}
+                  aria-valuemax={3}
+                  aria-valuenow={chineseDone}
+                  aria-valuetext={`已完成 ${chineseDone} / 3 课`}
+                  className="mt-3 h-2 overflow-hidden rounded-full bg-rose-100"
+                >
+                  <span className="block h-full rounded-full bg-rose-600" style={{ width: `${chineseProgress}%` }} />
+                </div>
               </div>
               <span className="mt-6 flex min-h-11 items-center justify-between text-sm font-bold text-rose-600">
                 进入语文
@@ -135,7 +221,18 @@ export function LearningCenter({
                 </div>
                 <h3 id="subject-english-title" className="mt-5 text-2xl font-bold text-slate-900">英语</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-500">词汇、句型与听读</p>
-                <p className="mt-1 text-sm leading-6 text-slate-500">已完成 {englishCompletedCount} / 3 课</p>
+                <p className="mt-1 text-sm leading-6 text-slate-500">已完成 {englishDone} / 3 课</p>
+                <div
+                  role="progressbar"
+                  aria-label="英语学习进度"
+                  aria-valuemin={0}
+                  aria-valuemax={3}
+                  aria-valuenow={englishDone}
+                  aria-valuetext={`已完成 ${englishDone} / 3 课`}
+                  className="mt-3 h-2 overflow-hidden rounded-full bg-sky-100"
+                >
+                  <span className="block h-full rounded-full bg-sky-700" style={{ width: `${englishProgress}%` }} />
+                </div>
               </div>
               <span className="mt-6 flex min-h-11 items-center justify-between text-sm font-bold text-sky-700">
                 进入英语
@@ -164,10 +261,13 @@ export default function LearningCenterPage() {
     importLegacyProgress,
     dismissLegacyProgress,
   } = useProgress();
+  const passed = new Set(progress.passedKnowledgePoints);
 
   return (
     <LearningCenter
-      completedCount={progress.passedKnowledgePoints.length}
+      primaryTask={getPrimaryLearningTask(progress, Date.now())}
+      completedCount={mathCourses.filter((course) => passed.has(course.meta.id)).length}
+      mathTotalCount={mathCourses.length}
       chineseCompletedCount={progress.languageLessons?.chinese?.completedLessonIds.length ?? 0}
       englishCompletedCount={progress.languageLessons?.english?.completedLessonIds.length ?? 0}
       legacyProgressAvailable={legacyProgressAvailable}
