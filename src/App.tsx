@@ -1,10 +1,11 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
 import { ProgressProvider } from '@/context/ProgressContext';
 import Layout from '@/components/Layout';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
+const LearningCenterPage = lazy(() => import('@/pages/LearningCenterPage'));
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const GradePage = lazy(() => import('@/pages/GradePage'));
 const KnowledgePointPage = lazy(() => import('@/pages/KnowledgePointPage'));
@@ -21,27 +22,61 @@ const SuspenseFallback = () => (
   </div>
 );
 
+function MathShell() {
+  return (
+    <ProtectedRoute>
+      <Layout><Outlet /></Layout>
+    </ProtectedRoute>
+  );
+}
+
+function AuthShell() {
+  return (
+    <div className="app-frame flex min-h-screen flex-col">
+      <main id="main-content" className="app-main flex items-center justify-center">
+        <div className="w-full"><Outlet /></div>
+      </main>
+    </div>
+  );
+}
+
+export function LegacyMathRedirect() {
+  const { pathname, search, hash } = useLocation();
+  return <Navigate to={`/math${pathname}${search}${hash}`} replace />;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <ProgressProvider>
-          <Layout>
-            <Suspense fallback={<SuspenseFallback />}>
-              <Routes>
-                <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-                <Route path="/grade/:grade" element={<ProtectedRoute><GradePage /></ProtectedRoute>} />
-                <Route path="/kp/:id" element={<ProtectedRoute><KnowledgePointPage /></ProtectedRoute>} />
-                <Route path="/dashboard" element={<ProtectedRoute><ProgressDashboard /></ProtectedRoute>} />
-                <Route path="/map" element={<ProtectedRoute><KnowledgeMapPage /></ProtectedRoute>} />
-                <Route path="/repair/:skillId" element={<ProtectedRoute><SkillRepairPage /></ProtectedRoute>} />
+          <Suspense fallback={<SuspenseFallback />}>
+            <Routes>
+              <Route path="/" element={<ProtectedRoute><LearningCenterPage /></ProtectedRoute>} />
+              <Route path="/math" element={<MathShell />}>
+                <Route index element={<HomePage />} />
+                <Route path="grade/:grade" element={<GradePage />} />
+                <Route path="kp/:id" element={<KnowledgePointPage />} />
+                <Route path="dashboard" element={<ProgressDashboard />} />
+                <Route path="map" element={<KnowledgeMapPage />} />
+                <Route path="repair/:skillId" element={<SkillRepairPage />} />
+              </Route>
+
+              {/* ponytail: keep one compatibility hop until existing math links move under /math. */}
+              <Route path="/grade/*" element={<LegacyMathRedirect />} />
+              <Route path="/kp/*" element={<LegacyMathRedirect />} />
+              <Route path="/dashboard" element={<LegacyMathRedirect />} />
+              <Route path="/map" element={<LegacyMathRedirect />} />
+              <Route path="/repair/*" element={<LegacyMathRedirect />} />
+
+              <Route element={<AuthShell />}>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Suspense>
-          </Layout>
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
         </ProgressProvider>
       </AuthProvider>
     </BrowserRouter>

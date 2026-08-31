@@ -101,7 +101,7 @@ export default function KnowledgePointPage() {
     return (
       <div className="text-center py-12">
         <p className="text-slate-500 text-lg mb-4">加载失败，请检查网络后重试。</p>
-        <Link to="/" className="text-indigo-600 hover:underline">
+        <Link to="/math" className="text-indigo-600 hover:underline">
           返回首页
         </Link>
       </div>
@@ -112,7 +112,7 @@ export default function KnowledgePointPage() {
     return (
       <div className="text-center py-12">
         <p className="text-slate-500 text-lg">知识点不存在</p>
-        <Link to="/" className="text-indigo-600 hover:underline mt-4 inline-block">
+        <Link to="/math" className="text-indigo-600 hover:underline mt-4 inline-block">
           返回首页
         </Link>
       </div>

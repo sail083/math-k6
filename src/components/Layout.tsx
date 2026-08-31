@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo, type ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useProgress } from '@/context/ProgressContext';
 import { useAuth } from '@/context/AuthContext';
@@ -23,10 +23,10 @@ export default function Layout({ children }: { children: ReactNode }) {
   const grades = useMemo(() => getGrades(), []);
   const { pathname } = useLocation();
   const routeParts = pathname.split('/').filter(Boolean);
-  const currentGrade = routeParts[0] === 'grade'
-    ? Number(routeParts[1])
-    : routeParts[0] === 'kp'
-      ? getKnowledgePointById(routeParts[1])?.meta.grade
+  const currentGrade = routeParts[1] === 'grade'
+    ? Number(routeParts[2])
+    : routeParts[1] === 'kp'
+      ? getKnowledgePointById(routeParts[2])?.meta.grade
       : undefined;
 
   // Prefer a first-class username; otherwise mask the phone number.
@@ -36,17 +36,42 @@ export default function Layout({ children }: { children: ReactNode }) {
     ? `${displayPhone.slice(0, 3)}****${displayPhone.slice(7)}`
     : user?.email?.split('@')[0] ?? '');
 
+  useEffect(() => {
+    document.title = 'Math Lab · 小学数学 3-6 年级';
+    return () => { document.title = '语数英综合学习平台'; };
+  }, []);
+
   return (
     <div className="app-frame min-h-screen flex flex-col">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:font-semibold focus:text-indigo-700 focus:shadow-lg"
+      >
+        跳到主要内容
+      </a>
       {/* 顶部栏 */}
       <header className="app-header sticky top-0 z-30">
         <div className="app-container">
           {/* 标题行 */}
           <div className="flex items-center justify-between gap-3 py-3">
-            <NavLink to="/" className="flex items-center gap-2 shrink-0">
-              <span className="brand-mark">M</span>
-              <span className="brand-copy"><strong>Math Lab</strong><small>小学数学 3-6 年级</small></span>
-            </NavLink>
+            <div className="flex items-center gap-2">
+              <NavLink
+                to="/math"
+                className="flex min-h-11 shrink-0 items-center gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200"
+              >
+                <span className="brand-mark">M</span>
+                <span className="brand-copy"><strong>Math Lab</strong><small>小学数学 3-6 年级</small></span>
+              </NavLink>
+              <NavLink
+                to="/"
+                className="inline-flex min-h-11 items-center rounded-lg px-3 text-xs font-semibold text-slate-500 transition-colors hover:bg-slate-100 hover:text-indigo-600 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-200"
+                aria-label="返回学习中心"
+              >
+                <span aria-hidden="true">←</span>
+                <span className="ml-1 hidden sm:inline">学习中心</span>
+                <span className="ml-1 sm:hidden">学科</span>
+              </NavLink>
+            </div>
 
             {/* 桌面端：年级导航 + 进度 + 用户 */}
             <div className="hidden md:flex items-center gap-5">
@@ -54,7 +79,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                 {grades.map((g) => (
                   <NavLink
                     key={g}
-                    to={`/grade/${g}`}
+                    to={`/math/grade/${g}`}
                     className={({ isActive }) =>
                       `grade-nav__item ${
                         isActive || currentGrade === g
@@ -67,7 +92,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                   </NavLink>
                 ))}
               </nav>
-              <NavLink to="/dashboard" className="header-progress" aria-label={`查看学习进度，已完成 ${percent}%`}>
+              <NavLink to="/math/dashboard" className="header-progress" aria-label={`查看学习进度，已完成 ${percent}%`}>
                 <UiIcon name="progress" size={18}/>
                 <div className="header-progress__copy"><span>全部课程</span><strong>{percent}%</strong></div>
                 <div className="header-progress__track">
@@ -78,7 +103,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                 </div>
               </NavLink>
               <NavLink
-                to="/map"
+                to="/math/map"
                 className={({ isActive }) =>
                   `grade-nav__item ${isActive ? 'is-active' : ''}`
                 }
@@ -128,7 +153,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           {/* 移动端：进度条 */}
           <div className="md:hidden mobile-progress">
             <div className="flex items-center justify-between">
-              <NavLink to="/dashboard" className="mobile-progress__label"><UiIcon name="progress" size={16}/><span>学习进度</span><strong>{percent}%</strong></NavLink>
+              <NavLink to="/math/dashboard" className="mobile-progress__label"><UiIcon name="progress" size={16}/><span>学习进度</span><strong>{percent}%</strong></NavLink>
               {user ? (
                 <button
                   onClick={logout}
@@ -169,7 +194,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             {grades.map((g) => (
               <NavLink
                 key={g}
-                to={`/grade/${g}`}
+                to={`/math/grade/${g}`}
                 className={({ isActive }) =>
                   `mobile-grade-link ${isActive || currentGrade === g ? 'is-active' : ''}`
                 }
@@ -177,8 +202,8 @@ export default function Layout({ children }: { children: ReactNode }) {
                 {g === 3 ? '📐 ' : g === 4 ? '✏️ ' : g === 5 ? '📏 ' : '⭕ '}{gradeLabels[g]}
               </NavLink>
             ))}
-            <NavLink to="/dashboard" className={({ isActive }) => `mobile-grade-link ${isActive ? 'is-active' : ''}`}>📊 进度</NavLink>
-            <NavLink to="/map" className={({ isActive }) => `mobile-grade-link ${isActive ? 'is-active' : ''}`}>🗺 地图</NavLink>
+            <NavLink to="/math/dashboard" className={({ isActive }) => `mobile-grade-link ${isActive ? 'is-active' : ''}`}>📊 进度</NavLink>
+            <NavLink to="/math/map" className={({ isActive }) => `mobile-grade-link ${isActive ? 'is-active' : ''}`}>🗺 地图</NavLink>
           </nav>
         </div>
       </header>

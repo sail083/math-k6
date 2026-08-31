@@ -119,7 +119,7 @@ export default function ProgressDashboard() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-800">学习进度</h1>
         <Link
-          to="/"
+          to="/math"
           className="text-sm text-indigo-600 hover:text-indigo-700 font-medium min-h-[44px] flex items-center"
         >
           ← 返回首页
@@ -132,12 +132,12 @@ export default function ProgressDashboard() {
           <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-4 text-center">
             <div className="text-3xl font-bold text-emerald-600 tabular-nums">{stableCount}</div>
             <div className="text-xs font-medium text-emerald-700 mt-1">已稳固</div>
-            {stableCount > 0 && <Link to="/" className="text-[10px] text-emerald-600 hover:underline mt-1 inline-block">查看全部</Link>}
+            {stableCount > 0 && <Link to="/math" className="text-[10px] text-emerald-600 hover:underline mt-1 inline-block">查看全部</Link>}
           </div>
           <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-center">
             <div className="text-3xl font-bold text-amber-600 tabular-nums">{dueCount}</div>
             <div className="text-xs font-medium text-amber-700 mt-1">待复习</div>
-            {dueCount > 0 && <Link to="/" className="text-[10px] text-amber-600 hover:underline mt-1 inline-block">去复习</Link>}
+            {dueCount > 0 && <Link to="/math" className="text-[10px] text-amber-600 hover:underline mt-1 inline-block">去复习</Link>}
           </div>
           <div className="rounded-xl bg-sky-50 border border-sky-200 p-4 text-center">
             <div className="text-3xl font-bold text-sky-600 tabular-nums">{provisionalCount}</div>

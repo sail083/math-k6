@@ -13,9 +13,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: '小学数学3-6年级 一次讲透',
-        short_name: '数学K6',
-        description: '小学数学3-6年级核心知识点交互式教学平台',
+        name: '语文数学英语综合学习平台',
+        short_name: '学习中心',
+        description: '面向小学阶段的语文、数学、英语综合学习平台',
         theme_color: '#4f46e5',
         background_color: '#ffffff',
         display: 'standalone',

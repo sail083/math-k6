@@ -77,7 +77,7 @@ export default function GradePage() {
   }, [rawTrack, searchParams, setSearchParams, track]);
 
   if (!isValidGrade) {
-    return <div className="py-12 text-center"><p className="text-slate-500">年级不存在，请从首页选择年级。</p><Link to="/" className="mt-2 inline-block text-indigo-600 hover:underline">返回首页</Link></div>;
+    return <div className="py-12 text-center"><p className="text-slate-500">年级不存在，请从首页选择年级。</p><Link to="/math" className="mt-2 inline-block text-indigo-600 hover:underline">返回数学首页</Link></div>;
   }
 
   const setVersion = (next: TextbookFilter) => {
@@ -94,7 +94,7 @@ export default function GradePage() {
   return (
     <div className="space-y-5">
       <div className="flex items-center gap-2 text-sm">
-        <Link to="/" className="text-slate-400 hover:text-indigo-600">← 首页</Link>
+        <Link to="/math" className="text-slate-400 hover:text-indigo-600">← 数学首页</Link>
         <span className="text-slate-300">/</span>
         <span className="font-medium text-slate-600">{gradeLabels[gradeNum]}</span>
       </div>
