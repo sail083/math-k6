@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { chineseLessonIds } from '@/content/chinese';
 import { englishLessonIds } from '@/content/english';
 import { PUBLISHED_LANGUAGE_LESSON_IDS } from '@/lib/progress';
-import migrationSql from '../../supabase/migrations/20260831185539_v1_language_progress.sql?raw';
+import migrationSql from '../../supabase/migrations/20260831234642_v1_language_progress.sql?raw';
 
 describe('V1 language progress migration', () => {
   it('keeps language completions in an independent profiles column', () => {
