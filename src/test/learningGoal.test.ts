@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { parseLearningGoal, setLearningGoal } from '@/lib/progress';
 import type { ProgressData, LearningEventName } from '@/lib/types';
-import migrationSql from '../../supabase/migrations/20260827000000_expand_chk_event_name.sql?raw';
+import migrationSql from '../../supabase/migrations/20260827090329_expand_chk_event_name.sql?raw';
 
 const emptyProgress = (): ProgressData => ({ passedKnowledgePoints: [], stars: {} });
 

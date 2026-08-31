@@ -10,6 +10,7 @@ describe('V1 language progress migration', () => {
     expect(migrationSql).toContain("progress #> '{languageLessons,chinese,completedLessonIds}'");
     expect(migrationSql).toContain("progress #> '{languageLessons,english,completedLessonIds}'");
     expect(migrationSql).not.toMatch(/set\s+progress\s*=/i);
+    expect(migrationSql).toContain('grant select, update on table public.profiles to authenticated');
   });
 
   it('atomically deduplicates only the six published subject lessons', () => {
@@ -39,5 +40,6 @@ describe('V1 language progress migration', () => {
     expect(migrationSql).toContain('complete_language_lesson(text, text, uuid)');
     expect(migrationSql).toMatch(/revoke all on function[\s\S]+from public, anon;/);
     expect(migrationSql).toMatch(/grant execute on function[\s\S]+to authenticated;/);
+    expect(migrationSql).toContain('revoke all on function public.get_email_by_phone(text) from anon');
   });
 });

@@ -8,6 +8,10 @@ alter table public.profiles
 comment on column public.profiles.language_progress is
   'Completed Chinese and English lesson IDs. Kept outside legacy progress so old clients cannot overwrite it.';
 
+-- RLS decides which row is visible; explicit table grants make a fresh local
+-- Supabase project match the production Data API privileges.
+grant select, update on table public.profiles to authenticated;
+
 -- Preserve any language completions written by the unreleased nested format.
 -- The old key remains untouched so this additive migration is easy to roll back.
 update public.profiles
@@ -125,3 +129,7 @@ revoke all on function public.complete_language_lesson(text, text, uuid)
   from public, anon;
 grant execute on function public.complete_language_lesson(text, text, uuid)
   to authenticated;
+
+-- The V1 client uses get_email_by_login_identifier. Retain the old phone
+-- resolver for trusted compatibility, but no longer expose it pre-auth.
+revoke all on function public.get_email_by_phone(text) from anon;
