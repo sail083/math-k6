@@ -209,7 +209,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       </header>
 
       {/* 内容区 */}
-      <main id="main-content" className="app-main">{children}</main>
+      <main id="main-content" tabIndex={-1} className="app-main">{children}</main>
 
       {/* 底部 */}
       <footer className="border-t border-slate-200 bg-white">

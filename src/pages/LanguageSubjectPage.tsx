@@ -363,7 +363,7 @@ export default function LanguageSubjectPage({ subject }: { subject: LanguageSubj
           <Link to="/" className={`inline-flex min-h-11 shrink-0 items-center rounded-lg px-3 text-sm font-semibold text-slate-600 hover:bg-white focus-visible:outline-none focus-visible:ring-4 sm:px-4 ${theme.focus}`}>返回学习中心</Link>
         </div>
       </header>
-      <main id="main-content" className="app-main">{content}</main>
+      <main id="main-content" tabIndex={-1} className="app-main">{content}</main>
       <footer className="border-t border-slate-200 bg-white"><div className="app-container py-4 text-center text-xs text-slate-500">{config.label} · {config.unitTitle}</div></footer>
     </div>
   );

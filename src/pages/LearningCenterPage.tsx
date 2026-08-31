@@ -69,7 +69,7 @@ export function LearningCenter({
         </div>
       </header>
 
-      <main id="main-content" className="app-main">
+      <main id="main-content" tabIndex={-1} className="app-main">
         <section aria-labelledby="learning-center-title" className="rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 px-6 py-8 text-white shadow-lg sm:px-8 sm:py-10">
           <p className="text-sm font-semibold text-indigo-100">我的学习空间</p>
           <h1 id="learning-center-title" className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">

@@ -87,6 +87,7 @@ describe('integrated learning center', () => {
 
     expect(screen.getByRole('heading', { level: 1, name: '今天想学哪一科？' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '跳到主要内容' })).toHaveAttribute('href', '#main-content');
+    expect(screen.getByRole('main')).toHaveAttribute('tabindex', '-1');
     expect(screen.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent))
       .toEqual(['会观察，也会用词', '数学', '语文', '英语']);
     expect(screen.getByRole('link', { name: '进入数学' })).toHaveAttribute('href', '/math');
