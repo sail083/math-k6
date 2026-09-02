@@ -2,6 +2,120 @@ import type { LanguageLesson } from '@/lib/types';
 
 export const englishLessons = [
   {
+    id: 'en-g3a-u1-meet',
+    title: '认识新朋友',
+    summary: '用问候、自我介绍和年龄信息认识一位新朋友。',
+    body: "Hello! I'm Lin. I'm nine. This is my friend Ben. He's nine too. We meet at school. We smile and say, 'Nice to meet you!'",
+    speakable: true,
+    questions: [
+      {
+        id: 'en-g3a-u1-meet-q1',
+        type: 'choice',
+        prompt: '哪句话可以用来介绍自己？',
+        options: ["I'm Lin.", "He's Ben.", 'Nice to meet you!', 'This is my friend.'],
+        correctAnswer: "I'm Lin.",
+        explanation: "I'm 加名字可以介绍自己。再试时先找主语 I，再找表示“是”的 am。",
+        points: 10,
+      },
+      {
+        id: 'en-g3a-u1-meet-q2',
+        type: 'fill-blank',
+        prompt: "请补全林的年龄：I'm ______.（只填一个英文单词）",
+        correctAnswer: 'nine',
+        explanation: "正文写着 I'm nine，nine 表示九岁。再试时回到第二句寻找年龄数字。",
+        points: 10,
+      },
+      {
+        id: 'en-g3a-u1-meet-q3',
+        type: 'choice',
+        prompt: '初次见到新朋友时，哪句话最合适？',
+        options: ['Nice to meet you!', 'Close the book.', 'Good night!', 'Sit down.'],
+        correctAnswer: 'Nice to meet you!',
+        explanation: 'Nice to meet you 表示“很高兴认识你”。再试时先判断场景是初次见面。',
+        points: 10,
+      },
+    ],
+  },
+  {
+    id: 'en-g3a-u1-help',
+    title: '一起帮助、一起玩',
+    summary: '用邀请、递物和感谢表达友好。',
+    body: "A new classmate drops a pencil. Lin says, 'Let's help.' Ben picks it up and says, 'Here you are.' The classmate says, 'Thank you!' Then Lin asks, 'Let's play together.' Everyone says, 'Great!'",
+    speakable: true,
+    questions: [
+      {
+        id: 'en-g3a-u1-help-q1',
+        type: 'choice',
+        prompt: '别人把铅笔递给你并说 Here you are，应该怎样回应？',
+        options: ['Thank you!', 'Goodbye!', 'I am nine.', 'Sit down.'],
+        correctAnswer: 'Thank you!',
+        explanation: '收到别人递来的物品时可以说 Thank you。再试时抓住“别人帮助了我”这个场景。',
+        points: 10,
+      },
+      {
+        id: 'en-g3a-u1-help-q2',
+        type: 'fill-blank',
+        prompt: "请补全邀请：Let's ______ together.（只填一个英文单词）",
+        correctAnswer: 'play',
+        explanation: "正文用 Let's play together 邀请大家一起玩。再试时寻找 play together 这个词组。",
+        points: 10,
+      },
+      {
+        id: 'en-g3a-u1-help-q3',
+        type: 'choice',
+        prompt: '哪句话表示“让我们帮忙吧”？',
+        options: ["Let's help.", "Let's go home.", 'Here you are.', 'Thank you!'],
+        correctAnswer: "Let's help.",
+        explanation: "Let's 后接动作，help 表示帮助。再试时先找到含有 help 的句子。",
+        points: 10,
+      },
+    ],
+  },
+  {
+    id: 'en-g3a-u1-friend-card',
+    title: '制作我的朋友卡',
+    summary: '用姓名、年龄和友谊句完成一张原创朋友卡。',
+    body: "Hello! I'm Lin. I'm nine. This is my friend Mia. She's nine too. We read and play together. We are good friends.",
+    speakable: true,
+    project: {
+      title: '我的朋友卡',
+      prompt: '参照正文写三句话：介绍自己、介绍朋友，再说说你们是朋友。',
+      placeholder: "Hello! I'm ...\nThis is my friend ...\nWe are friends.",
+    },
+    questions: [
+      {
+        id: 'en-g3a-u1-friend-card-q1',
+        type: 'fill-blank',
+        prompt: "请补全朋友的年龄：______ nine too.（填写 She's 或 He's）",
+        correctAnswer: "She's",
+        explanation: "正文中的朋友 Mia 是女孩，所以用 She's。再试时先确认人物，再选择 He 或 She。",
+        points: 10,
+      },
+      {
+        id: 'en-g3a-u1-friend-card-q2',
+        type: 'fill-blank',
+        prompt: '请补全句子：We are good ______.（只填一个英文单词）',
+        correctAnswer: 'friends',
+        explanation: 'We are good friends 表示“我们是好朋友”。再试时注意主语 We 对应复数 friends。',
+        points: 10,
+      },
+      {
+        id: 'en-g3a-u1-friend-card-q3',
+        type: 'choice',
+        prompt: '哪组句子适合写在朋友卡上？',
+        options: [
+          "I'm Lin. This is my friend Mia. We are friends.",
+          'Open the door. Sit down. Goodbye.',
+          'One, two, three. It is red.',
+          'The dog is brown. It is under a tree.',
+        ],
+        correctAnswer: "I'm Lin. This is my friend Mia. We are friends.",
+        explanation: '朋友卡需要介绍自己、朋友和两人的关系。再试时逐句检查这三个信息。',
+        points: 10,
+      },
+    ],
+  },
+  {
     id: 'en-park-animals',
     title: '认识公园里的动物',
     summary: '认识 cat、dog、bird 和 rabbit 四个动物单词。',
@@ -117,3 +231,32 @@ export const englishLessons = [
 ] satisfies LanguageLesson[];
 
 export const englishLessonIds = englishLessons.map((lesson) => lesson.id);
+
+export const englishUnits = [
+  {
+    id: 'g3a-u1-friends',
+    grade: 3,
+    semester: '上册',
+    unit: 1,
+    title: "Let's be friends!",
+    summary: '外研社《英语（新标准）》2022课标新修订版三年级上册 Unit 1。',
+    lessonIds: ['en-g3a-u1-meet', 'en-g3a-u1-help', 'en-g3a-u1-friend-card'],
+  },
+  {
+    id: 'g3b-u1-animals',
+    grade: 3,
+    semester: '下册',
+    unit: 1,
+    title: 'Animal friends',
+    summary: '原“公园里的动物”三课保留为三年级下册 Unit 1 的预备内容。',
+    lessonIds: ['en-park-animals', 'en-park-sentences', 'en-park-listen-read'],
+  },
+] satisfies Array<{
+  id: string;
+  grade: 3 | 4 | 5 | 6;
+  semester: '上册' | '下册';
+  unit: number;
+  title: string;
+  summary: string;
+  lessonIds: string[];
+}>;

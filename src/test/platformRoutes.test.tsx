@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '@/App';
+import { englishLessonIds } from '@/content/english';
 import { LearningCenter } from '@/pages/LearningCenterPage';
 import type { PrimaryTask } from '@/lib/platformTasks';
 
@@ -76,6 +77,7 @@ describe('integrated learning center', () => {
           mathTotalCount={47}
           chineseCompletedCount={1}
           englishCompletedCount={0}
+          englishTotalCount={englishLessonIds.length}
           legacyProgressAvailable={false}
           legacyCompletedCount={0}
           onImportLegacy={vi.fn()}
@@ -100,7 +102,7 @@ describe('integrated learning center', () => {
     expect(screen.getByRole('progressbar', { name: '语文学习进度' })).toHaveAttribute('aria-valuenow', '1');
     expect(screen.getByRole('progressbar', { name: '英语学习进度' })).toHaveAttribute('aria-valuenow', '0');
     expect(screen.getByText('已完成 1 / 3 课')).toBeInTheDocument();
-    expect(screen.getByText('已完成 0 / 3 课')).toBeInTheDocument();
+    expect(screen.getByText(`已完成 0 / ${englishLessonIds.length} 课`)).toBeInTheDocument();
     expect(screen.getByText('词汇、句型与听读')).toBeInTheDocument();
   });
 
@@ -115,6 +117,7 @@ describe('integrated learning center', () => {
           mathTotalCount={47}
           chineseCompletedCount={0}
           englishCompletedCount={0}
+          englishTotalCount={englishLessonIds.length}
           legacyProgressAvailable
           legacyCompletedCount={4}
           onImportLegacy={onImportLegacy}
@@ -139,7 +142,8 @@ describe('integrated learning center', () => {
           completedCount={47}
           mathTotalCount={47}
           chineseCompletedCount={3}
-          englishCompletedCount={3}
+          englishCompletedCount={englishLessonIds.length}
+          englishTotalCount={englishLessonIds.length}
           legacyProgressAvailable={false}
           legacyCompletedCount={0}
           onImportLegacy={vi.fn()}
@@ -168,8 +172,8 @@ describe('integrated learning center', () => {
     window.history.replaceState({}, '', '/english');
     const view = render(<App />);
 
-    expect(await screen.findByRole('heading', { level: 1, name: '公园里的动物' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /认识公园里的动物/ })).toHaveAttribute('href', '/english/en-park-animals');
+    expect(await screen.findByRole('heading', { level: 1, name: '外研版英语课程' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /认识新朋友/ })).toHaveAttribute('href', '/english/en-g3a-u1-meet');
     expect(document.title).toBe('英语学习 · 语数英综合学习平台');
     view.unmount();
     expect(document.title).toBe('语数英综合学习平台');

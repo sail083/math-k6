@@ -1,5 +1,5 @@
 import { chineseLessons } from '@/content/chinese';
-import { englishLessons } from '@/content/english';
+import { englishLessons, englishUnits } from '@/content/english';
 import {
   getAllKnowledgePoints,
   getCourseTrack,
@@ -108,14 +108,21 @@ function normalizeLanguageTask(
   progress: ProgressData,
 ): RankedTask | null {
   const lessonIds = lessons.map((lesson) => lesson.id);
-  const nextLessonId = getNextLanguageLessonId(progress, subject, lessonIds);
-  if (!nextLessonId) return null;
-  const lessonIndex = lessonIds.indexOf(nextLessonId);
+  const currentLessonId = progress.languageLessons?.[subject]?.currentLessonId;
+  const currentUnit = subject === 'english' && currentLessonId
+    ? englishUnits.find((unit) => unit.lessonIds.includes(currentLessonId))
+    : undefined;
+  const resumableLessonId = currentUnit
+    && getNextLanguageLessonId(progress, subject, currentUnit.lessonIds) === currentLessonId
+    ? currentLessonId
+    : null;
+  const targetLessonId = resumableLessonId ?? getNextLanguageLessonId(progress, subject, lessonIds);
+  if (!targetLessonId) return null;
+  const lessonIndex = lessonIds.indexOf(targetLessonId);
   const lesson = lessons[lessonIndex];
   if (!lesson) return null;
 
-  const currentLessonId = progress.languageLessons?.[subject]?.currentLessonId;
-  const isResume = typeof currentLessonId === 'string' && currentLessonId === nextLessonId;
+  const isResume = currentLessonId === targetLessonId;
   const label = subject === 'chinese' ? '语文' : '英语';
   return {
     id: `${subject}:${isResume ? 'resume' : 'next'}:${lesson.id}`,

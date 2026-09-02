@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useProgress } from '@/context/ProgressContext';
+import { englishLessonIds } from '@/content/english';
 import { getAllKnowledgePoints, getCourseTrack } from '@/lib/content';
 import { getPrimaryLearningTask, type PrimaryTask } from '@/lib/platformTasks';
 
@@ -14,6 +15,7 @@ interface LearningCenterProps {
   mathTotalCount: number;
   chineseCompletedCount: number;
   englishCompletedCount: number;
+  englishTotalCount: number;
   legacyProgressAvailable: boolean;
   legacyCompletedCount: number;
   onImportLegacy: () => void;
@@ -27,6 +29,7 @@ export function LearningCenter({
   mathTotalCount,
   chineseCompletedCount,
   englishCompletedCount,
+  englishTotalCount,
   legacyProgressAvailable,
   legacyCompletedCount,
   onImportLegacy,
@@ -35,10 +38,10 @@ export function LearningCenter({
 }: LearningCenterProps) {
   const mathDone = Math.max(0, Math.min(completedCount, mathTotalCount));
   const chineseDone = Math.max(0, Math.min(chineseCompletedCount, 3));
-  const englishDone = Math.max(0, Math.min(englishCompletedCount, 3));
+  const englishDone = Math.max(0, Math.min(englishCompletedCount, englishTotalCount));
   const mathProgress = mathTotalCount > 0 ? Math.round(mathDone / mathTotalCount * 100) : 0;
   const chineseProgress = Math.round(chineseDone / 3 * 100);
-  const englishProgress = Math.round(englishDone / 3 * 100);
+  const englishProgress = englishTotalCount > 0 ? Math.round(englishDone / englishTotalCount * 100) : 0;
   const subjectLabel = primaryTask ? subjectLabels[primaryTask.subject] : '';
   const phaseLabel = primaryTask ? phaseLabels[primaryTask.phase] : '';
 
@@ -221,14 +224,14 @@ export function LearningCenter({
                 </div>
                 <h3 id="subject-english-title" className="mt-5 text-2xl font-bold text-slate-900">英语</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-500">词汇、句型与听读</p>
-                <p className="mt-1 text-sm leading-6 text-slate-500">已完成 {englishDone} / 3 课</p>
+                <p className="mt-1 text-sm leading-6 text-slate-500">已完成 {englishDone} / {englishTotalCount} 课</p>
                 <div
                   role="progressbar"
                   aria-label="英语学习进度"
                   aria-valuemin={0}
-                  aria-valuemax={3}
+                  aria-valuemax={Math.max(englishTotalCount, 1)}
                   aria-valuenow={englishDone}
-                  aria-valuetext={`已完成 ${englishDone} / 3 课`}
+                  aria-valuetext={`已完成 ${englishDone} / ${englishTotalCount} 课`}
                   className="mt-3 h-2 overflow-hidden rounded-full bg-sky-100"
                 >
                   <span className="block h-full rounded-full bg-sky-700" style={{ width: `${englishProgress}%` }} />
@@ -269,7 +272,8 @@ export default function LearningCenterPage() {
       completedCount={mathCourses.filter((course) => passed.has(course.meta.id)).length}
       mathTotalCount={mathCourses.length}
       chineseCompletedCount={progress.languageLessons?.chinese?.completedLessonIds.length ?? 0}
-      englishCompletedCount={progress.languageLessons?.english?.completedLessonIds.length ?? 0}
+      englishCompletedCount={englishLessonIds.filter((id) => progress.languageLessons?.english?.completedLessonIds.includes(id)).length}
+      englishTotalCount={englishLessonIds.length}
       legacyProgressAvailable={legacyProgressAvailable}
       legacyCompletedCount={legacyCompletedKnowledgePointCount}
       onImportLegacy={importLegacyProgress}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { chineseLessonIds } from '@/content/chinese';
-import { englishLessonIds } from '@/content/english';
+import { englishLessonIds, englishUnits } from '@/content/english';
 import { getAllKnowledgePoints, getCourseTrack } from '@/lib/content';
 import { getPrimaryLearningTask } from '@/lib/platformTasks';
 import type { ProgressData, SkillReviewSchedule } from '@/lib/types';
@@ -184,6 +184,24 @@ describe('getPrimaryLearningTask', () => {
     };
 
     expect(getPrimaryLearningTask(progress, NOW)?.subject).toBe('chinese');
+  });
+
+  it('resumes preserved animal-unit progress even while the new first unit is incomplete', () => {
+    const legacyLessonId = englishUnits[1].lessonIds[0];
+    const progress: ProgressData = {
+      passedKnowledgePoints: allBasePassed,
+      stars: {},
+      languageLessons: {
+        chinese: { completedLessonIds: chineseLessonIds, currentLessonId: null, updatedAt: NOW },
+        english: { completedLessonIds: [], currentLessonId: legacyLessonId, updatedAt: NOW },
+      },
+    };
+
+    expect(getPrimaryLearningTask(progress, NOW)).toMatchObject({
+      subject: 'english',
+      phase: 'resume',
+      link: `/english/${legacyLessonId}`,
+    });
   });
 
   it('gives a new user the first available math course when all subjects have next tasks', () => {

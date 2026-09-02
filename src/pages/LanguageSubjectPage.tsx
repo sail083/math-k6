@@ -3,7 +3,7 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import ChoiceGame from '@/components/games/ChoiceGame';
 import FillBlankGame from '@/components/games/FillBlankGame';
 import { chineseLessonIds, chineseLessons } from '@/content/chinese';
-import { englishLessonIds, englishLessons } from '@/content/english';
+import { englishLessonIds, englishLessons, englishUnits } from '@/content/english';
 import { useProgress } from '@/context/ProgressContext';
 import { getNextLanguageLessonId } from '@/lib/progress';
 import type { LanguageLesson, LanguageSubject } from '@/lib/types';
@@ -66,13 +66,42 @@ const SUBJECTS: Record<LanguageSubject, SubjectConfig> = {
   english: {
     label: '英语',
     mark: 'Aa',
-    unitTitle: '公园里的动物',
-    unitSummary: '从动物词汇、基础句型到英文听读，读懂一段公园见闻。',
+    unitTitle: '外研版英语课程',
+    unitSummary: '按外研社《英语（新标准）》2022课标新修订版，从三年级上册开始学习。',
     lessons: englishLessons,
     lessonIds: englishLessonIds,
     theme: 'sky',
   },
 };
+
+function LessonProject({ project }: { project: NonNullable<LanguageLesson['project']> }) {
+  const [draft, setDraft] = useState('');
+  const ready = draft.trim().length >= 10;
+
+  // ponytail: 草稿只保留在当前页面；需要作品集时再接持久化。
+  return (
+    <section aria-labelledby="lesson-project-title" className="rounded-2xl border border-sky-200 bg-white p-5 shadow-sm sm:p-6">
+      <p className="text-xs font-bold uppercase tracking-wider text-sky-700">单元任务</p>
+      <h2 id="lesson-project-title" className="mt-1 text-xl font-bold text-slate-900">{project.title}</h2>
+      <p id="lesson-project-help" className="mt-2 text-sm leading-6 text-slate-600">{project.prompt}</p>
+      <label htmlFor="lesson-project-draft" className="mt-5 block text-sm font-bold text-slate-800">朋友卡内容</label>
+      <textarea
+        id="lesson-project-draft"
+        lang="en"
+        rows={5}
+        maxLength={240}
+        value={draft}
+        placeholder={project.placeholder}
+        aria-describedby="lesson-project-help lesson-project-status"
+        onChange={(event) => setDraft(event.target.value)}
+        className="mt-2 min-h-32 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-base leading-7 text-slate-900 outline-none placeholder:text-slate-400 focus-visible:border-sky-600 focus-visible:ring-4 focus-visible:ring-sky-100"
+      />
+      <p id="lesson-project-status" role="status" className={`mt-2 text-sm font-semibold ${ready ? 'text-emerald-700' : 'text-slate-500'}`}>
+        {ready ? '朋友卡已写好，可以继续完成小练习。' : '至少写一句完整的英文，再继续练习。'}
+      </p>
+    </section>
+  );
+}
 
 export function ReadAloudButton({ text }: { text: string }) {
   const synthesis = typeof window === 'undefined' ? undefined : window.speechSynthesis;
@@ -268,10 +297,14 @@ export default function LanguageSubjectPage({ subject }: { subject: LanguageSubj
   const { lessonId } = useParams<{ lessonId: string }>();
   const { progress, startLanguageLesson, completeLanguageLesson } = useProgress();
   const lesson = lessonId ? config.lessons.find((item) => item.id === lessonId) : undefined;
+  const activeUnit = lesson && subject === 'english'
+    ? englishUnits.find((unit) => unit.lessonIds.includes(lesson.id))
+    : undefined;
+  const orderedLessonIds = activeUnit?.lessonIds ?? config.lessonIds;
   const subjectProgress = progress.languageLessons?.[subject];
   const completedIds = subjectProgress?.completedLessonIds;
   const completed = useMemo(() => new Set(completedIds ?? []), [completedIds]);
-  const nextLessonId = getNextLanguageLessonId(progress, subject, config.lessonIds);
+  const nextLessonId = getNextLanguageLessonId(progress, subject, orderedLessonIds);
   const isLocked = !!lesson && !completed.has(lesson.id) && nextLessonId !== lesson.id;
 
   useEffect(() => {
@@ -281,18 +314,18 @@ export default function LanguageSubjectPage({ subject }: { subject: LanguageSubj
 
   useEffect(() => {
     if (!lesson || isLocked || completed.has(lesson.id)) return;
-    startLanguageLesson(subject, lesson.id, config.lessonIds);
-  }, [completed, config.lessonIds, isLocked, lesson, startLanguageLesson, subject]);
+    startLanguageLesson(subject, lesson.id, orderedLessonIds);
+  }, [completed, isLocked, lesson, orderedLessonIds, startLanguageLesson, subject]);
 
   if (lessonId && (!lesson || isLocked)) return <Navigate to={basePath} replace />;
 
   const content = lesson ? (
     <div className="space-y-6">
       <nav aria-label="面包屑" className="text-sm">
-        <Link to={basePath} className={`font-semibold hover:underline ${theme.accent}`}>← {config.label}课程</Link>
+        <Link to={basePath} className={`inline-flex min-h-11 items-center font-semibold hover:underline ${theme.accent}`}>← {config.label}课程</Link>
       </nav>
       <article className={`rounded-2xl border bg-white p-6 shadow-sm sm:p-8 ${theme.border}`}>
-        <p className={`text-sm font-bold ${theme.kicker}`}>{config.unitTitle} · 第 {config.lessons.indexOf(lesson) + 1} 课</p>
+        <p className={`text-sm font-bold ${theme.kicker}`}>{activeUnit?.title ?? config.unitTitle} · 第 {orderedLessonIds.indexOf(lesson.id) + 1} 课</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">{lesson.title}</h1>
         <p className="mt-3 text-sm leading-6 text-slate-500">{lesson.summary}</p>
         {lesson.speakable ? <ReadAloudButton text={lesson.body} /> : null}
@@ -300,35 +333,58 @@ export default function LanguageSubjectPage({ subject }: { subject: LanguageSubj
           {lesson.body.split('\n\n').map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
         </div>
       </article>
+      {lesson.project ? <LessonProject project={lesson.project} /> : null}
       <LessonPractice
         key={lesson.id}
         lesson={lesson}
         nextLessonId={nextLessonId}
         subject={subject}
-        onPassed={() => completeLanguageLesson(subject, lesson.id, config.lessonIds)}
+        onPassed={() => completeLanguageLesson(subject, lesson.id, orderedLessonIds)}
       />
     </div>
   ) : (
     <div>
       <section className={`rounded-2xl bg-gradient-to-br px-6 py-8 text-white shadow-lg sm:px-8 ${theme.hero}`}>
-        <p className={`text-sm font-semibold ${theme.heroKicker}`}>{config.label} · 三课小单元</p>
+        <p className={`text-sm font-semibold ${theme.heroKicker}`}>{subject === 'english' ? '英语 · 外研社三年级起点' : '语文 · 三课小单元'}</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">{config.unitTitle}</h1>
         <p className={`mt-3 max-w-2xl text-sm leading-6 ${theme.heroCopy}`}>{config.unitSummary}</p>
-        <p className="mt-5 text-sm font-bold">已完成 {completed.size} / {config.lessons.length} 课</p>
+        <p className="mt-5 text-sm font-bold">已完成 {config.lessonIds.filter((id) => completed.has(id)).length} / {config.lessons.length} 课</p>
       </section>
-      <section aria-labelledby="lesson-list-title" className="mt-7">
-        <h2 id="lesson-list-title" className="text-xl font-bold text-slate-900">三课学习顺序</h2>
-        <div className="mt-4 grid gap-4">
-          {config.lessons.map((item, index) => {
+      <section aria-labelledby="lesson-list-title" className="mt-7 space-y-7">
+        <h2 id="lesson-list-title" className="text-xl font-bold text-slate-900">{subject === 'english' ? '已发布课程' : '三课学习顺序'}</h2>
+        {(subject === 'english' ? englishUnits : [{
+          id: 'zh-campus',
+          grade: 3,
+          semester: '上册' as const,
+          unit: 1,
+          title: config.unitTitle,
+          summary: config.unitSummary,
+          lessonIds: config.lessonIds,
+        }]).map((unit) => {
+          const unitLessons = unit.lessonIds.map((id) => config.lessons.find((item) => item.id === id)).filter((item): item is LanguageLesson => !!item);
+          const unitNextLessonId = getNextLanguageLessonId(progress, subject, unit.lessonIds);
+          const unitCompleted = unit.lessonIds.filter((id) => completed.has(id)).length;
+          return (
+            <section key={unit.id} aria-labelledby={`${unit.id}-title`} className="rounded-2xl border border-slate-200 bg-white/60 p-4 sm:p-5">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  {subject === 'english' ? <p className={`text-xs font-bold ${theme.kicker}`}>{unit.grade}年级{unit.semester} · Unit {unit.unit}</p> : null}
+                  <h3 id={`${unit.id}-title`} className="mt-1 text-xl font-bold text-slate-900">{unit.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-500">{unit.summary}</p>
+                </div>
+                <span className="shrink-0 text-sm font-bold text-slate-600">已完成 {unitCompleted} / {unit.lessonIds.length} 课</span>
+              </div>
+              <div className="mt-4 grid gap-4">
+          {unitLessons.map((item, index) => {
             const isDone = completed.has(item.id);
-            const available = isDone || item.id === nextLessonId;
+            const available = isDone || item.id === unitNextLessonId;
             const status = isDone ? '已完成' : available ? (subjectProgress?.currentLessonId === item.id ? '继续学习' : '可以开始') : '完成前一课后开放';
             const card = (
               <>
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <p className={`text-xs font-bold ${theme.kicker}`}>第 {index + 1} 课</p>
-                    <h3 className="mt-1 text-xl font-bold text-slate-900">{item.title}</h3>
+                    <h4 className="mt-1 text-xl font-bold text-slate-900">{item.title}</h4>
                     <p className="mt-2 text-sm leading-6 text-slate-500">{item.summary}</p>
                   </div>
                   <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold ${isDone ? 'bg-emerald-100 text-emerald-700' : available ? theme.availableChip : 'bg-slate-100 text-slate-500'}`}>{status}</span>
@@ -346,7 +402,10 @@ export default function LanguageSubjectPage({ subject }: { subject: LanguageSubj
               </article>
             );
           })}
-        </div>
+              </div>
+            </section>
+          );
+        })}
       </section>
     </div>
   );
@@ -358,13 +417,13 @@ export default function LanguageSubjectPage({ subject }: { subject: LanguageSubj
         <div className="app-container flex min-h-[68px] items-center justify-between gap-3 py-3 sm:gap-4">
           <Link to={basePath} className={`flex min-h-11 min-w-0 flex-1 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-4 ${theme.focus}`} aria-label={`${config.label}课程首页`}>
             <span className={`brand-mark shrink-0 ${theme.mark}`} aria-hidden="true">{config.mark}</span>
-            <div className="brand-copy min-w-0"><strong className="block truncate">{config.label}学习</strong><small className="block truncate">{config.unitTitle}</small></div>
+            <div className="brand-copy min-w-0"><strong className="block truncate">{config.label}学习</strong><small className="block truncate">{activeUnit?.title ?? config.unitTitle}</small></div>
           </Link>
           <Link to="/" className={`inline-flex min-h-11 shrink-0 items-center rounded-lg px-3 text-sm font-semibold text-slate-600 hover:bg-white focus-visible:outline-none focus-visible:ring-4 sm:px-4 ${theme.focus}`}>返回学习中心</Link>
         </div>
       </header>
       <main id="main-content" tabIndex={-1} className="app-main">{content}</main>
-      <footer className="border-t border-slate-200 bg-white"><div className="app-container py-4 text-center text-xs text-slate-500">{config.label} · {config.unitTitle}</div></footer>
+      <footer className="border-t border-slate-200 bg-white"><div className="app-container py-4 text-center text-xs text-slate-500">{config.label} · {activeUnit?.title ?? config.unitTitle}</div></footer>
     </div>
   );
 }

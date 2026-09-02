@@ -177,7 +177,14 @@ export function toRemoteMathProgress(progress: ProgressData): ProgressData {
 const LANGUAGE_SUBJECTS: LanguageSubject[] = ['chinese', 'english'];
 export const PUBLISHED_LANGUAGE_LESSON_IDS: Record<LanguageSubject, readonly string[]> = {
   chinese: ['zh-campus-words', 'zh-campus-reading', 'zh-campus-speaking'],
-  english: ['en-park-animals', 'en-park-sentences', 'en-park-listen-read'],
+  english: [
+    'en-g3a-u1-meet',
+    'en-g3a-u1-help',
+    'en-g3a-u1-friend-card',
+    'en-park-animals',
+    'en-park-sentences',
+    'en-park-listen-read',
+  ],
 };
 
 export function parseLanguageLessons(

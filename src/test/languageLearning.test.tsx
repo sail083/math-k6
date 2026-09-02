@@ -3,7 +3,7 @@ import { StrictMode } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { chineseLessonIds, chineseLessons } from '@/content/chinese';
-import { englishLessonIds, englishLessons } from '@/content/english';
+import { englishLessonIds, englishLessons, englishUnits } from '@/content/english';
 import LanguageSubjectPage, { LessonPractice, ReadAloudButton } from '@/pages/LanguageSubjectPage';
 import type { LanguageLesson, ProgressData } from '@/lib/types';
 import { saveProgress } from '@/lib/progress';
@@ -115,10 +115,21 @@ describe('Chinese V0.8 content', () => {
   });
 });
 
-describe('English V0.9 content', () => {
-  it('contains the reviewed three-by-three course with fixed answers and retry guidance', () => {
-    expect(englishLessonIds).toEqual(['en-park-animals', 'en-park-sentences', 'en-park-listen-read']);
-    expect(new Set(englishLessonIds).size).toBe(3);
+describe('English 2022 curriculum content', () => {
+  it('adds the reviewed FLTRP unit while preserving the original animal lesson IDs', () => {
+    expect(englishLessonIds).toEqual([
+      'en-g3a-u1-meet',
+      'en-g3a-u1-help',
+      'en-g3a-u1-friend-card',
+      'en-park-animals',
+      'en-park-sentences',
+      'en-park-listen-read',
+    ]);
+    expect(new Set(englishLessonIds).size).toBe(6);
+    expect(englishUnits.map((unit) => [unit.grade, unit.semester, unit.unit, unit.title, unit.lessonIds])).toEqual([
+      [3, '上册', 1, "Let's be friends!", englishLessonIds.slice(0, 3)],
+      [3, '下册', 1, 'Animal friends', englishLessonIds.slice(3)],
+    ]);
     for (const lesson of englishLessons) {
       expect(lesson.questions).toHaveLength(3);
       expect(lesson.questions.every((question) => question.points === 10)).toBe(true);
@@ -126,13 +137,17 @@ describe('English V0.9 content', () => {
       expect(lesson.questions.every((question) => /[\u4e00-\u9fff]/.test(question.explanation) && question.explanation.includes('再试'))).toBe(true);
     }
     expect(englishLessons.map((lesson) => lesson.questions.map((question) => question.correctAnswer))).toEqual([
+      ["I'm Lin.", 'nine', 'Nice to meet you!'],
+      ['Thank you!', 'play', "Let's help."],
+      ["She's", 'friends', "I'm Lin. This is my friend Mia. We are friends."],
       ['兔子', '小鸟', 'dog'],
       ['I can see a bird.', 'is', 'The dog is brown.'],
       ['Under a tree.', 'White.', 'small'],
     ]);
-    expect(englishLessons[1].body).toContain('cat、dog、bird、rabbit 都以辅音音素开头');
-    expect(englishLessons[2].body).toBe('Today I am at the park. I can see a brown dog under a tree. A white rabbit is near the flowers. The bird is yellow and small. The animals are quiet. I like the little rabbit best.');
-    expect(englishLessons[2].speakable).toBe(true);
+    expect(englishLessons[2].project?.title).toBe('我的朋友卡');
+    expect(englishLessons[4].body).toContain('cat、dog、bird、rabbit 都以辅音音素开头');
+    expect(englishLessons[5].body).toBe('Today I am at the park. I can see a brown dog under a tree. A white rabbit is near the flowers. The bird is yellow and small. The animals are quiet. I like the little rabbit best.');
+    expect(englishLessons.filter((lesson) => lesson.speakable)).toHaveLength(4);
     expect(JSON.stringify(englishLessons)).not.toMatch(/中文谐音|口语达标|听力达标/);
   });
 });
@@ -278,7 +293,23 @@ describe('Chinese subject routes', () => {
 });
 
 describe('English subject routes', () => {
-  it('starts the first English lesson and keeps its single body visible', async () => {
+  it('starts the first FLTRP lesson with its unit-local order', async () => {
+    render(
+      <MemoryRouter initialEntries={['/english/en-g3a-u1-meet']}>
+        <Routes><Route path="/english/:lessonId" element={<LanguageSubjectPage subject="english" />} /></Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('heading', { level: 1, name: '认识新朋友' })).toBeInTheDocument();
+    expect(screen.getByText(/Hello! I'm Lin/)).toBeInTheDocument();
+    await waitFor(() => expect(progressMocks.startLanguageLesson).toHaveBeenCalledWith(
+      'english',
+      'en-g3a-u1-meet',
+      englishUnits[0].lessonIds,
+    ));
+  });
+
+  it('keeps the original animal unit reachable with its existing IDs', async () => {
     render(
       <MemoryRouter initialEntries={['/english/en-park-animals']}>
         <Routes><Route path="/english/:lessonId" element={<LanguageSubjectPage subject="english" />} /></Routes>
@@ -286,17 +317,16 @@ describe('English subject routes', () => {
     );
 
     expect(screen.getByRole('heading', { level: 1, name: '认识公园里的动物' })).toBeInTheDocument();
-    expect(screen.getByText(/cat 是猫，dog 是狗/)).toBeInTheDocument();
     await waitFor(() => expect(progressMocks.startLanguageLesson).toHaveBeenCalledWith(
       'english',
       'en-park-animals',
-      englishLessonIds,
+      englishUnits[1].lessonIds,
     ));
   });
 
   it('redirects a locked English lesson and shows completion state independently', async () => {
     const { unmount: unmountLocked } = render(
-      <MemoryRouter initialEntries={['/english/en-park-sentences']}>
+      <MemoryRouter initialEntries={['/english/en-g3a-u1-help']}>
         <Routes>
           <Route path="/english" element={<><LanguageSubjectPage subject="english" /><LocationPath /></>} />
           <Route path="/english/:lessonId" element={<><LanguageSubjectPage subject="english" /><LocationPath /></>} />
@@ -319,9 +349,9 @@ describe('English subject routes', () => {
         <Routes><Route path="/english" element={<LanguageSubjectPage subject="english" />} /></Routes>
       </MemoryRouter>,
     );
-    expect(screen.getByText('已完成 1 / 3 课')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /用句子说说动物/ })).toHaveAttribute('href', '/english/en-park-sentences');
-    expect(screen.getByRole('article', { name: /听读公园里的动物，完成前一课后开放/ })).toBeInTheDocument();
+    expect(screen.getByText('已完成 1 / 6 课')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /一起帮助、一起玩/ })).toHaveAttribute('href', '/english/en-g3a-u1-help');
+    expect(screen.getByRole('article', { name: /制作我的朋友卡，完成前一课后开放/ })).toBeInTheDocument();
   });
 
   it('shows the speakable lesson body permanently beside the read-aloud control', () => {
@@ -333,13 +363,16 @@ describe('English subject routes', () => {
       },
     };
     render(
-      <MemoryRouter initialEntries={['/english/en-park-listen-read']}>
+      <MemoryRouter initialEntries={['/english/en-g3a-u1-friend-card']}>
         <Routes><Route path="/english/:lessonId" element={<LanguageSubjectPage subject="english" />} /></Routes>
       </MemoryRouter>,
     );
 
     expect(screen.getByText(englishLessons[2].body)).toBeVisible();
     expect(screen.getByRole('button', { name: '朗读英文正文' })).toHaveClass('min-h-11');
+    const draft = screen.getByRole('textbox', { name: '朋友卡内容' });
+    fireEvent.change(draft, { target: { value: "I'm Lin. We are friends." } });
+    expect(screen.getByText('朋友卡已写好，可以继续完成小练习。')).toBeVisible();
   });
 });
 
