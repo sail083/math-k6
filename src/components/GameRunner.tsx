@@ -99,6 +99,7 @@ export default function GameRunner({
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, AnswerRecord>>({});
   const [gameStatus, setGameStatus] = useState<GameStatus>('playing');
+  const [run, setRun] = useState(0);
 
   // Freeze review mode for the lifetime of this course attempt.
   // Captured once when the component mounts; the React key on GameRunner
@@ -196,6 +197,7 @@ export default function GameRunner({
     setCurrentQuestionIndex(0);
     setAnswers({});
     setGameStatus('playing');
+    setRun((value) => value + 1);
   };
 
   const renderQuestion = () => {
@@ -203,7 +205,7 @@ export default function GameRunner({
       case 'choice':
         return (
           <ChoiceGame
-            key={currentQuestion.id}
+            key={`${currentQuestion.id}:${run}`}
             question={currentQuestion}
             onAnswer={handleAnswer}
           />
@@ -211,7 +213,7 @@ export default function GameRunner({
       case 'fill-blank':
         return (
           <FillBlankGame
-            key={currentQuestion.id}
+            key={`${currentQuestion.id}:${run}`}
             question={currentQuestion}
             onAnswer={handleAnswer}
           />
@@ -219,7 +221,7 @@ export default function GameRunner({
       case 'true-false':
         return (
           <TrueFalseGame
-            key={currentQuestion.id}
+            key={`${currentQuestion.id}:${run}`}
             question={currentQuestion}
             onAnswer={handleAnswer}
           />
@@ -227,7 +229,7 @@ export default function GameRunner({
       case 'drag-match':
         return (
           <DragMatchGame
-            key={currentQuestion.id}
+            key={`${currentQuestion.id}:${run}`}
             question={currentQuestion}
             onAnswer={handleAnswer}
           />
@@ -235,7 +237,7 @@ export default function GameRunner({
       case 'drag-assemble':
         return (
           <DragAssembleGame
-            key={currentQuestion.id}
+            key={`${currentQuestion.id}:${run}`}
             question={currentQuestion}
             onAnswer={handleAnswer}
           />
@@ -243,7 +245,7 @@ export default function GameRunner({
       case 'timeline':
         return (
           <TimelineGame
-            key={currentQuestion.id}
+            key={`${currentQuestion.id}:${run}`}
             question={currentQuestion}
             onAnswer={handleAnswer}
           />
@@ -251,7 +253,7 @@ export default function GameRunner({
       case 'timed-challenge':
         return (
           <TimedChallengeGame
-            key={currentQuestion.id}
+            key={`${currentQuestion.id}:${run}`}
             question={currentQuestion}
             onAnswer={handleAnswer}
           />
