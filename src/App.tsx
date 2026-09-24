@@ -16,6 +16,7 @@ const SkillRepairPage = lazy(() => import('@/pages/SkillRepairPage'));
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const RegisterPage = lazy(() => import('@/pages/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage'));
+const UpdatePasswordPage = lazy(() => import('@/pages/UpdatePasswordPage'));
 
 const SuspenseFallback = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -83,6 +84,7 @@ export default function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/update-password" element={<UpdatePasswordPage />} />
               </Route>
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
