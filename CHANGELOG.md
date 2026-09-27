@@ -1,5 +1,20 @@
 # Changelog
 
+## v2026.09.27 — Corrected drag-match evidence
+
+### Changed
+
+- 配对题完成时分别记录最终答案正确性与是否首次无提示完成。
+- 有错误尝试后仍完成配对的反馈改为“已完成但有错误尝试”。
+
+### Fixed
+
+- 已修正的配对题不再被错误记为零分，同时不会被当作首次迁移证据。
+
+### Known Issues
+
+- 真实登录、远端进度同步及生产环境课程流程仍待授权账号验收。
+
 ## v2026.09.24 — Retry reset release
 
 ### Added

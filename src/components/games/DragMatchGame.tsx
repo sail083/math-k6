@@ -4,7 +4,7 @@ import { CheckIcon, XIcon, InfoIcon, shuffleArray } from './shared';
 
 interface DragMatchGameProps {
   question: Question;
-  onAnswer: (selectedAnswer: string, isCorrect: boolean) => void;
+  onAnswer: (selectedAnswer: string, isCorrect: boolean, firstTry?: boolean) => void;
 }
 
 export default function DragMatchGame({ question, onAnswer }: DragMatchGameProps) {
@@ -70,7 +70,7 @@ export default function DragMatchGame({ question, onAnswer }: DragMatchGameProps
             ? question.correctAnswer.join('、')
             : question.correctAnswer
           : matchDescription;
-        onAnswer(answerValue, !hadMistake);
+        onAnswer(answerValue, true, !hadMistake);
       }
     } else {
       // Wrong match — flash red and return item
@@ -188,25 +188,25 @@ export default function DragMatchGame({ question, onAnswer }: DragMatchGameProps
             className={`flex items-center gap-3 p-4 rounded-xl border-2 ${
               !hadMistake
                 ? 'bg-green-50 border-green-500'
-                : 'bg-red-50 border-red-500'
+                : 'bg-amber-50 border-amber-400'
             }`}
           >
             <span
               className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 ${
                 !hadMistake
                   ? 'bg-green-500 text-white'
-                  : 'bg-red-500 text-white'
+                  : 'bg-amber-500 text-white'
               }`}
             >
-              {!hadMistake ? <CheckIcon /> : <XIcon />}
+              <CheckIcon />
             </span>
             <div className="flex-1">
               <p
                 className={`text-sm font-bold ${
-                  !hadMistake ? 'text-green-700' : 'text-red-700'
+                  !hadMistake ? 'text-green-700' : 'text-amber-700'
                 }`}
               >
-                {!hadMistake ? '全部匹配正确！' : '匹配完成（有错误尝试）'}
+                {!hadMistake ? '全部匹配正确！' : '匹配完成（过程有错误尝试）'}
               </p>
             </div>
           </div>
