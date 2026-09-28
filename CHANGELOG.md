@@ -1,5 +1,19 @@
 # Changelog
 
+## v2026.09.28 — Ordering retry feedback
+
+### Changed
+
+- 排列题和时间线题首次排错后保留当前顺序，可调整并再次确认。
+
+### Fixed
+
+- 修正后的排序答案会计入正确分数，但不会被当作首次迁移证据。
+
+### Known Issues
+
+- 真实登录、远端进度同步及生产环境课程流程仍待授权账号验收。
+
 ## v2026.09.27 — Corrected drag-match evidence
 
 ### Changed
