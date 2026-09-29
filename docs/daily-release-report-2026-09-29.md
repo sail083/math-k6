@@ -79,7 +79,7 @@ v2026.09.29 · judgment retry feedback
 - 全量：22 个测试文件、574 项测试通过。
 - `npm run typecheck`、`npm run build`、`git diff --check` 均通过。
 - `npm run lint` 退出码 0；仅有仓库既有 Fast Refresh/hooks 警告。
-- Playwright 本地浏览器：未登录根路径跳转 `/login`，登录表单可用，0 console error；未以此冒充认证态课程验收。
+- Playwright 本地浏览器：未登录根路径跳转 `/login`，登录表单可用，0 console error；隔离工作树缺少 Supabase 公开环境变量，浏览器另有对应配置警告，故未以此冒充本地认证态课程验收。
 
 ## Bugs Fixed
 
@@ -100,6 +100,7 @@ v2026.09.29 · judgment retry feedback
 ## Known Issues
 
 - 认证态“课程作答 → 云端同步 → 重登回读”仍待用户提供授权会话。
+- 隔离工作树未提供 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`，本地认证功能不可用；未影响本轮静态构建或正式部署，但本地认证验收需使用受控环境。
 - `timed-challenge` 目前无题库引用；需要真实课程采用后，再单独定义其限时失败与证据规则。
 - 2026-09-27 误建且未别名的 Vercel 项目仍需单独授权清理。
 
