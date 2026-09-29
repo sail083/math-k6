@@ -88,7 +88,10 @@ v2026.09.29 · judgment retry feedback
 
 ## Release Status
 
-工程门禁已通过；提交、推送与正式部署将在本轮后续步骤完成后回填。
+- Git：`be3697f`（`fix: preserve judgment retry evidence`）已推送至 `origin/main`。
+- 正式部署：`vercel deploy . --prod --yes --scope logsail`；`dpl_5EWkp1EVaYAX2tJvDc5YSFq4G5fR` 为 `READY`，别名 <https://math.logsail.lat>。
+- 部署 URL：<https://math-k6-e8my4dqvw-logsail.vercel.app>。
+- 回滚目标：<https://math-k6-a5p2yc0to-logsail.vercel.app>（2026-09-28 正式部署）。
 
 ## Product Impact
 
@@ -113,4 +116,4 @@ v2026.09.29 · judgment retry feedback
 
 ## Final Status
 
-`PARTIAL`：代码与本地门禁完成，等待本轮实际提交、部署和部署回读后更新为最终状态。
+`DONE`：本轮唯一版本目标、定向/全量回归、工程门禁、本地公开入口检查、提交、推送和正式部署均已完成。认证态云端进度链路是独立已知问题，未冒充为本轮验收。
