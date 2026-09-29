@@ -4,12 +4,14 @@ import { CheckIcon, XIcon, InfoIcon } from './shared';
 
 interface TrueFalseGameProps {
   question: Question;
-  onAnswer: (selectedAnswer: string, isCorrect: boolean) => void;
+  onAnswer: (selectedAnswer: string, isCorrect: boolean, firstTry?: boolean) => void;
 }
 
 export default function TrueFalseGame({ question, onAnswer }: TrueFalseGameProps) {
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [hasAnswered, setHasAnswered] = useState(false);
+  const [wrongOptions, setWrongOptions] = useState<string[]>([]);
+  const [resolved, setResolved] = useState(false);
+  const [resolvedCorrect, setResolvedCorrect] = useState(false);
+  const [finalSelection, setFinalSelection] = useState<string | null>(null);
 
   // 选项优先取 question.options，否则回退为 ["对", "错"]
   const options =
@@ -28,20 +30,26 @@ export default function TrueFalseGame({ question, onAnswer }: TrueFalseGameProps
   };
 
   const handleSelect = (option: string) => {
-    if (hasAnswered) return;
+    if (resolved || wrongOptions.includes(option)) return;
     const correct = checkCorrect(option);
-    setSelectedOption(option);
-    setHasAnswered(true);
-    onAnswer(option, correct);
+    if (correct) {
+      setResolved(true);
+      setResolvedCorrect(true);
+      setFinalSelection(option);
+      onAnswer(option, true, wrongOptions.length === 0);
+      return;
+    }
+
+    setWrongOptions((previous) => [...previous, option]);
   };
 
   const getButtonState = (
     option: string,
   ): 'correct' | 'wrong' | 'dimmed' | 'default' => {
-    if (!hasAnswered) return 'default';
+    if (!resolved) return wrongOptions.includes(option) ? 'wrong' : 'default';
     const isCorrectOption = checkCorrect(option);
     if (isCorrectOption) return 'correct';
-    if (option === selectedOption) return 'wrong';
+    if (option === finalSelection) return 'wrong';
     return 'dimmed';
   };
 
@@ -64,7 +72,7 @@ export default function TrueFalseGame({ question, onAnswer }: TrueFalseGameProps
             <button
               key={index}
               onClick={() => handleSelect(option)}
-              disabled={hasAnswered}
+              disabled={resolved || wrongOptions.includes(option)}
               className={`relative w-full flex flex-col items-center justify-center gap-2 py-8 rounded-2xl border-2 transition-all duration-200 min-h-[88px] ${
                 state === 'correct'
                   ? 'bg-green-500 border-green-600 text-white shadow-md'
@@ -98,14 +106,24 @@ export default function TrueFalseGame({ question, onAnswer }: TrueFalseGameProps
         })}
       </div>
 
-      {/* 解析 */}
-      {hasAnswered && (
+      {wrongOptions.length === 1 && !resolved && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3">
+          <span className="text-amber-500 shrink-0 mt-0.5"><InfoIcon /></span>
+          <div>
+            <p className="text-sm font-medium text-amber-900 mb-0.5">再想想</p>
+            <p className="text-sm text-amber-800">回到题目的条件，换一个判断再确认一次。</p>
+          </div>
+        </div>
+      )}
+
+      {/* 最终解析 */}
+      {resolved && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
           <span className="text-blue-500 shrink-0">
             <InfoIcon />
           </span>
           <div>
-            <p className="text-sm font-medium text-blue-900 mb-1">解析</p>
+            <p className="text-sm font-medium text-blue-900 mb-1">{resolvedCorrect ? '回答正确！' : '解析'}</p>
             <p className="text-sm text-blue-800 leading-relaxed">
               {question.explanation}
             </p>

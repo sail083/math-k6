@@ -1,5 +1,19 @@
 # Changelog
 
+## v2026.09.29 — Judgment retry feedback
+
+### Changed
+
+- 判断题第一次判断错误后会保留题目、给出不泄露答案的提示，并允许改选后再次确认。
+
+### Fixed
+
+- 修正后的判断题答案会计入分数，但不会被记录为首次独立完成证据。
+
+### Known Issues
+
+- 真实登录、远端进度同步及生产环境课程流程仍待授权账号验收。
+
 ## v2026.09.28 — Ordering retry feedback
 
 ### Changed

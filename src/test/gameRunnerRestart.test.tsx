@@ -22,12 +22,15 @@ const game: GameConfig = {
 };
 
 describe('GameRunner restart', () => {
-  it('resets a true-false question so a learner can complete the next attempt', () => {
+  it('resets a true-false question after a failed group attempt', () => {
     render(<GameRunner game={game} knowledgePointId={game.knowledgePointId} />);
 
     fireEvent.click(screen.getByRole('button', { name: /错/ }));
+    fireEvent.click(screen.getByRole('button', { name: /对/ }));
     fireEvent.click(screen.getByRole('button', { name: '下一题' }));
-    fireEvent.change(screen.getByPlaceholderText('在此输入你的答案'), { target: { value: '7' } });
+    fireEvent.change(screen.getByPlaceholderText('在此输入你的答案'), { target: { value: '6' } });
+    fireEvent.click(screen.getByRole('button', { name: '确认' }));
+    fireEvent.change(screen.getByPlaceholderText('在此输入你的答案'), { target: { value: '6' } });
     fireEvent.click(screen.getByRole('button', { name: '确认' }));
     fireEvent.click(screen.getByRole('button', { name: '查看结果' }));
 
