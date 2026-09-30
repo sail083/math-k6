@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Question } from '@/lib/types';
 import { CheckIcon, XIcon, InfoIcon } from './shared';
 
@@ -23,7 +23,7 @@ function ClockIcon() {
 
 export default function TimedChallengeGame({ question, onAnswer }: TimedChallengeGameProps) {
   const timeLimit = question.timeLimit ?? 30;
-  const options = question.options ?? [];
+  const options = useMemo(() => question.options ?? [], [question.options]);
 
   const [timeLeft, setTimeLeft] = useState(timeLimit);
   const [hasAnswered, setHasAnswered] = useState(false);
@@ -52,21 +52,31 @@ export default function TimedChallengeGame({ question, onAnswer }: TimedChalleng
     }
   }, [timeLeft, hasAnswered, onAnswer]);
 
-  const checkCorrect = (selected: string): boolean => {
+  const checkCorrect = useCallback((selected: string): boolean => {
     if (Array.isArray(question.correctAnswer)) {
       return question.correctAnswer.includes(selected);
     }
     return question.correctAnswer === selected;
-  };
+  }, [question.correctAnswer]);
 
-  const handleSelect = (option: string) => {
+  const handleSelect = useCallback((option: string) => {
     if (hasAnswered) return;
     const correct = checkCorrect(option);
     setSelectedOption(option);
     setIsCorrect(correct);
     setHasAnswered(true);
     onAnswer(option, correct);
-  };
+  }, [checkCorrect, hasAnswered, onAnswer]);
+
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if (hasAnswered) return;
+      const index = ({ '1': 0, '2': 1, '3': 2, '4': 3, a: 0, b: 1, c: 2, d: 3 } as Record<string, number>)[event.key.toLowerCase()];
+      if (index !== undefined && options[index]) handleSelect(options[index]);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [hasAnswered, options, handleSelect]);
 
   const getOptionState = (option: string): 'correct' | 'wrong' | 'dimmed' | 'default' => {
     if (!hasAnswered) return 'default';
@@ -98,7 +108,7 @@ export default function TimedChallengeGame({ question, onAnswer }: TimedChalleng
           </div>
           {!hasAnswered && (
             <span className="text-sm text-slate-500 font-medium">
-              ⚡ 限时挑战
+              ⚡ 限时挑战 · 按 1–4 或 A–D 作答
             </span>
           )}
         </div>

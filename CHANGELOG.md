@@ -1,5 +1,23 @@
 # Changelog
 
+## v2026.09.30 — Timed challenge keyboard answers
+
+### Added
+
+- 限时选择题支持 `1–4` 与 `A–D` 键盘快捷作答，并在题面提示可用按键。
+
+### Changed
+
+- 限时题沿用已有选择题的快捷作答方式，不改变计分、超时或证据规则。
+
+### Fixed
+
+- 无。
+
+### Known Issues
+
+- 已登录课程与云端进度回读仍需受控的真实账号验收。
+
 ## v2026.09.29 — Judgment retry feedback
 
 ### Changed
