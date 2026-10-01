@@ -61,6 +61,21 @@ describe('hasTransferEvidence', () => {
   it('rejects a transfer answer that was correct only on retry (not first-try)', () => {
     expect(hasTransferEvidence(game, { choice: rec(true), transfer: rec(true, false) })).toBe(false);
   });
+
+  it('does not make a timed single-choice question a transfer gate', () => {
+    const withTimedChoice: GameConfig = {
+      ...game,
+      questions: [
+        ...game.questions,
+        { id: 'timed', type: 'timed-challenge', prompt: '限时选择', options: ['A', 'B'], correctAnswer: 'A', explanation: '', points: 10, timeLimit: 15 },
+      ],
+    };
+    expect(hasTransferEvidence(withTimedChoice, {
+      choice: rec(true),
+      transfer: rec(true),
+      timed: rec(false, true),
+    })).toBe(true);
+  });
 });
 
 describe('hasTransferEvidence with review question set', () => {

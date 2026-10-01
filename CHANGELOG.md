@@ -1,5 +1,23 @@
 # Changelog
 
+## v2026.10.01 — Timed-choice mastery fairness
+
+### Added
+
+- 限时单选不会被当作必须首答正确的迁移验证题的回归测试。
+
+### Changed
+
+- 过关的迁移证据只要求非选择式作答；限时单选继续计入分数，但不额外成为迁移门槛。
+
+### Fixed
+
+- 修正限时选择题答错时，即使学生已独立完成填空迁移题也会被错误阻止过关的问题。
+
+### Known Issues
+
+- 已登录课程与云端进度回读仍需受控的真实账号验收。
+
 ## v2026.09.30 — Timed challenge keyboard answers
 
 ### Added

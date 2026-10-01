@@ -43,7 +43,7 @@ export function masteryThreshold(configuredThreshold: number): number {
 
 export function hasTransferEvidence(game: GameConfig, answers: Record<string, AnswerRecord>, questionSet?: Question[]): boolean {
   const questions = questionSet ?? game.questions;
-  const transferQuestions = questions.filter((question) => question.type !== 'choice' && question.type !== 'true-false');
+  const transferQuestions = questions.filter((question) => question.type !== 'choice' && question.type !== 'true-false' && question.type !== 'timed-challenge');
   return transferQuestions.length > 0 && transferQuestions.every((question) => {
     const a = answers[question.id];
     return a?.correct === true && a?.firstTry === true;
