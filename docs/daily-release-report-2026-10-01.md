@@ -75,6 +75,7 @@ v2026.10.01 · timed-choice mastery fairness
 - `npm run lint` 退出码 0；仅保留既有 Fast Refresh/hooks 警告，未新增警告。
 - `npm run typecheck`、`npm run build`、`git diff --check` 均通过。
 - 本地浏览器：未登录根路径定向到完整 `/login` 表单，无错误覆盖层。没有受控认证会话，因此未将此证据表述为已登录课程或生产验收。
+- 生产浏览器：正式别名被 Cloudflare 人机验证拦截，部署 URL 被 Vercel Deployment Protection 拦截；两者均未被冒充为应用级生产验收。
 
 ## Bugs Fixed
 
@@ -82,7 +83,9 @@ v2026.10.01 · timed-choice mastery fairness
 
 ## Release Status
 
-待提交、推送和正式部署。本报告将在这些动作完成后补入实际提交、部署和回滚信息。
+- Git：`6b0e8b0`（`fix: keep timed choices out of transfer gate`）已推送至 `origin/main`。
+- Production：`vercel deploy . --prod --yes --scope logsail`，部署 `dpl_ArLYB1DRyXwxkTck3ZFmc4v5oPXa` 为 `READY`，别名 <https://math.logsail.lat>。
+- 部署 URL：<https://math-k6-rbr67zxv3-logsail.vercel.app>；回滚目标为上一已知就绪部署 <https://math-k6-kca9ettif-logsail.vercel.app>（`dpl_BEDX6SCPwpGw4vhVz5nAirxQb4kz`）。
 
 ## Product Impact
 
@@ -107,4 +110,4 @@ math-k6 现在把“速度型单选表现”和“独立迁移能力”正确分
 
 ## Final Status
 
-`PARTIAL`：实现和本地门禁完成，尚未执行本轮提交和生产部署。
+`DONE`：目标、回归、全量工程门禁、公开本地入口、提交、推送与正式部署均完成。认证态云端回读与被访问保护拦截的生产浏览器检查仍是独立已知边界。
