@@ -44,4 +44,14 @@ describe('TimedChallengeGame keyboard answers', () => {
       'mult.one-digit', true, true, 'transfer', 'initial',
     );
   });
+
+  it('labels the timed single-choice result as a choice question', () => {
+    render(<GameRunner game={game} knowledgePointId={game.knowledgePointId} />);
+
+    fireEvent.keyDown(window, { key: '2' });
+    fireEvent.click(screen.getByRole('button', { name: '查看结果' }));
+
+    expect(screen.getByText('选择题')).toBeInTheDocument();
+    expect(screen.queryByText('迁移验证')).not.toBeInTheDocument();
+  });
 });

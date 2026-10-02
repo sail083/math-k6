@@ -41,9 +41,13 @@ export function masteryThreshold(configuredThreshold: number): number {
   return Math.max(0.8, configuredThreshold);
 }
 
+export function isTransferQuestion(question: Question): boolean {
+  return question.type !== 'choice' && question.type !== 'true-false' && question.type !== 'timed-challenge';
+}
+
 export function hasTransferEvidence(game: GameConfig, answers: Record<string, AnswerRecord>, questionSet?: Question[]): boolean {
   const questions = questionSet ?? game.questions;
-  const transferQuestions = questions.filter((question) => question.type !== 'choice' && question.type !== 'true-false' && question.type !== 'timed-challenge');
+  const transferQuestions = questions.filter(isTransferQuestion);
   return transferQuestions.length > 0 && transferQuestions.every((question) => {
     const a = answers[question.id];
     return a?.correct === true && a?.firstTry === true;
@@ -387,10 +391,10 @@ export default function GameRunner({
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-slate-700">
                         第 {index + 1} 题
-                        {(q.type === 'choice' || q.type === 'true-false') ? (
-                          <span className="question-type-tag is-choice">选择题</span>
-                        ) : (
+                        {isTransferQuestion(q) ? (
                           <span className="question-type-tag is-transfer">迁移验证</span>
+                        ) : (
+                          <span className="question-type-tag is-choice">选择题</span>
                         )}
                       </p>
                       <p className="text-sm text-slate-600 mt-0.5">{q.prompt}</p>

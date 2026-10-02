@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateStars, hasTransferEvidence, masteryThreshold, type AnswerRecord } from '@/components/GameRunner';
+import { calculateStars, hasTransferEvidence, isTransferQuestion, masteryThreshold, type AnswerRecord } from '@/components/GameRunner';
 import type { GameConfig, Question } from '@/lib/types';
 
 describe('calculateStars', () => {
@@ -75,6 +75,13 @@ describe('hasTransferEvidence', () => {
       transfer: rec(true),
       timed: rec(false, true),
     })).toBe(true);
+  });
+});
+
+describe('isTransferQuestion', () => {
+  it('does not label timed single-choice questions as transfer evidence', () => {
+    expect(isTransferQuestion({ id: 'timed', type: 'timed-challenge', prompt: '', options: [], correctAnswer: '', explanation: '', points: 10, timeLimit: 15 })).toBe(false);
+    expect(isTransferQuestion({ id: 'fill', type: 'fill-blank', prompt: '', correctAnswer: '', explanation: '', points: 10 })).toBe(true);
   });
 });
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## v2026.10.02 — Timed-choice result clarity
+
+### Changed
+
+- 答题回顾按与过关规则一致的分类显示限时单选为选择题。
+
+### Fixed
+
+- 修正限时单选虽不再阻断迁移证据、但仍被回顾界面错误标为“迁移验证”的矛盾提示。
+
+### Known Issues
+
+- 已登录课程与云端进度回读仍需受控的真实账号验收。
+
 ## v2026.10.01 — Timed-choice mastery fairness
 
 ### Added
