@@ -333,11 +333,11 @@ export default function GameRunner({
               <div className="result-icon"><UiIcon name="progress" size={32}/></div>
               <h2 className="text-2xl font-bold text-slate-700 mb-2">{resultTitle(false)}</h2>
               <p className="text-sm text-slate-500">{isReview ? resultSubtitle(false) : (correctRate < requiredRate && !transferPassed
-                ? `再答对一些（需要达到 ${Math.round(requiredRate * 100)}%），同时把填空题也独立完成。`
+                ? `再答对一些（需要达到 ${Math.round(requiredRate * 100)}%），并让迁移验证题首次独立答对。`
                 : correctRate < requiredRate
                   ? `再答对一些，达到 ${Math.round(requiredRate * 100)}% 就能过关。`
                   : !transferPassed
-                    ? '选择题做得不错，再把填空、拖动或排序题自己完成一次。'
+                    ? '迁移验证题需要首次独立答对；回看讲解后再试一次。'
                     : resultSubtitle(false))}</p>
             </>
           )}
@@ -396,6 +396,9 @@ export default function GameRunner({
                         ) : (
                           <span className="question-type-tag is-choice">选择题</span>
                         )}
+                        {isTransferQuestion(q) && correct && !answer?.firstTry ? (
+                          <span className="question-type-tag is-retry">重试后答对 · 本次不计迁移验证</span>
+                        ) : null}
                       </p>
                       <p className="text-sm text-slate-600 mt-0.5">{q.prompt}</p>
                     </div>

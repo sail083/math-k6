@@ -1,5 +1,19 @@
 # Changelog
 
+## v2026.10.03 — Transfer-evidence result clarity
+
+### Changed
+
+- 答题回顾会标明迁移题是否仅在重试后答对，并说明这次不计入首次迁移证据。
+
+### Fixed
+
+- 修正学生答对迁移题却因非首次作答未过关时，结果页未说明真实原因的问题。
+
+### Known Issues
+
+- 已登录课程与云端进度回读仍需受控的真实账号验收。
+
 ## v2026.10.02 — Timed-choice result clarity
 
 ### Changed
