@@ -1,5 +1,19 @@
 # Changelog
 
+## v2026.10.04 — Judgment keyboard answers
+
+### Added
+
+- 判断题支持键盘 `1/A` 选择“对”、`2/B` 选择“错”，并在题面提示快捷键。
+
+### Fixed
+
+- 让判断题与既有单选、限时单选一样可连续用键盘完成，保留首错后改选的学习反馈。
+
+### Known Issues
+
+- 已登录课程与云端进度回读仍需受控的真实账号验收。
+
 ## v2026.10.03 — Transfer-evidence result clarity
 
 ### Changed

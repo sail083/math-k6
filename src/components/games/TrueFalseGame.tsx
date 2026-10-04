@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Question } from '@/lib/types';
 import { CheckIcon, XIcon, InfoIcon } from './shared';
 
@@ -14,12 +14,12 @@ export default function TrueFalseGame({ question, onAnswer }: TrueFalseGameProps
   const [finalSelection, setFinalSelection] = useState<string | null>(null);
 
   // 选项优先取 question.options，否则回退为 ["对", "错"]
-  const options =
-    question.options && question.options.length > 0
-      ? question.options
-      : ['对', '错'];
+  const options = useMemo(
+    () => question.options && question.options.length > 0 ? question.options : ['对', '错'],
+    [question.options],
+  );
 
-  const checkCorrect = (selected: string): boolean => {
+  const checkCorrect = useCallback((selected: string): boolean => {
     const normalized = selected.trim().toLowerCase();
     if (Array.isArray(question.correctAnswer)) {
       return question.correctAnswer.some(
@@ -27,9 +27,9 @@ export default function TrueFalseGame({ question, onAnswer }: TrueFalseGameProps
       );
     }
     return question.correctAnswer.trim().toLowerCase() === normalized;
-  };
+  }, [question.correctAnswer]);
 
-  const handleSelect = (option: string) => {
+  const handleSelect = useCallback((option: string) => {
     if (resolved || wrongOptions.includes(option)) return;
     const correct = checkCorrect(option);
     if (correct) {
@@ -41,7 +41,17 @@ export default function TrueFalseGame({ question, onAnswer }: TrueFalseGameProps
     }
 
     setWrongOptions((previous) => [...previous, option]);
-  };
+  }, [checkCorrect, onAnswer, resolved, wrongOptions]);
+
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if (resolved) return;
+      const index = ({ '1': 0, '2': 1, a: 0, b: 1 } as Record<string, number>)[event.key.toLowerCase()];
+      if (index !== undefined && options[index]) handleSelect(options[index]);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [resolved, options, handleSelect]);
 
   const getButtonState = (
     option: string,
@@ -61,6 +71,7 @@ export default function TrueFalseGame({ question, onAnswer }: TrueFalseGameProps
       <p className="text-lg font-medium text-slate-800 leading-relaxed">
         {question.prompt}
       </p>
+      <p className="text-xs text-slate-500">按 1 或 A 选对；按 2 或 B 选错</p>
 
       {/* 对 / 错 按钮 */}
       <div className="grid grid-cols-2 gap-4">
