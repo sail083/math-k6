@@ -45,7 +45,7 @@ export default function TrueFalseGame({ question, onAnswer }: TrueFalseGameProps
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      if (resolved) return;
+      if (resolved || event.altKey || event.ctrlKey || event.metaKey) return;
       const index = ({ '1': 0, '2': 1, a: 0, b: 1 } as Record<string, number>)[event.key.toLowerCase()];
       if (index !== undefined && options[index]) handleSelect(options[index]);
     };

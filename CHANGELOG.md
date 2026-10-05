@@ -1,5 +1,15 @@
 # Changelog
 
+## v2026.10.05 — Modified shortcut guard
+
+### Fixed
+
+- 选择题、限时选择题和判断题现在会忽略 `Ctrl/⌘/Alt` 与选项键的组合，避免全选等系统快捷键误提交答案。
+
+### Known Issues
+
+- 已登录课程与云端进度回读仍需受控的真实账号验收。
+
 ## v2026.10.04 — Judgment keyboard answers
 
 ### Added

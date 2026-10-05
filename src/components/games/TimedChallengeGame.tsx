@@ -70,7 +70,7 @@ export default function TimedChallengeGame({ question, onAnswer }: TimedChalleng
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      if (hasAnswered) return;
+      if (hasAnswered || event.altKey || event.ctrlKey || event.metaKey) return;
       const index = ({ '1': 0, '2': 1, '3': 2, '4': 3, a: 0, b: 1, c: 2, d: 3 } as Record<string, number>)[event.key.toLowerCase()];
       if (index !== undefined && options[index]) handleSelect(options[index]);
     };

@@ -52,7 +52,7 @@ export default function ChoiceGame({ question, onAnswer }: ChoiceGameProps) {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (resolved) return;
+      if (resolved || e.altKey || e.ctrlKey || e.metaKey) return;
       const keyMap: Record<string, number> = { '1': 0, '2': 1, '3': 2, '4': 3, 'a': 0, 'b': 1, 'c': 2, 'd': 3 };
       const idx = keyMap[e.key.toLowerCase()];
       if (idx !== undefined && idx < options.length) {
