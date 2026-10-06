@@ -481,6 +481,7 @@ export default function GameRunner({
       {isAnswered && (
         <div className="flex justify-end">
           <button
+            autoFocus
             onClick={handleNext}
             className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[48px] flex items-center gap-2"
           >

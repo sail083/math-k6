@@ -1,5 +1,15 @@
 # Changelog
 
+## v2026.10.06 — Keyboard answer flow focus
+
+### Fixed
+
+- 键盘或鼠标作答后，“下一题”或“查看结果”会自动接收焦点，可直接按 Enter 连续推进。
+
+### Known Issues
+
+- 已登录课程与云端进度回读仍需受控的真实账号验收。
+
 ## v2026.10.05 — Modified shortcut guard
 
 ### Fixed

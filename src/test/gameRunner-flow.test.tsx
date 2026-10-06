@@ -180,6 +180,19 @@ describe('GameRunner rendered regression', () => {
     expect(screen.getByText('最后再练一下')).toBeInTheDocument();
   });
 
+  it('moves focus to the next action after an answer', () => {
+    render(
+      <GameRunner
+        game={gameWithReview}
+        knowledgePointId="kp-review"
+      />,
+    );
+
+    fireEvent.click(screen.getByText('X'));
+
+    expect(screen.getByRole('button', { name: '下一题' })).toHaveFocus();
+  });
+
   /**
    * Harness: manages GameRunner props in state so the test can simulate
    * parent re-renders (e.g. reviewMode going null after mastery change,
