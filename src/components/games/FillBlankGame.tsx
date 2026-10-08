@@ -74,6 +74,7 @@ export default function FillBlankGame({ question, onAnswer }: FillBlankGameProps
       <div className="flex gap-3">
         <input
           type="text"
+          autoFocus
           value={resolved ? submittedValue : inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}

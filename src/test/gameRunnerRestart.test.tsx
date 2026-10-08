@@ -22,6 +22,17 @@ const game: GameConfig = {
 };
 
 describe('GameRunner restart', () => {
+  it('focuses the blank input after advancing from a resolved question', () => {
+    render(<GameRunner game={game} knowledgePointId={game.knowledgePointId} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /对/ }));
+    const next = screen.getByRole('button', { name: '下一题' });
+    next.focus();
+    fireEvent.click(next);
+
+    expect(screen.getByPlaceholderText('在此输入你的答案')).toHaveFocus();
+  });
+
   it('resets a true-false question after a failed group attempt', () => {
     render(<GameRunner game={game} knowledgePointId={game.knowledgePointId} />);
 

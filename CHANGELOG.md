@@ -1,5 +1,15 @@
 # Changelog
 
+## v2026.10.08 — Fill-blank keyboard continuation
+
+### Fixed
+
+- 从已完成题目进入填空题时，答案输入框会自动接收焦点，可直接继续键入答案。
+
+### Known Issues
+
+- 已登录课程与云端进度回读仍需受控的真实账号验收。
+
 ## v2026.10.06 — Keyboard answer flow focus
 
 ### Fixed
