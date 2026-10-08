@@ -81,7 +81,12 @@ v2026.10.06 已让作答后的“下一题/查看结果”自动获得焦点，�
 
 ## Release Status
 
-`READY FOR RELEASE`：本地门禁和公开入口核查完成；待本轮唯一改动提交、推送与生产部署后回填实际提交、部署和回滚记录。
+`DONE`。
+
+- Git：`1675594`（`fix: focus fill-blank answers`）已推送至 `origin/main`。
+- Production：`vercel deploy /private/tmp/math-k6-deploy-20261008-clean.hTH6rC --prod --yes --scope logsail --project math-k6 --non-interactive` 成功；部署 `dpl_67LQmh2KuCGe4i8s96HwWAvKc9AN` 为 `READY`，别名为 <https://math.logsail.lat>。
+- 部署 URL：<https://math-k6-hx92s0nyx-logsail.vercel.app>。
+- 回滚目标：紧邻的前一生产部署 <https://math-k6-k00gbktxt-logsail.vercel.app>；若需回退，应先检查其变更范围后使用受控 Vercel rollback。
 
 ## Product Impact
 
@@ -106,4 +111,4 @@ v2026.10.06 已让作答后的“下一题/查看结果”自动获得焦点，�
 
 ## Final Status
 
-`PARTIAL`：实现与本地验收完成，等待实际提交、推送和生产部署后更新为最终状态。
+`DONE`：唯一目标、失败复现、定向与全量回归、工程门禁、公开入口核查、提交、推送和生产部署均已完成。认证课程与云端回读仍是受控账号边界，未被本轮证据替代。
