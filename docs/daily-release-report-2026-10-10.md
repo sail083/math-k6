@@ -84,7 +84,7 @@ v2026.10.10 · Password recovery completion
 
 `DONE`。
 
-- 代码提交：`6106bfd fix: complete password recovery flow`，已推送至 `release/daily-20261010-password-recovery`。
+- 代码提交：`6106bfd fix: complete password recovery flow`；连同 CHANGELOG 和本报告已推送至 `release/daily-20261010-password-recovery`，并快进至 `origin/main`（`6a8e568`）。
 - 生产部署：`dpl_Fb3J2Yu5LyngUN88DkGbb5BNQKQY`，Vercel 状态 `READY`；部署地址 <https://math-k6-3lrlzxrhm-logsail.vercel.app>，已别名至 <https://math.logsail.lat>。
 - 回滚目标：上一生产部署 <https://math-k6-hx92s0nyx-logsail.vercel.app>；回退前应先审阅其变更范围，再执行受控 Vercel rollback。
 
