@@ -1,5 +1,19 @@
 # Changelog
 
+## v2026.10.10 — Password recovery completion
+
+### Added
+
+- 恢复链接打开后的“设置新密码”页面，含确认输入、长度校验和无效/过期链接提示。
+
+### Fixed
+
+- 密码找回邮件现在会进入可完成改密的页面，不再错误地回到登录页。
+
+### Known Issues
+
+- 已登录课程与云端进度回读仍需受控的真实账号验收。
+
 ## v2026.10.08 — Fill-blank keyboard continuation
 
 ### Fixed
