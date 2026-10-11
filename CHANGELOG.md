@@ -1,5 +1,15 @@
 # Changelog
 
+## v2026.10.11 — Match-game keyboard continuation
+
+### Fixed
+
+- 从上一题进入配对题时，第一个待匹配项目会自动获得焦点，可立即用键盘继续操作。
+
+### Known Issues
+
+- 已登录课程与云端进度回读仍需受控的真实账号验收。
+
 ## v2026.10.10 — Password recovery completion
 
 ### Added

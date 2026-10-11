@@ -105,11 +105,12 @@ export default function DragMatchGame({ question, onAnswer }: DragMatchGameProps
               全部已匹配
             </div>
           )}
-          {remainingItems.map((item) => {
+          {remainingItems.map((item, index) => {
             const isSelected = selectedItemId === item.id;
             return (
               <button
                 key={item.id}
+                autoFocus={index === 0}
                 onClick={() => handleItemClick(item.id)}
                 disabled={hasAnswered}
                 className={`w-full flex items-center gap-2 p-3 rounded-xl border-2 transition-all duration-200 text-left min-h-[48px] ${
