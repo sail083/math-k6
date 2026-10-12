@@ -1,5 +1,15 @@
 # Changelog
 
+## v2026.10.12 — Ordering-game keyboard continuation
+
+### Fixed
+
+- 从上一题进入步骤排序或时间线题时，第一个可用的“下移”操作会自动获得焦点；只有一项时则聚焦“确认”。
+
+### Known Issues
+
+- 已登录课程与云端进度回读仍需受控的真实账号验收。
+
 ## v2026.10.11 — Match-game keyboard continuation
 
 ### Fixed

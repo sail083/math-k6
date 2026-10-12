@@ -64,6 +64,8 @@ export default function TimelineGame({ question, onAnswer }: TimelineGameProps) 
     return order[index] === correctOrder[index];
   };
 
+  const canReorder = order.length > 1;
+
   return (
     <div className="space-y-4">
       {/* 题目 */}
@@ -138,6 +140,7 @@ export default function TimelineGame({ question, onAnswer }: TimelineGameProps) 
                   <button
                     onClick={() => moveDown(index)}
                     disabled={isLast}
+                    autoFocus={index === 0 && canReorder}
                     className="flex items-center justify-center w-11 h-11 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     aria-label="下移"
                   >
@@ -155,6 +158,7 @@ export default function TimelineGame({ question, onAnswer }: TimelineGameProps) 
         <div className="flex justify-end">
           <button
             onClick={handleSubmit}
+            autoFocus={!canReorder}
             className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[48px] flex items-center"
           >
             确认

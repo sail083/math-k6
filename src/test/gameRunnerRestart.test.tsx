@@ -38,6 +38,32 @@ const dragMatchGame: GameConfig = {
   ],
 };
 
+function orderingGame(type: 'drag-assemble' | 'timeline', itemCount = 2): GameConfig {
+  const dragItems = itemCount === 1
+    ? [{ id: 'only', label: '唯一步骤' }]
+    : [
+        { id: 'first', label: '第一步' },
+        { id: 'second', label: '第二步' },
+      ];
+
+  return {
+    knowledgePointId: `${type}-focus`,
+    passThreshold: 0.8,
+    questions: [
+      { id: 'judge', type: 'true-false', prompt: '1 + 1 = 2', correctAnswer: '对', explanation: '1 加 1 等于 2。', points: 10 },
+      {
+        id: 'ordering',
+        type,
+        prompt: '按正确顺序排列。',
+        correctAnswer: dragItems.map((item) => item.id),
+        explanation: '按步骤依次完成。',
+        points: 10,
+        dragItems,
+      },
+    ],
+  };
+}
+
 describe('GameRunner restart', () => {
   it('focuses the blank input after advancing from a resolved question', () => {
     render(<GameRunner game={game} knowledgePointId={game.knowledgePointId} />);
@@ -59,6 +85,28 @@ describe('GameRunner restart', () => {
     fireEvent.click(next);
 
     expect(screen.getByRole('button', { name: '数字 1' })).toHaveFocus();
+  });
+
+  it.each(['drag-assemble', 'timeline'] as const)('focuses the first available sort control after advancing to a %s question', (type) => {
+    const config = orderingGame(type);
+    render(<GameRunner game={config} knowledgePointId={config.knowledgePointId} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /对/ }));
+    const next = screen.getByRole('button', { name: '下一题' });
+    next.focus();
+    fireEvent.click(next);
+
+    expect(screen.getAllByRole('button', { name: '下移' })[0]).toHaveFocus();
+  });
+
+  it.each(['drag-assemble', 'timeline'] as const)('focuses confirmation when a %s question has nothing to reorder', (type) => {
+    const config = orderingGame(type, 1);
+    render(<GameRunner game={config} knowledgePointId={config.knowledgePointId} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /对/ }));
+    fireEvent.click(screen.getByRole('button', { name: '下一题' }));
+
+    expect(screen.getByRole('button', { name: '确认' })).toHaveFocus();
   });
 
   it('resets a true-false question after a failed group attempt', () => {
