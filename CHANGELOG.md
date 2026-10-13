@@ -1,5 +1,15 @@
 # Changelog
 
+## v2026.10.13 — Timed-challenge keyboard continuation
+
+### Fixed
+
+- 从上一题进入限时选择题时，第一个答案选项会自动获得焦点，可立即用键盘作答。
+
+### Known Issues
+
+- 已登录课程与云端进度回读仍需受控的真实账号验收。
+
 ## v2026.10.12 — Ordering-game keyboard continuation
 
 ### Fixed

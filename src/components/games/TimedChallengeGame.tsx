@@ -156,6 +156,7 @@ export default function TimedChallengeGame({ question, onAnswer }: TimedChalleng
               key={index}
               onClick={() => handleSelect(option)}
               disabled={hasAnswered}
+              autoFocus={index === 0}
               className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 text-left min-h-[48px] ${
                 state === 'correct'
                   ? 'bg-green-50 border-green-500'

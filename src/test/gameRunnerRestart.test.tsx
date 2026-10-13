@@ -64,6 +64,24 @@ function orderingGame(type: 'drag-assemble' | 'timeline', itemCount = 2): GameCo
   };
 }
 
+const timedChallengeGame: GameConfig = {
+  knowledgePointId: 'timed-challenge-focus',
+  passThreshold: 0.8,
+  questions: [
+    { id: 'judge', type: 'true-false', prompt: '1 + 1 = 2', correctAnswer: '对', explanation: '1 加 1 等于 2。', points: 10 },
+    {
+      id: 'timed',
+      type: 'timed-challenge',
+      prompt: '12 × 3 = ?',
+      options: ['36', '15'],
+      correctAnswer: '36',
+      explanation: '12 乘 3 等于 36。',
+      points: 10,
+      timeLimit: 15,
+    },
+  ],
+};
+
 describe('GameRunner restart', () => {
   it('focuses the blank input after advancing from a resolved question', () => {
     render(<GameRunner game={game} knowledgePointId={game.knowledgePointId} />);
@@ -107,6 +125,17 @@ describe('GameRunner restart', () => {
     fireEvent.click(screen.getByRole('button', { name: '下一题' }));
 
     expect(screen.getByRole('button', { name: '确认' })).toHaveFocus();
+  });
+
+  it('focuses the first answer after advancing to a timed challenge', () => {
+    render(<GameRunner game={timedChallengeGame} knowledgePointId={timedChallengeGame.knowledgePointId} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /对/ }));
+    const next = screen.getByRole('button', { name: '下一题' });
+    next.focus();
+    fireEvent.click(next);
+
+    expect(screen.getByRole('button', { name: 'A36' })).toHaveFocus();
   });
 
   it('resets a true-false question after a failed group attempt', () => {
