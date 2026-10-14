@@ -82,6 +82,7 @@ export default function TrueFalseGame({ question, onAnswer }: TrueFalseGameProps
           return (
             <button
               key={index}
+              autoFocus={index === 0}
               onClick={() => handleSelect(option)}
               disabled={resolved || wrongOptions.includes(option)}
               className={`relative w-full flex flex-col items-center justify-center gap-2 py-8 rounded-2xl border-2 transition-all duration-200 min-h-[88px] ${

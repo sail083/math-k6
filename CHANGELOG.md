@@ -1,5 +1,15 @@
 # Changelog
 
+## v2026.10.14 — True-false keyboard continuation
+
+### Fixed
+
+- 从上一题进入判断题时，第一个答案选项会自动获得焦点，可立即用键盘继续作答。
+
+### Known Issues
+
+- 已登录课程与云端进度回读仍需受控的真实账号验收。
+
 ## v2026.10.13 — Timed-challenge keyboard continuation
 
 ### Fixed
