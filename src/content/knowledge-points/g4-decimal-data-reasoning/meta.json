@@ -1,0 +1,21 @@
+{
+  "id": "g4-decimal-data-reasoning",
+  "track": "extension",
+  "grade": 4,
+  "unit": 205,
+  "title": "小数与数据推理",
+  "objectives": [
+    "能从条形统计图中依据标题、单位和刻度读取小数数据",
+    "能用数位对齐的方法比较、合并和求差小数数据",
+    "能结合估算、单位转换和原始数据检查结论"
+  ],
+  "prerequisites": [
+    "g4-bar-chart",
+    "g4-decimal-meaning",
+    "g4-decimal-properties",
+    "g4-decimal-add-sub"
+  ],
+  "textbookRefs": [],
+  "vizType": "bar-chart",
+  "hasFormula": false
+}
