@@ -421,7 +421,7 @@ describe('content loading', () => {
   describe('delayed review sets (all 58 courses)', () => {
     it('covers all 58 courses — none missing reviewSets', async () => {
       const kps = getAllKnowledgePoints();
-      expect(kps).toHaveLength(57);
+      expect(kps).toHaveLength(58);
       for (const kp of kps) {
         const detail = await loadKnowledgePointDetail(kp.meta.id);
         expect(detail?.game?.reviewSets?.d1, kp.meta.id).toBeDefined();
