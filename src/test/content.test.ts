@@ -18,9 +18,9 @@ import { buildDiscoveryContent } from '@/lib/learningContent';
 
 describe('content loading', () => {
   describe('getAllKnowledgePoints', () => {
-    it('returns all 57 knowledge points', () => {
+    it('returns all 58 knowledge points', () => {
       const kps = getAllKnowledgePoints();
-      expect(kps).toHaveLength(57);
+      expect(kps).toHaveLength(58);
     });
 
     it('gives every course enough questions and a non-choice mastery check', async () => {
@@ -59,8 +59,8 @@ describe('content loading', () => {
       expect(getKnowledgePointsByGrade(3)).toHaveLength(15);
     });
 
-    it('returns 16 KPs for grade 4 including progression courses', () => {
-      expect(getKnowledgePointsByGrade(4)).toHaveLength(16);
+    it('returns 17 KPs for grade 4 including progression courses', () => {
+      expect(getKnowledgePointsByGrade(4)).toHaveLength(17);
     });
 
     it('returns 14 KPs for grade 5 including challenges', () => {
@@ -79,6 +79,7 @@ describe('content loading', () => {
       'g3-perimeter-area-puzzle',
       'g3-fraction-visual-reasoning',
       'g4-sum-difference',
+      'g4-decimal-data-reasoning',
     ];
     const challengeIds = [
       'g3-cycle-pattern',
@@ -88,7 +89,7 @@ describe('content loading', () => {
       'g5-chicken-rabbit',
     ];
 
-    it('keeps five extension and five challenge courses in prerequisite order', () => {
+    it('keeps six extension and five challenge courses in prerequisite order', () => {
       expect(getTrackCourses('extension').map((kp) => kp.meta.id)).toEqual(extensionIds);
       expect(getChallengeCourses().map((kp) => kp.meta.id)).toEqual(challengeIds);
       const allIds = new Set(getAllKnowledgePoints().map((kp) => kp.meta.id));
@@ -121,7 +122,7 @@ describe('content loading', () => {
       }
     });
 
-    it('derives batch A base relations from prerequisites only', () => {
+    it('derives course base relations from prerequisites only', () => {
       expect(getCourseRelations('g3-smart-calculation').baseCourses.map((kp) => kp.meta.id)).toEqual([
         'g3-add-sub-10000', 'g3-mult-1digit', 'g3-measurement',
       ]);
@@ -133,6 +134,9 @@ describe('content loading', () => {
       ]);
       expect(getCourseRelations('g4-sum-difference').challengeNext.map((kp) => kp.meta.id)).toContain('g4-sum-difference-multiple');
       expect(getCourseRelations('g3-smart-calculation').challengeNext.map((kp) => kp.meta.id)).toContain('g4-operation-patterns');
+      expect(getCourseRelations('g4-decimal-data-reasoning').baseCourses.map((kp) => kp.meta.id)).toEqual([
+        'g4-bar-chart', 'g4-decimal-meaning', 'g4-decimal-properties', 'g4-decimal-add-sub',
+      ]);
     });
 
     it('keeps dependencies present, acyclic, and non-descending by track', () => {
@@ -171,6 +175,36 @@ describe('content loading', () => {
         'g4-angle-shape-reasoning',
       ]) {
         expect(hasCourseSpecificModel(id), id).toBe(true);
+      }
+    });
+  });
+
+  describe('batch B sample course: decimal and data reasoning', () => {
+    it('uses the planned prerequisites and a dedicated decimal-chart exploration model', async () => {
+      const course = getKnowledgePointById('g4-decimal-data-reasoning');
+      expect(course?.meta.track).toBe('extension');
+      expect(course?.meta.prerequisites).toEqual([
+        'g4-bar-chart', 'g4-decimal-meaning', 'g4-decimal-properties', 'g4-decimal-add-sub',
+      ]);
+      expect(course?.meta.vizType).toBe('bar-chart');
+      expect(hasCourseSpecificModel('g4-decimal-data-reasoning')).toBe(true);
+
+      const detail = await loadKnowledgePointDetail('g4-decimal-data-reasoning');
+      expect(detail?.game?.questions).toHaveLength(6);
+      expect(detail?.game?.questions.filter((question) => question.type !== 'choice')).toHaveLength(1);
+      expect(detail?.game?.questions[5].correctAnswer).toBe('3.15');
+      expect(detail?.game?.reviewSets?.d1?.questions).toHaveLength(2);
+      expect(detail?.game?.reviewSets?.d7?.questions).toHaveLength(2);
+      expect(detail?.explanation).toContain('边界与反例');
+      expect(buildDiscoveryContent(course!.meta, detail!.explanation).rule).toContain('小数点');
+    });
+
+    it('keeps each sample multiple-choice challenge unambiguous', async () => {
+      const detail = await loadKnowledgePointDetail('g4-decimal-data-reasoning');
+      for (const question of detail!.game!.questions) {
+        if (question.type !== 'choice') continue;
+        expect(question.options?.includes(question.correctAnswer as string), question.id).toBe(true);
+        expect(new Set(question.options).size, question.id).toBe(question.options?.length);
       }
     });
   });
@@ -384,8 +418,8 @@ describe('content loading', () => {
     });
   });
 
-  describe('delayed review sets (all 57 courses)', () => {
-    it('covers all 57 courses — none missing reviewSets', async () => {
+  describe('delayed review sets (all 58 courses)', () => {
+    it('covers all 58 courses — none missing reviewSets', async () => {
       const kps = getAllKnowledgePoints();
       expect(kps).toHaveLength(57);
       for (const kp of kps) {
@@ -519,7 +553,7 @@ describe('content loading', () => {
       }
     });
 
-    it('review-choice correct positions cover positions A, B, and C across all 57 courses', async () => {
+    it('review-choice correct positions cover positions A, B, and C across all 58 courses', async () => {
       const positions = new Set<number>();
       for (const kp of getAllKnowledgePoints()) {
         const detail = await loadKnowledgePointDetail(kp.meta.id);
