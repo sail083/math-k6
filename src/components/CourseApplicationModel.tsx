@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 
 export type ApplicationModelType =
   | 'g4-bar-chart'
+  | 'g4-decimal-data-reasoning'
   | 'g5-position'
   | 'g5-tree-planting'
   | 'g3-cycle-pattern'
@@ -17,7 +18,7 @@ export type ApplicationModelType =
 interface Props { type: ApplicationModelType; onInteract?: () => void }
 
 const modelIds = new Set<string>([
-  'g4-bar-chart', 'g5-position', 'g5-tree-planting',
+  'g4-bar-chart', 'g4-decimal-data-reasoning', 'g5-position', 'g5-tree-planting',
   'g3-cycle-pattern', 'g3-systematic-enumeration',
   'g4-sum-difference', 'g4-sum-difference-multiple', 'g5-chicken-rabbit',
   'g3-smart-calculation', 'g3-perimeter-area-puzzle',
@@ -43,6 +44,48 @@ function BarChartBuild({ onInteract }: Pick<Props, 'onInteract'>) {
       {values.map((value, index) => <g key={labels[index]} opacity={index < shown ? 1 : 0.12}><rect x={82 + index * 82} y={220 - value * 17} width="42" height={value * 17} className="chart-bar"/><text x={103 + index * 82} y={212 - value * 17} textAnchor="middle">{value}</text><text x={103 + index * 82} y="242" textAnchor="middle">{labels[index]}</text></g>)}
     </svg>
     <div className="model-proof is-valid"><strong>改成每格 {unit} 人后，刻度标签改变，但四组原始人数不能改变</strong></div>
+  </Shell>;
+}
+
+function DecimalDataReasoning({ onInteract }: Pick<Props, 'onInteract'>) {
+  const [firstTenths, setFirstTenths] = useState(12);
+  const [secondTenths, setSecondTenths] = useState(8);
+  const values = [firstTenths, secondTenths, 16, 14];
+  const labels = ['一组', '二组', '三组', '四组'];
+  const totalTenths = values.reduce((sum, value) => sum + value, 0);
+  const differenceTenths = Math.max(...values) - Math.min(...values);
+  const format = (tenths: number) => (tenths / 10).toFixed(1);
+  const chartTop = 32;
+  const chartBottom = 220;
+  const chartHeight = chartBottom - chartTop;
+
+  return <Shell
+    title="先按纵轴刻度读出各组长度，再比较和与差"
+    result={`总长 ${format(totalTenths)} 米 · 最长与最短相差 ${format(differenceTenths)} 米`}
+    controls={<>
+      <label>一组长度 <output>{format(firstTenths)} 米</output><input aria-label="一组长度" type="range" min="5" max="20" value={firstTenths} onChange={e => { setFirstTenths(Number(e.target.value)); onInteract?.(); }} /></label>
+      <label>二组长度 <output>{format(secondTenths)} 米</output><input aria-label="二组长度" type="range" min="5" max="20" value={secondTenths} onChange={e => { setSecondTenths(Number(e.target.value)); onInteract?.(); }} /></label>
+    </>}>
+    <div className="data-source-row">{values.map((value, index) => <span key={labels[index]}><b>{labels[index]}</b>{format(value)} 米</span>)}</div>
+    <svg className="application-svg" viewBox="0 0 430 260" role="img" aria-label={`小数长度条形统计图，纵轴每格0.5米。四组依次为${values.map(format).join('米、')}米`}>
+      {Array.from({ length: 6 }, (_, index) => {
+        const tickTenths = index * 5;
+        const y = chartBottom - tickTenths / 25 * chartHeight;
+        return <g key={tickTenths}><line x1="55" y1={y} x2="405" y2={y} className="chart-gridline"/><text x="42" y={y + 4} textAnchor="end">{format(tickTenths)}</text></g>;
+      })}
+      <line x1="55" y1={chartTop} x2="55" y2={chartBottom} className="chart-axis"/>
+      <line x1="55" y1={chartBottom} x2="405" y2={chartBottom} className="chart-axis"/>
+      {values.map((value, index) => {
+        const height = value / 25 * chartHeight;
+        const x = 82 + index * 82;
+        return <g key={labels[index]}>
+          <rect x={x} y={chartBottom - height} width="42" height={height} className="chart-bar" rx="2"/>
+          <text x={x + 21} y={chartBottom - height - 7} textAnchor="middle">{format(value)}</text>
+          <text x={x + 21} y="242" textAnchor="middle">{labels[index]}</text>
+        </g>;
+      })}
+    </svg>
+    <div className="model-proof is-valid"><strong>每格 0.5 米，四组使用同一刻度；总量和差值要根据标注数据计算，不能只凭柱高估读</strong></div>
   </Shell>;
 }
 
@@ -175,6 +218,7 @@ function ProgressionLab({ mode, onInteract }: Pick<Props, 'onInteract'> & { mode
 export default function CourseApplicationModel({ type, onInteract }: Props) {
   switch (type) {
     case 'g4-bar-chart': return <BarChartBuild onInteract={onInteract}/>;
+    case 'g4-decimal-data-reasoning': return <DecimalDataReasoning onInteract={onInteract}/>;
     case 'g5-position': return <CoordinatePosition onInteract={onInteract}/>;
     case 'g5-tree-planting': return <TreePlanting onInteract={onInteract}/>;
     case 'g3-cycle-pattern': return <PatternBoard type="cycle" onInteract={onInteract}/>;
