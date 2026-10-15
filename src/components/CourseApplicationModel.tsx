@@ -63,8 +63,8 @@ function DecimalDataReasoning({ onInteract }: Pick<Props, 'onInteract'>) {
     title="先按纵轴刻度读出各组长度，再比较和与差"
     result={`总长 ${format(totalTenths)} 米 · 最长与最短相差 ${format(differenceTenths)} 米`}
     controls={<>
-      <label>一组长度 <output>{format(firstTenths)} 米</output><input aria-label="一组长度" type="range" min="5" max="20" value={firstTenths} onChange={e => { setFirstTenths(Number(e.target.value)); onInteract?.(); }} /></label>
-      <label>二组长度 <output>{format(secondTenths)} 米</output><input aria-label="二组长度" type="range" min="5" max="20" value={secondTenths} onChange={e => { setSecondTenths(Number(e.target.value)); onInteract?.(); }} /></label>
+      <label>一组长度 <output>{format(firstTenths)} 米</output><input aria-label="一组长度" type="range" min="5" max="20" className="min-h-[44px] w-full" value={firstTenths} onChange={e => { setFirstTenths(Number(e.target.value)); onInteract?.(); }} /></label>
+      <label>二组长度 <output>{format(secondTenths)} 米</output><input aria-label="二组长度" type="range" min="5" max="20" className="min-h-[44px] w-full" value={secondTenths} onChange={e => { setSecondTenths(Number(e.target.value)); onInteract?.(); }} /></label>
     </>}>
     <div className="data-source-row">{values.map((value, index) => <span key={labels[index]}><b>{labels[index]}</b>{format(value)} 米</span>)}</div>
     <svg className="application-svg" viewBox="0 0 430 260" role="img" aria-label={`小数长度条形统计图，纵轴每格0.5米。四组依次为${values.map(format).join('米、')}米`}>
