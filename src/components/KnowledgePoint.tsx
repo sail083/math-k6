@@ -36,6 +36,7 @@ function getExploreMission(meta: KnowledgePointType['meta']) {
     'g3-perimeter-area-puzzle': { title: '图形拼接或切割后，哪些边会消失？', hint: '改变长、宽和拼接方式，分别追踪外边界和内部方格。' },
     'g3-fraction-visual-reasoning': { title: '分数画法不同时，怎样判断它们是不是同一个量？', hint: '先确认整体相同，再对齐等分、图形和数轴位置。' },
     'g4-operation-patterns': { title: '算式外形变了，怎样保证总量不变？', hint: '切换分配、配对和拆分方式，每次都用原式验证。' },
+    'g4-decimal-data-reasoning': { title: '柱状图里的小数数据怎样变成可靠的比较和计算？', hint: '分别调整两组数据，先读单位与刻度，再求总量和最大差值；留意数位对齐和估算检查。' },
     'g4-angle-shape-reasoning': { title: '图形剪拼后，哪些角度关系一直不变？', hint: '比较平行、转角和内角，再用反例检查结论边界。' },
   };
   if (challengeMissions[meta.id]) return challengeMissions[meta.id];
