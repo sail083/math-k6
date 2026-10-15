@@ -1414,8 +1414,8 @@ describe('R4: Repair questions vs existing game.json dedup', () => {
     import: 'default',
   }) as Record<string, { questions: Array<{ prompt: string; correctAnswer: string | string[] }>; reviewSets?: { d1?: { questions: Array<{ prompt: string; correctAnswer: string | string[] }> }; d7?: { questions: Array<{ prompt: string; correctAnswer: string | string[] }> } } }>;
 
-  it('loads all 57 game.json files', () => {
-    expect(Object.keys(gameModules).length).toBe(57);
+  it('loads all 58 game.json files', () => {
+    expect(Object.keys(gameModules).length).toBe(58);
   });
 
   it('36 repair questions have no exact prompt+answer match with existing initial/D1/D7 questions', () => {
