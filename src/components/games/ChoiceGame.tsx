@@ -93,6 +93,7 @@ export default function ChoiceGame({ question, onAnswer }: ChoiceGameProps) {
               key={index}
               onClick={() => handleSelect(option)}
               disabled={isDisabled}
+              autoFocus={index === 0}
               className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 text-left min-h-[48px] ${
                 state === 'correct'
                   ? 'bg-green-50 border-green-500'

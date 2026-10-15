@@ -99,6 +99,23 @@ const trueFalseEntryGame: GameConfig = {
   ],
 };
 
+const choiceEntryGame: GameConfig = {
+  knowledgePointId: 'choice-focus',
+  passThreshold: 0.8,
+  questions: [
+    { id: 'judge', type: 'true-false', prompt: '1 + 1 = 2', correctAnswer: '对', explanation: '1 加 1 等于 2。', points: 10 },
+    {
+      id: 'choice',
+      type: 'choice',
+      prompt: '2 + 2 等于多少？',
+      options: ['4', '5'],
+      correctAnswer: '4',
+      explanation: '2 加 2 等于 4。',
+      points: 10,
+    },
+  ],
+};
+
 describe('GameRunner restart', () => {
   it('focuses the blank input after advancing from a resolved question', () => {
     render(<GameRunner game={game} knowledgePointId={game.knowledgePointId} />);
@@ -164,6 +181,17 @@ describe('GameRunner restart', () => {
     fireEvent.click(next);
 
     expect(screen.getByRole('button', { name: /对/ })).toHaveFocus();
+  });
+
+  it('focuses the first answer after advancing to a choice question', () => {
+    render(<GameRunner game={choiceEntryGame} knowledgePointId={choiceEntryGame.knowledgePointId} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /对/ }));
+    const next = screen.getByRole('button', { name: '下一题' });
+    next.focus();
+    fireEvent.click(next);
+
+    expect(screen.getByRole('button', { name: 'A4' })).toHaveFocus();
   });
 
   it('resets a true-false question after a failed group attempt', () => {
