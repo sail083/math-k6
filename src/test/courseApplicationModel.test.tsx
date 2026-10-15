@@ -2,12 +2,13 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import CourseApplicationModel, { type ApplicationModelType } from '@/components/CourseApplicationModel';
 
-describe('batch A course application models', () => {
+describe('course application models', () => {
   it.each<ApplicationModelType>([
     'g3-smart-calculation',
     'g3-perimeter-area-puzzle',
     'g3-fraction-visual-reasoning',
     'g4-angle-shape-reasoning',
+    'g4-decimal-data-reasoning',
   ])('renders %s and updates its mathematical result', (type) => {
     const { unmount } = render(<CourseApplicationModel type={type} />);
     const result = screen.getByTestId('application-result');
