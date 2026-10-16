@@ -119,7 +119,7 @@ export default function TrueFalseGame({ question, onAnswer }: TrueFalseGameProps
       </div>
 
       {wrongOptions.length === 1 && !resolved && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3">
+        <div role="status" className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3">
           <span className="text-amber-500 shrink-0 mt-0.5"><InfoIcon /></span>
           <div>
             <p className="text-sm font-medium text-amber-900 mb-0.5">再想想</p>
