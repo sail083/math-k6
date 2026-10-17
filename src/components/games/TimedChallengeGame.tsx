@@ -1,243 +1,248 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { Question } from '@/lib/types';
-import { CheckIcon, XIcon, InfoIcon } from './shared';
+import { canUseTimedPractice, type TimedAnswerDetails } from '@/lib/timedChallengeQuality';
+import { CheckIcon, XIcon } from './shared';
 
 interface TimedChallengeGameProps {
   question: Question;
-  onAnswer: (selectedAnswer: string, isCorrect: boolean) => void;
+  onAnswer: (selectedAnswer: string, isCorrect: boolean, firstTry?: boolean, details?: TimedAnswerDetails) => void;
 }
 
-const optionLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+type Phase = 'ready' | 'running' | 'untimed' | 'timeout' | 'answered';
+interface ClockSample { monotonic: number; wall: number }
+interface ClockRun { deadline: number; last: ClockSample }
+const optionLetters = ['A', 'B', 'C', 'D'];
+// An engineering fail-safe: a long scheduling gap makes timing evidence unreliable.
+// This is NOT a pupil time limit. See docs/timed-challenge-quality.md.
+const MAX_CLOCK_GAP_MS = 2000;
 
-function ClockIcon() {
-  return (
-    <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-      <path
-        fillRule="evenodd"
-        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
+function readClock(): ClockSample | null {
+  try {
+    const monotonic = performance.now();
+    const wall = Date.now();
+    return Number.isFinite(monotonic) && Number.isFinite(wall) ? { monotonic, wall } : null;
+  } catch {
+    return null;
+  }
 }
 
-export default function TimedChallengeGame({ question, onAnswer }: TimedChallengeGameProps) {
-  const timeLimit = question.timeLimit ?? 30;
+// Reset the complete attempt (including synchronous submission lock) if content changes.
+export default function TimedChallengeGame(props: TimedChallengeGameProps) {
+  return <TimedChallengeAttempt key={JSON.stringify(props.question)} {...props} />;
+}
+
+function TimedChallengeAttempt({ question, onAnswer }: TimedChallengeGameProps) {
+  const promptId = useId();
+  const instructionId = useId();
+  const timingAvailable = canUseTimedPractice(question);
+  const timeLimit = timingAvailable ? question.timeLimit! : 0;
   const options = useMemo(() => question.options ?? [], [question.options]);
-
+  const [phase, setPhase] = useState<Phase>(timingAvailable ? 'ready' : 'untimed');
+  const phaseRef = useRef<Phase>(phase);
+  const settled = useRef(false);
+  const clock = useRef<ClockRun | null>(null);
+  const root = useRef<HTMLDivElement>(null);
+  const firstOption = useRef<HTMLButtonElement>(null);
   const [timeLeft, setTimeLeft] = useState(timeLimit);
-  const [hasAnswered, setHasAnswered] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState(false);
-  const [timedOut, setTimedOut] = useState(false);
+  const [answerRevealed, setAnswerRevealed] = useState(false);
+  const [clockInterrupted, setClockInterrupted] = useState(false);
+  const [answerTiming, setAnswerTiming] = useState<'timed' | 'untimed'>('untimed');
+  const hasAnswered = phase === 'answered' || phase === 'timeout';
+  const showAnswer = phase === 'answered' || answerRevealed;
 
-  // Countdown timer
-  useEffect(() => {
-    if (hasAnswered) return;
+  const checkCorrect = useCallback((selected: string): boolean => (
+    Array.isArray(question.correctAnswer)
+      ? question.correctAnswer.includes(selected)
+      : question.correctAnswer === selected
+  ), [question.correctAnswer]);
 
-    const interval = setInterval(() => {
-      setTimeLeft((prev) => Math.max(0, prev - 1));
-    }, 1000);
+  const switchToUntimed = useCallback((interrupted = false) => {
+    if (settled.current) return;
+    phaseRef.current = 'untimed';
+    clock.current = null;
+    setClockInterrupted(interrupted);
+    setPhase('untimed');
+  }, []);
 
-    return () => clearInterval(interval);
-  }, [hasAnswered]);
+  const finishTimeout = useCallback(() => {
+    if (settled.current) return;
+    // Claim the result before any state update or external callback.
+    settled.current = true;
+    phaseRef.current = 'timeout';
+    clock.current = null;
+    setTimeLeft(0);
+    setPhase('timeout');
+    onAnswer('超时', false, false, { outcome: 'timeout', timing: 'timed' });
+  }, [onAnswer]);
 
-  // Handle timeout
-  useEffect(() => {
-    if (timeLeft === 0 && !hasAnswered) {
-      setTimedOut(true);
-      setHasAnswered(true);
-      setIsCorrect(false);
-      onAnswer('超时', false);
+  /** Check both timer ticks and input against the same deadline, independent of paint order. */
+  const synchronizeClock = useCallback(() => {
+    if (phaseRef.current !== 'running' || settled.current) return;
+    const sample = readClock();
+    const run = clock.current;
+    const monotonicGap = sample && run ? sample.monotonic - run.last.monotonic : NaN;
+    const wallGap = sample && run ? sample.wall - run.last.wall : NaN;
+    if (document.hidden || !sample || !run || !Number.isFinite(monotonicGap)
+      || monotonicGap < 0 || wallGap < 0 || monotonicGap > MAX_CLOCK_GAP_MS
+      || Math.abs(monotonicGap - wallGap) > MAX_CLOCK_GAP_MS) {
+      switchToUntimed(true);
+      return;
     }
-  }, [timeLeft, hasAnswered, onAnswer]);
+    run.last = sample;
+    const remaining = Math.max(0, run.deadline - sample.monotonic);
+    setTimeLeft(Math.ceil(remaining / 1000));
+    if (remaining === 0) finishTimeout();
+  }, [finishTimeout, switchToUntimed]);
 
-  const checkCorrect = useCallback((selected: string): boolean => {
-    if (Array.isArray(question.correctAnswer)) {
-      return question.correctAnswer.includes(selected);
-    }
-    return question.correctAnswer === selected;
-  }, [question.correctAnswer]);
+  const startTimer = () => {
+    if (phaseRef.current !== 'ready' || settled.current) return;
+    const sample = readClock();
+    if (!sample || document.hidden) { switchToUntimed(true); return; }
+    clock.current = { deadline: sample.monotonic + timeLimit * 1000, last: sample };
+    phaseRef.current = 'running';
+    setPhase('running');
+  };
+
+  useEffect(() => {
+    if (phase !== 'running') return;
+    const interval = window.setInterval(synchronizeClock, 100);
+    const onVisibilityChange = () => { if (document.hidden) switchToUntimed(true); };
+    const onPageHide = () => switchToUntimed(true);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    window.addEventListener('pagehide', onPageHide);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('pagehide', onPageHide);
+    };
+  }, [phase, synchronizeClock, switchToUntimed]);
+
+  useEffect(() => {
+    if (!document.hidden && (phase === 'running' || phase === 'untimed')) firstOption.current?.focus();
+  }, [phase]);
 
   const handleSelect = useCallback((option: string) => {
-    if (hasAnswered) return;
+    if (settled.current || !['running', 'untimed'].includes(phaseRef.current)) return;
+    synchronizeClock();
+    if (settled.current) return; // Timeout wins at or after the deadline.
+    settled.current = true;
+    const timing = phaseRef.current === 'running' ? 'timed' : 'untimed';
     const correct = checkCorrect(option);
+    phaseRef.current = 'answered';
+    clock.current = null;
     setSelectedOption(option);
     setIsCorrect(correct);
-    setHasAnswered(true);
-    onAnswer(option, correct);
-  }, [checkCorrect, hasAnswered, onAnswer]);
+    setAnswerTiming(timing);
+    setPhase('answered');
+    onAnswer(option, correct, true, { outcome: 'answered', timing });
+  }, [checkCorrect, onAnswer, synchronizeClock]);
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      if (hasAnswered || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (settled.current || event.defaultPrevented || event.repeat || event.isComposing
+        || event.altKey || event.ctrlKey || event.metaKey) return;
+      const target = event.target;
+      if (target instanceof Element && (
+        target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])')
+        || (target !== document.body && !root.current?.contains(target))
+      )) return;
       const index = ({ '1': 0, '2': 1, '3': 2, '4': 3, a: 0, b: 1, c: 2, d: 3 } as Record<string, number>)[event.key.toLowerCase()];
-      if (index !== undefined && options[index]) handleSelect(options[index]);
+      if (index !== undefined && options[index] && ['running', 'untimed'].includes(phaseRef.current)) {
+        event.preventDefault();
+        handleSelect(options[index]);
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [hasAnswered, options, handleSelect]);
+  }, [options, handleSelect]);
 
   const getOptionState = (option: string): 'correct' | 'wrong' | 'dimmed' | 'default' => {
-    if (!hasAnswered) return 'default';
-    const isCorrectOption = checkCorrect(option);
-    if (isCorrectOption) return 'correct';
+    if (!showAnswer) return 'default';
+    if (checkCorrect(option)) return 'correct';
     if (option === selectedOption) return 'wrong';
     return 'dimmed';
   };
-
-  const isUrgent = timeLeft <= 10 && !hasAnswered;
-  const progressPercent = (timeLeft / timeLimit) * 100;
+  const correctText = Array.isArray(question.correctAnswer) ? question.correctAnswer.join('、') : question.correctAnswer;
+  const isUrgent = timeLeft <= 10 && phase === 'running';
+  const progressPercent = timeLimit > 0 ? Math.max(0, Math.min(100, (timeLeft / timeLimit) * 100)) : 0;
 
   return (
-    <div className="space-y-4">
-      {/* 计时器 */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-lg tabular-nums transition-colors ${
-              hasAnswered
-                ? 'bg-slate-100 text-slate-500'
-                : isUrgent
-                  ? 'bg-red-100 text-red-600'
-                  : 'bg-indigo-50 text-indigo-600'
-            }`}
-          >
-            <ClockIcon />
-            <span>{hasAnswered ? '已结束' : `${timeLeft}s`}</span>
-          </div>
-          {!hasAnswered && (
-            <span className="text-sm text-slate-500 font-medium">
-              ⚡ 限时挑战 · 按 1–4 或 A–D 作答
-            </span>
-          )}
-        </div>
-        {/* 进度条 */}
-        <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
-          <div
-            className={`h-full rounded-full transition-all duration-1000 ease-linear ${
-              isUrgent
-                ? 'bg-gradient-to-r from-red-500 to-red-600'
-                : 'bg-gradient-to-r from-indigo-500 to-indigo-600'
-            }`}
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-      </div>
-
-      {/* 题目 */}
-      <p className="text-lg font-medium text-slate-800 leading-relaxed">
-        {question.prompt}
-      </p>
-
-      {/* 超时提示 */}
-      {timedOut && (
-        <div role="status" className="flex items-center gap-3 p-4 rounded-xl border-2 bg-red-50 border-red-500">
-          <span className="flex items-center justify-center w-8 h-8 rounded-full shrink-0 bg-red-500 text-white">
-            <XIcon />
+    <div ref={root} className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3 justify-between">
+        {phase === 'ready' ? (
+          <button autoFocus onClick={startTimer} className="px-4 py-3 rounded-xl bg-indigo-600 text-white min-h-[48px]">
+            开始 {timeLimit} 秒练习
+          </button>
+        ) : phase === 'running' ? (
+          <span role="timer" aria-label="剩余时间" aria-live="off" className={`px-4 py-2 rounded-xl font-bold text-lg tabular-nums ${isUrgent ? 'bg-amber-50 text-amber-800' : 'bg-indigo-50 text-indigo-600'}`}>
+            {timeLeft}s
           </span>
-          <div className="flex-1">
-            <p className="text-sm font-bold text-red-700">时间到！</p>
-            <p className="text-sm text-green-600 mt-0.5">
-              正确答案：{Array.isArray(question.correctAnswer) ? question.correctAnswer.join('、') : question.correctAnswer}
-            </p>
-          </div>
+        ) : <span className="text-sm font-medium text-slate-600">{hasAnswered ? '本题已结束' : '不限时练习'}</span>}
+        {(phase === 'ready' || phase === 'running') && (
+          <button onClick={() => {
+            synchronizeClock();
+            if (phaseRef.current === 'ready' || phaseRef.current === 'running') switchToUntimed();
+          }} className="px-4 py-3 rounded-xl border border-slate-300 min-h-[48px]">
+            不限时练习
+          </button>
+        )}
+      </div>
+      {phase === 'running' && (
+        <div aria-hidden="true" className="h-2 bg-slate-200 rounded-full overflow-hidden">
+          <div className="h-full rounded-full bg-indigo-500" style={{ width: `${progressPercent}%` }} />
         </div>
       )}
+      {phase !== 'ready' && <>
+        <p id={promptId} className="text-lg font-medium text-slate-800 leading-relaxed">{question.prompt}</p>
+        <p id={instructionId} className="text-sm text-slate-500">按 1–4 或 A–D 作答，也可逐个选择按钮。</p>
+      </>}
 
-      {/* 选项 */}
-      <div className="space-y-3">
+      {/* Keep the live region mounted. The timer itself is deliberately not a live region. */}
+      <div role="status" aria-live="polite" aria-atomic="true" className="text-sm text-slate-700">
+        {phase === 'ready' && '准备好后再开始，开始后显示题目；计时包含读题与选择，也可以选择不限时练习。计时结果只作练习表现，不计知识得分。'}
+        {phase === 'running' && '计时已开始，可随时切换为不限时练习。'}
+        {phase === 'untimed' && (clockInterrupted ? '计时已中断，已转为不限时练习。请继续作答，本次不计速度。' : '本题不限时，请先想清楚计算方法。')}
+        {phase === 'timeout' && (
+          <div className="p-4 rounded-xl border border-amber-300 bg-amber-50">
+            <p className="font-bold">时间到！</p>
+            <p>本次未在时限内完成，不代表不会；本题不计知识得分，也不记为知识错误。</p>
+            {showAnswer && <><p className="mt-1">正确答案：{correctText}</p><p className="mt-1">{question.explanation}</p></>}
+          </div>
+        )}
+        {phase === 'answered' && (
+          <div className="flex items-center gap-3 p-4 rounded-xl border border-blue-200 bg-blue-50">
+            <span aria-hidden="true" className={isCorrect ? 'text-green-600' : 'text-red-600'}>{isCorrect ? <CheckIcon /> : <XIcon />}</span>
+            <div>
+              <p className="font-bold">{isCorrect ? '回答正确！' : '回答错误'}</p>
+              {!isCorrect && <p className="mt-1">正确答案：{correctText}</p>}
+              <p className="mt-1">{question.explanation}</p>
+              {answerTiming === 'timed' && <p className="mt-1">本次为限时练习，结果不计入知识得分。</p>}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {phase !== 'ready' && <div role="group" aria-labelledby={promptId} aria-describedby={instructionId} className="space-y-3">
         {options.map((option, index) => {
           const state = getOptionState(option);
-          const letter = optionLetters[index] ?? String(index + 1);
-
           return (
-            <button
-              key={index}
-              onClick={() => handleSelect(option)}
-              disabled={hasAnswered}
-              autoFocus={index === 0}
-              className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 text-left min-h-[48px] ${
-                state === 'correct'
-                  ? 'bg-green-50 border-green-500'
-                  : state === 'wrong'
-                    ? 'bg-red-50 border-red-500'
-                    : state === 'dimmed'
-                      ? 'bg-white border-slate-200 opacity-50'
-                      : 'bg-white border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50 cursor-pointer'
-              }`}
-            >
-              {/* 选项字母徽章 */}
-              <span
-                className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold shrink-0 ${
-                  state === 'correct'
-                    ? 'bg-green-500 text-white'
-                    : state === 'wrong'
-                      ? 'bg-red-500 text-white'
-                      : 'bg-slate-100 text-slate-600'
-                }`}
-              >
-                {letter}
-              </span>
-
-              {/* 选项文本 */}
+            <button key={index} ref={index === 0 ? firstOption : undefined}
+              onClick={() => handleSelect(option)} disabled={hasAnswered}
+              className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 text-left min-h-[48px] ${state === 'correct' ? 'bg-green-50 border-green-500' : state === 'wrong' ? 'bg-red-50 border-red-500' : state === 'dimmed' ? 'bg-white border-slate-200 opacity-50' : 'bg-white border-slate-200 enabled:hover:border-indigo-400'}`}>
+              <span className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold shrink-0 bg-slate-100 text-slate-600">{optionLetters[index] ?? String(index + 1)}</span>
               <span className="flex-1 text-slate-700">{option}</span>
-
-              {/* 状态图标 */}
-              {state === 'correct' && (
-                <span className="text-green-600 shrink-0">
-                  <CheckIcon />
-                </span>
-              )}
-              {state === 'wrong' && (
-                <span className="text-red-600 shrink-0">
-                  <XIcon />
-                </span>
-              )}
+              {state === 'correct' && <span aria-hidden="true" className="text-green-600"><CheckIcon /></span>}
+              {state === 'wrong' && <span aria-hidden="true" className="text-red-600"><XIcon /></span>}
             </button>
           );
         })}
-      </div>
-
-      {/* 解析（答题后或超时后都显示） */}
-      {hasAnswered && !timedOut && (
-        <div role="status" className="flex items-center gap-3 p-4 rounded-xl border-2 bg-blue-50 border-blue-200">
-          <span
-            className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 ${
-              isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-            }`}
-          >
-            {isCorrect ? <CheckIcon /> : <XIcon />}
-          </span>
-          <div className="flex-1">
-            <p
-              className={`text-sm font-bold ${
-                isCorrect ? 'text-green-700' : 'text-red-700'
-              }`}
-            >
-              {isCorrect ? '回答正确！' : '回答错误'}
-            </p>
-            {!isCorrect && (
-              <p className="text-sm text-green-600 mt-0.5">
-                正确答案：{Array.isArray(question.correctAnswer) ? question.correctAnswer.join('、') : question.correctAnswer}
-              </p>
-            )}
-          </div>
-        </div>
-      )}
-
-      {hasAnswered && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
-          <span className="text-blue-500 shrink-0">
-            <InfoIcon />
-          </span>
-          <div>
-            <p className="text-sm font-medium text-blue-900 mb-1">解析</p>
-            <p className="text-sm text-blue-800 leading-relaxed">
-              {question.explanation}
-            </p>
-          </div>
-        </div>
+      </div>}
+      {phase === 'timeout' && !showAnswer && (
+        <button onClick={() => setAnswerRevealed(true)} className="px-4 py-3 rounded-xl border border-indigo-300 text-indigo-700 min-h-[48px]">
+          查看答案与解析
+        </button>
       )}
     </div>
   );

@@ -55,6 +55,11 @@
       "correctAnswer": "92",
       "explanation": "23 × 4：个位 3 × 4 = 12，写 2 进 1；十位 2 × 4 = 8，加进位 1 = 9。所以 23 × 4 = 92。",
       "timeLimit": 15,
+      "timing": {
+        "goal": "fluency",
+        "reviewStatus": "pending",
+        "rationale": "本题涉及个位乘法、进位和十位合并；原15秒尚无按年级、操作方式和辅助技术分层的校准证据，完成教学复核前仅提供不限时练习。"
+      },
       "points": 10
     },
     { "id": "q6", "type": "fill-blank", "prompt": "迁移题：把312拆成300、10和2，312×3=？", "correctAnswer": "936", "explanation": "300×3+10×3+2×3=900+30+6=936。", "points": 10 }

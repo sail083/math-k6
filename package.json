@@ -10,6 +10,7 @@
     "typecheck": "tsc -b",
     "preview": "vite preview",
     "test": "NODE_OPTIONS=--no-experimental-webstorage vitest run",
+    "test:timed-quality": "NODE_OPTIONS=--no-experimental-webstorage vitest run src/test/timedChallengeSafety.test.tsx src/test/timedChallengeContent.test.ts src/test/timedChallengeScoring.test.tsx src/test/timedChallengeKeyboard.test.tsx src/test/gameResultAnnouncements.test.tsx",
     "test:watch": "NODE_OPTIONS=--no-experimental-webstorage vitest",
     "prepare": "husky"
   },

@@ -165,6 +165,18 @@ export interface DragItemSpec {
 
 export type EvidenceType = 'conceptual' | 'procedural' | 'transfer' | 'retention';
 
+/** Timing approval is a teaching decision; pending content always runs without a timer. */
+export interface TimedPracticePolicy {
+  goal: 'fluency' | 'reasoning';
+  reviewStatus: 'pending' | 'approved';
+  rationale: string;
+  review?: {
+    reviewer: string;
+    reviewedAt: string;          // YYYY-MM-DD
+    evidence: string;            // inspectable calibration/review reference, not a claimed norm
+  };
+}
+
 export interface Question {
   id: string;
   type: GameType;
@@ -174,6 +186,7 @@ export interface Question {
   explanation: string;
   dragItems?: DragItemSpec[];    // 拖拽匹配 / 拖拽拼装用
   timeLimit?: number;            // 限时挑战（秒）
+  timing?: TimedPracticePolicy;
   points: number;
   // ===== 知识图谱技能映射（向后兼容可选字段）=====
   primarySkillId?: string;       // 主技能 ID（如 'frac.notation'）
