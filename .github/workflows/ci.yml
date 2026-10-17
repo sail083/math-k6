@@ -1,0 +1,126 @@
+name: Code quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  merge_group:
+    types: [checks_requested]
+  workflow_dispatch:
+
+# PR code runs without repository write access or production credentials.
+permissions:
+  contents: read
+
+concurrency:
+  group: code-quality-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+    working-directory: .
+
+env:
+  CI: 'true'
+  TZ: UTC
+  LANG: C.UTF-8
+  HUSKY: '0'
+  # Override any inherited public configuration; unit tests use mocks/fallbacks.
+  VITE_SUPABASE_URL: ''
+  VITE_SUPABASE_ANON_KEY: ''
+
+jobs:
+  checks:
+    name: Quality / ${{ matrix.label }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: lint
+            label: Lint
+            script: lint
+          - id: typecheck
+            label: TypeScript
+            script: typecheck
+          - id: unit
+            label: Unit tests
+            script: test:ci
+          - id: build
+            label: Production build
+            script: build
+          - id: content
+            label: Course content
+            script: test:content:ci
+    steps:
+      - name: Check out the tested revision
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up pinned Node.js and npm cache
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Pin npm and record the environment
+        run: |
+          set -euo pipefail
+          mkdir -p "reports/${{ matrix.id }}"
+          npm install --global "$(node -p "require('./package.json').packageManager")" --registry=https://registry.npmjs.org/ --no-audit --no-fund 2>&1 | tee "reports/${{ matrix.id }}/environment.log"
+          node --version | tee -a "reports/${{ matrix.id }}/environment.log"
+          npm --version | tee -a "reports/${{ matrix.id }}/environment.log"
+          git rev-parse HEAD | tee -a "reports/${{ matrix.id }}/environment.log"
+          sha256sum package-lock.json | tee -a "reports/${{ matrix.id }}/environment.log"
+
+      - name: Install locked dependencies including dev tools
+        id: install
+        run: |
+          set -euo pipefail
+          npm ci --include=dev --no-audit --no-fund 2>&1 | tee "reports/${{ matrix.id }}/install.log"
+
+      - name: Run ${{ matrix.label }}
+        id: check
+        run: |
+          set -euo pipefail
+          npm run "${{ matrix.script }}" 2>&1 | tee "reports/${{ matrix.id }}/output.log"
+
+      - name: Upload logs and test reports even on failure
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: quality-${{ matrix.id }}-${{ github.run_attempt }}
+          path: reports/${{ matrix.id }}/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Summarize the check
+        if: ${{ always() }}
+        env:
+          CHECK_LABEL: ${{ matrix.label }}
+          INSTALL_OUTCOME: ${{ steps.install.outcome }}
+          CHECK_OUTCOME: ${{ steps.check.outcome }}
+        run: |
+          printf '### %s\n\n| Step | Outcome |\n| --- | --- |\n| Install | %s |\n| Check | %s |\n\nTested commit: `%s`. Download this job\047s `quality-*` artifact for logs and any JUnit report.\n' "$CHECK_LABEL" "$INSTALL_OUTCOME" "$CHECK_OUTCOME" "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+
+  required:
+    # Keep this name stable: select it as the required status check for main.
+    name: CI required
+    needs: checks
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every quality job to succeed
+        env:
+          CHECKS_RESULT: ${{ needs.checks.result }}
+        run: |
+          if [[ "$CHECKS_RESULT" != 'success' ]]; then
+            echo "::error::Quality checks did not all succeed (result: $CHECKS_RESULT). Open the failed job and download its quality-* artifact."
+            exit 1
+          fi
+          echo 'All five quality checks passed.'

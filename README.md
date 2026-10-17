@@ -1,5 +1,7 @@
 # React + TypeScript + Vite
 
+项目的 GitHub Actions 自动质量检查、固定运行环境、课程回归与分支必需状态检查配置见 [CI 执行说明](docs/ci-quality-checks.md)。
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:
