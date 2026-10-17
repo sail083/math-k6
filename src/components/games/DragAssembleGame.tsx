@@ -168,6 +168,7 @@ export default function DragAssembleGame({ question, onAnswer }: DragAssembleGam
         <>
           {/* 正确 / 错误反馈条 */}
           <div
+            role="status"
             className={`flex items-center gap-3 p-4 rounded-xl border-2 ${
               isCorrect
                 ? 'bg-green-50 border-green-500'

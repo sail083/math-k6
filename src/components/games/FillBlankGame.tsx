@@ -116,6 +116,7 @@ export default function FillBlankGame({ question, onAnswer }: FillBlankGameProps
         <>
           {/* 正确 / 错误反馈条 */}
           <div
+            role="status"
             className={`flex items-center gap-3 p-4 rounded-xl border-2 ${
               resolvedCorrect
                 ? 'bg-green-50 border-green-500'

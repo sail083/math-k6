@@ -170,6 +170,7 @@ export default function TimelineGame({ question, onAnswer }: TimelineGameProps) 
       {(hasAnswered || showRetryFeedback) && (
         <>
           <div
+            role="status"
             className={`flex items-center gap-3 p-4 rounded-xl border-2 ${
               isCorrect
                 ? 'bg-green-50 border-green-500'

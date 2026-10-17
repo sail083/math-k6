@@ -132,7 +132,7 @@ export default function TimedChallengeGame({ question, onAnswer }: TimedChalleng
 
       {/* 超时提示 */}
       {timedOut && (
-        <div className="flex items-center gap-3 p-4 rounded-xl border-2 bg-red-50 border-red-500">
+        <div role="status" className="flex items-center gap-3 p-4 rounded-xl border-2 bg-red-50 border-red-500">
           <span className="flex items-center justify-center w-8 h-8 rounded-full shrink-0 bg-red-500 text-white">
             <XIcon />
           </span>
@@ -201,7 +201,7 @@ export default function TimedChallengeGame({ question, onAnswer }: TimedChalleng
 
       {/* 解析（答题后或超时后都显示） */}
       {hasAnswered && !timedOut && (
-        <div className="flex items-center gap-3 p-4 rounded-xl border-2 bg-blue-50 border-blue-200">
+        <div role="status" className="flex items-center gap-3 p-4 rounded-xl border-2 bg-blue-50 border-blue-200">
           <span
             className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 ${
               isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white'

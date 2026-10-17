@@ -186,6 +186,7 @@ export default function DragMatchGame({ question, onAnswer }: DragMatchGameProps
         <>
           {/* 反馈条 */}
           <div
+            role="status"
             className={`flex items-center gap-3 p-4 rounded-xl border-2 ${
               !hadMistake
                 ? 'bg-green-50 border-green-500'

@@ -151,7 +151,7 @@ export default function ChoiceGame({ question, onAnswer }: ChoiceGameProps) {
 
       {/* 解析（答对或第二次答错后显示） */}
       {resolved && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
+        <div role="status" className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
           <span className="text-blue-500 shrink-0">
             <InfoIcon />
           </span>
