@@ -120,12 +120,14 @@ Agent 日常流程：从最新 main 建分支 → 实现及本地检查 → 用 
 | 失败报告链路 | 临时失败用例经过同一 `test:ci` + `tee` 管道：退出 1，JUnit failures=1，包含文件/行号的 `::error` 注解；验证后删除临时用例，再跑上述全量测试 |
 | 汇总判定 | 本地执行 gate 脚本：仅 success 返回 0；failure/cancelled/skipped 均返回 1 |
 | 差异空白检查 | `git diff --check` 通过 |
-| 真实 GitHub Actions | 等待把工作流写入 GitHub 并生成真实 run；本地通过不能替代 runner、缓存、artifact 上传及 PR 事件验收 |
+| 真实 GitHub Actions | [首轮 PR run 39042584563](https://github.com/sail083/math-k6/actions/runs/39042584563) 已 `completed/success`：五项检查及 `CI required` 全部成功，五份 artifact 已上传 |
 | main push / merge queue / 必需检查阻止合并 | 尚未执行；本次不合并 main 或变更保护设置 |
 
-当前连接已完成仓库/文件读取、分支状态与 rulesets 查询；保护详情读取返回 403。具备普通代码分支/PR 操作工具，但 `.github/workflows/*` 写入还受 GitHub App 的 **Workflows: write**（或适用令牌的 workflow 权限）限制。是否能实际写入以 API 返回为准，不能仅根据仓库 `push=true` 推断。
+首轮真实运行的 head 为 `c3e370c82a08766e64a67b28f88c9fadfd99b4b8`，测试合并提交为 `b75c58eaf7a14db89b65ff109eda123157e42e52`，事件为 `pull_request`。日志确认 runner 使用 Node 24.19.0、npm 11.9.0，独立安装依赖，全量 29 文件/612 项和课程 4 文件/159 项均通过；测试报告写入 `/home/runner/work/math-k6/math-k6/reports/`，不同于本地 checkout 路径。artifact 分别为 `quality-lint-1`、`quality-typecheck-1`、`quality-unit-1`、`quality-build-1`、`quality-content-1`，过期时间为 2026-10-31。后续最新提交的运行状态以 [PR #1](https://github.com/sail083/math-k6/pull/1) 的 Checks 为准；此处保留首轮已经发生的证据。
 
-分支保护设置、Actions 启用/策略和工作流文件写入是三个不同权限点。若集成不能写 workflow，使用交付补丁由有相应权限的账号提交；不需要提供任何 Vercel 或 Supabase 密钥。只在 PR 分支提交，避免现有 main Git 集成产生生产部署；本次不合并 main。
+当前连接已经实际完成 `.github/workflows/*` 写入、独立分支创建、[草稿 PR #1](https://github.com/sail083/math-k6/pull/1) 创建、Actions jobs/logs/artifacts 读取。由此确认本连接能完成这次代码与工作流变更，不能仅根据仓库 `push=true` 推断其他权限。保护详情读取仍返回 403，且没有可用的管理写入操作；未修改必需状态检查、Ruleset 或 Actions 设置。
+
+分支保护设置、Actions 启用/策略和工作流文件写入是三个不同权限点。其他 Agent 若使用权限较低的集成，仍可能需要 GitHub App 的 **Workflows: write**（或适用令牌的 workflow 权限）才能提交本配置；不需要提供任何 Vercel 或 Supabase 密钥。只在 PR 分支提交，避免现有 main Git 集成产生生产部署；本次不合并 main。现有 Vercel 集成会响应 PR，属于仓库既有行为，本次没有增加部署步骤或修改其项目配置。
 
 ### 官方参考
 
