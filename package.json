@@ -2,6 +2,7 @@
   "name": "math-k6",
   "private": true,
   "version": "1.0.0",
+  "packageManager": "npm@11.9.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,6 +11,9 @@
     "typecheck": "tsc -b",
     "preview": "vite preview",
     "test": "NODE_OPTIONS=--no-experimental-webstorage vitest run",
+    "test:ci": "npm run test -- --maxWorkers=2 --reporter=verbose --reporter=github-actions --reporter=junit --outputFile.junit=reports/unit/junit.xml",
+    "test:content": "npm run test -- src/test/content.test.ts src/test/knowledgeGraph.test.ts src/test/courseApplicationModel.test.tsx src/test/languageLearning.test.tsx",
+    "test:content:ci": "npm run test:content -- --maxWorkers=2 --reporter=verbose --reporter=github-actions --reporter=junit --outputFile.junit=reports/content/junit.xml",
     "test:watch": "NODE_OPTIONS=--no-experimental-webstorage vitest",
     "prepare": "husky"
   },
