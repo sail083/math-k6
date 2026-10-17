@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import type { GameConfig, Question } from '@/lib/types';
 import { useProgress } from '@/context/ProgressContext';
 import ChoiceGame from '@/components/games/ChoiceGame';
@@ -9,6 +9,7 @@ import DragAssembleGame from '@/components/games/DragAssembleGame';
 import TimelineGame from '@/components/games/TimelineGame';
 import TimedChallengeGame from '@/components/games/TimedChallengeGame';
 import UiIcon from '@/components/UiIcon';
+import type { TimedAnswerDetails } from '@/lib/timedChallengeQuality';
 
 interface GameRunnerProps {
   game: GameConfig;
@@ -28,6 +29,8 @@ export interface AnswerRecord {
   selected: string | string[];
   correct: boolean;
   firstTry: boolean;
+  outcome?: 'answered' | 'timeout';
+  timing?: 'timed' | 'untimed';
 }
 
 export function calculateStars(correctRate: number, passThreshold: number): number {
@@ -104,6 +107,7 @@ export default function GameRunner({
   const [answers, setAnswers] = useState<Record<string, AnswerRecord>>({});
   const [gameStatus, setGameStatus] = useState<GameStatus>('playing');
   const [run, setRun] = useState(0);
+  const submittedQuestionIds = useRef(new Set<string>());
 
   // Freeze review mode for the lifetime of this course attempt.
   // Captured once when the component mounts; the React key on GameRunner
@@ -118,8 +122,10 @@ export default function GameRunner({
   const hasReviewSets = !!(game.reviewSets?.d1 && game.reviewSets?.d7);
 
   const maxScore = useMemo(
-    () => activeQuestions.reduce((sum, q) => sum + q.points, 0),
-    [activeQuestions],
+    () => activeQuestions.reduce((sum, q) => sum + (
+      answers[q.id]?.outcome === 'timeout' || answers[q.id]?.timing === 'timed' ? 0 : q.points
+    ), 0),
+    [activeQuestions, answers],
   );
   const requiredRate = masteryThreshold(game.passThreshold);
 
@@ -127,7 +133,7 @@ export default function GameRunner({
     () =>
       activeQuestions.reduce((sum, q) => {
         const answer = answers[q.id];
-        return sum + (answer?.correct ? q.points : 0);
+        return sum + (answer?.correct && answer.timing !== 'timed' ? q.points : 0);
       }, 0),
     [answers, activeQuestions],
   );
@@ -147,20 +153,24 @@ export default function GameRunner({
   const isAnswered = answers[currentQuestion.id] !== undefined;
   const progressPercent = ((currentQuestionIndex + 1) / activeQuestions.length) * 100;
 
-  const handleAnswer = (selected: string, isCorrect: boolean, firstTry: boolean = true) => {
-    if (answers[currentQuestion.id]) return;
+  const handleAnswer = (selected: string, isCorrect: boolean, firstTry: boolean = true, details?: TimedAnswerDetails) => {
+    if (submittedQuestionIds.current.has(currentQuestion.id)) return;
+    submittedQuestionIds.current.add(currentQuestion.id);
+    const correct = details?.outcome === 'timeout' ? false : isCorrect;
     setAnswers((prev) => ({
       ...prev,
-      [currentQuestion.id]: { selected, correct: isCorrect, firstTry },
+      [currentQuestion.id]: { selected, correct, firstTry, ...details },
     }));
     // Record skill evidence once per question submission (guard above ensures no re-recording)
-    if (currentQuestion.primarySkillId && currentQuestion.evidenceType) {
+    if (details?.outcome !== 'timeout' && details?.timing !== 'timed'
+      && currentQuestion.primarySkillId && currentQuestion.evidenceType
+      && (currentQuestion.type !== 'timed-challenge' || currentQuestion.evidenceType === 'procedural')) {
       const mode: 'initial' | 'd1' | 'd7' =
         frozenReviewMode === 'd1' ? 'd1' :
         frozenReviewMode === 'd7' ? 'd7' : 'initial';
       recordSkillEvidence(
         currentQuestion.primarySkillId,
-        isCorrect,
+        correct,
         firstTry,
         currentQuestion.evidenceType,
         mode,
@@ -198,6 +208,7 @@ export default function GameRunner({
   };
 
   const handleRestart = () => {
+    submittedQuestionIds.current.clear();
     setCurrentQuestionIndex(0);
     setAnswers({});
     setGameStatus('playing');
@@ -351,10 +362,13 @@ export default function GameRunner({
 
           {/* 得分摘要 */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100">
-            <span className="text-sm text-slate-500">得分</span>
+            <span className="text-sm text-slate-500">知识得分</span>
             <span className="text-lg font-bold text-slate-800 tabular-nums">{score}</span>
             <span className="text-sm text-slate-400">/ {maxScore}</span>
           </div>
+          {activeQuestions.some((q) => answers[q.id]?.timing === 'timed') && (
+            <p className="text-sm text-slate-600 mt-2">计时练习不计入知识得分，也不记为知识错误；仍需通过不限时迁移验证。</p>
+          )}
         </div>
 
         {/* 答题回顾 */}
@@ -363,6 +377,7 @@ export default function GameRunner({
           <div className="space-y-4">
             {activeQuestions.map((q, index) => {
               const answer = answers[q.id];
+              const timedOut = answer?.outcome === 'timeout';
               const correct = answer?.correct ?? false;
               const selectedText = answer
                 ? Array.isArray(answer.selected)
@@ -381,12 +396,14 @@ export default function GameRunner({
                   <div className="flex items-start gap-3 p-3 bg-slate-50">
                     <span
                       className={`shrink-0 flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${
-                        correct
+                        timedOut
+                          ? 'bg-amber-100 text-amber-800'
+                          : correct
                           ? 'bg-green-100 text-green-600'
                           : 'bg-red-100 text-red-600'
                       }`}
                     >
-                      {correct ? '✓' : '✗'}
+                      {timedOut ? '—' : correct ? '✓' : '✗'}
                     </span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-slate-700">
@@ -401,11 +418,13 @@ export default function GameRunner({
                         ) : null}
                       </p>
                       <p className="text-sm text-slate-600 mt-0.5">{q.prompt}</p>
+                      {timedOut && <p className="text-sm text-amber-800 mt-1">未在时限内完成 · 不记知识错误</p>}
+                      {!timedOut && answer?.timing === 'timed' && <p className="text-sm text-slate-600 mt-1">限时练习表现 · 不计知识得分</p>}
                     </div>
                   </div>
                   {!correct && answer && (
                     <div className="px-3 pb-3 pt-2 space-y-1 bg-white border-t border-slate-100">
-                      <p className="text-xs text-red-500">你的答案：{selectedText}</p>
+                      {!timedOut && <p className="text-xs text-red-500">你的答案：{selectedText}</p>}
                       <p className="text-xs text-green-600">正确答案：{correctText}</p>
                       <p className="text-xs text-slate-500 mt-1">{q.explanation}</p>
                     </div>
@@ -461,7 +480,7 @@ export default function GameRunner({
             {isReview ? `复习（${frozenReviewMode === 'd1' ? '第一次' : '第二次'}）· ` : ''}第 {currentQuestionIndex + 1} / {activeQuestions.length} 题
           </span>
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 font-medium tabular-nums">
-            得分: {score} / {maxScore}
+            知识得分: {score} / {maxScore}
           </span>
         </div>
         <div className="h-2 bg-slate-200 rounded-full overflow-hidden" role="progressbar" aria-valuenow={Math.round(progressPercent)} aria-valuemin={0} aria-valuemax={100}>
@@ -473,7 +492,7 @@ export default function GameRunner({
       </div>
 
       {/* 题目卡片 */}
-      <div className={`rounded-xl bg-white border border-slate-200 shadow-sm p-5 sm:p-6${isAnswered ? (answers[currentQuestion.id]?.correct ? ' answer-correct-anim' : ' answer-wrong-anim') : ''}`}>
+      <div className={`rounded-xl bg-white border border-slate-200 shadow-sm p-5 sm:p-6${isAnswered && answers[currentQuestion.id]?.outcome !== 'timeout' ? (answers[currentQuestion.id]?.correct ? ' answer-correct-anim' : ' answer-wrong-anim') : ''}`}>
         {renderQuestion()}
       </div>
 
@@ -481,7 +500,7 @@ export default function GameRunner({
       {isAnswered && (
         <div className="flex justify-end">
           <button
-            autoFocus
+            autoFocus={currentQuestion.type !== 'timed-challenge'}
             onClick={handleNext}
             className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[48px] flex items-center gap-2"
           >

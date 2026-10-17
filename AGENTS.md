@@ -38,6 +38,12 @@ npm run test && npm run build
 - `npm run build` — TypeScript 类型检查 + Vite 生产构建（`tsc -b && vite build`）
 - `npm run lint` — oxlint 代码检查
 
+## 限时题质量准入
+
+- 修改限时题、计时、判分或反馈前阅读 `docs/timed-challenge-quality.md`，并执行 `npm run test:timed-quality` 与上述完整验证命令。
+- `pending` 时限只运行不限时练习；没有真实教学复核与分层校准依据，不得将建议阈值改为 `approved`，不得扩大待审题例外清单。
+- 计时表现与知识得分、技能证据分开；不得用计时单选替代不限时独立迁移验证，也不得用 DOM 测试替代真实屏幕阅读器验收。
+
 ## 高风险区域
 
 | 区域 | 风险说明 |

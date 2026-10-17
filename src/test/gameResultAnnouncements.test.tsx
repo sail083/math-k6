@@ -8,6 +8,7 @@ import DragMatchGame from '@/components/games/DragMatchGame';
 import DragAssembleGame from '@/components/games/DragAssembleGame';
 import TimelineGame from '@/components/games/TimelineGame';
 import TimedChallengeGame from '@/components/games/TimedChallengeGame';
+import { approvedTimedQuestion } from './fixtures/timedQuestion';
 
 const choice: Question = { id: 'choice-result', type: 'choice', prompt: '选择', options: ['对', '错'], correctAnswer: '对', explanation: '解析', points: 10 };
 const fillBlank: Question = { id: 'fill-result', type: 'fill-blank', prompt: '填空', correctAnswer: '7', explanation: '解析', points: 10 };
@@ -16,7 +17,7 @@ const ordered: Question = { id: 'ordered-result', type: 'drag-assemble', prompt:
 const timeline: Question = { ...ordered, id: 'timeline-result', type: 'timeline' };
 const match: Question = { id: 'match-result', type: 'drag-match', prompt: '配对', options: ['目标'], correctAnswer: '项目→目标', explanation: '解析', points: 10, dragItems: [{ id: 'item', label: '项目', target: '目标' }] };
 const timed: Question = { id: 'timed-result', type: 'timed-challenge', prompt: '限时', options: ['对', '错'], correctAnswer: '对', explanation: '解析', points: 10 };
-const timedOut: Question = { ...timed, id: 'timed-out-result', timeLimit: 1 };
+const timedOut: Question = { ...approvedTimedQuestion, id: 'timed-out-result', timeLimit: 1 };
 
 describe('game result announcements', () => {
   it('announces final results for every game type', () => {
@@ -42,6 +43,7 @@ describe('game result announcements', () => {
   it('announces a timed-out result', () => {
     vi.useFakeTimers();
     render(<TimedChallengeGame question={timedOut} onAnswer={vi.fn()} />);
+    fireEvent.click(screen.getByRole('button', { name: '开始 1 秒练习' }));
     act(() => vi.advanceTimersByTime(1000));
     expect(screen.getByRole('status')).toHaveTextContent('时间到！');
     vi.useRealTimers();

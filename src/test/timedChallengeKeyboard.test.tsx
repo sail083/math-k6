@@ -25,7 +25,7 @@ const game: GameConfig = {
     points: 10,
     timeLimit: 15,
     primarySkillId: 'mult.one-digit',
-    evidenceType: 'transfer',
+    evidenceType: 'procedural',
   }],
 };
 
@@ -41,7 +41,7 @@ describe('TimedChallengeGame keyboard answers', () => {
     expect(screen.getByText('回答正确！')).toBeInTheDocument();
     expect(progressMocks.recordSkillEvidence).toHaveBeenCalledTimes(1);
     expect(progressMocks.recordSkillEvidence).toHaveBeenCalledWith(
-      'mult.one-digit', true, true, 'transfer', 'initial',
+      'mult.one-digit', true, true, 'procedural', 'initial',
     );
   });
 
