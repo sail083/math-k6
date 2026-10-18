@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { GameConfig, Question } from '@/lib/types';
 import { useProgress } from '@/context/ProgressContext';
 import ChoiceGame from '@/components/games/ChoiceGame';
@@ -104,6 +104,7 @@ export default function GameRunner({
   const [answers, setAnswers] = useState<Record<string, AnswerRecord>>({});
   const [gameStatus, setGameStatus] = useState<GameStatus>('playing');
   const [run, setRun] = useState(0);
+  const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
   // Freeze review mode for the lifetime of this course attempt.
   // Captured once when the component mounts; the React key on GameRunner
@@ -122,6 +123,10 @@ export default function GameRunner({
     [activeQuestions],
   );
   const requiredRate = masteryThreshold(game.passThreshold);
+
+  useEffect(() => {
+    if (gameStatus !== 'playing') resultHeadingRef.current?.focus();
+  }, [gameStatus]);
 
   const score = useMemo(
     () =>
@@ -325,13 +330,13 @@ export default function GameRunner({
           {passed ? (
             <>
               <div className="result-icon is-success"><UiIcon name="spark" size={32}/></div>
-              <h2 className="text-2xl font-bold text-indigo-600 mb-2">{resultTitle(true)}</h2>
+              <h2 ref={resultHeadingRef} tabIndex={-1} className="text-2xl font-bold text-indigo-600 mb-2">{resultTitle(true)}</h2>
               <p className="text-sm text-slate-500">{resultSubtitle(true)}</p>
             </>
           ) : (
             <>
               <div className="result-icon"><UiIcon name="progress" size={32}/></div>
-              <h2 className="text-2xl font-bold text-slate-700 mb-2">{resultTitle(false)}</h2>
+              <h2 ref={resultHeadingRef} tabIndex={-1} className="text-2xl font-bold text-slate-700 mb-2">{resultTitle(false)}</h2>
               <p className="text-sm text-slate-500">{isReview ? resultSubtitle(false) : (correctRate < requiredRate && !transferPassed
                 ? `再答对一些（需要达到 ${Math.round(requiredRate * 100)}%），并让迁移验证题首次独立答对。`
                 : correctRate < requiredRate

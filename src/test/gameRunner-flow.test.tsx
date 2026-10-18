@@ -178,6 +178,7 @@ describe('GameRunner rendered regression', () => {
 
     expect(onPassed).not.toHaveBeenCalled();
     expect(screen.getByText('最后再练一下')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '最后再练一下' })).toHaveFocus();
   });
 
   it('moves focus to the next action after an answer', () => {
@@ -191,6 +192,22 @@ describe('GameRunner rendered regression', () => {
     fireEvent.click(screen.getByText('X'));
 
     expect(screen.getByRole('button', { name: '下一题' })).toHaveFocus();
+  });
+
+  it('moves focus to the course result after the final answer', () => {
+    render(
+      <GameRunner
+        game={gameWithReview}
+        knowledgePointId="kp-review"
+      />,
+    );
+
+    fireEvent.click(screen.getByText('X'));
+    fireEvent.click(screen.getByText('下一题'));
+    fireEvent.click(screen.getByTestId('fill-submit'));
+    fireEvent.click(screen.getByText('查看结果'));
+
+    expect(screen.getByRole('heading', { name: '当堂会' })).toHaveFocus();
   });
 
   /**
