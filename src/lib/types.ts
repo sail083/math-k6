@@ -165,6 +165,11 @@ export interface DragItemSpec {
 
 export type EvidenceType = 'conceptual' | 'procedural' | 'transfer' | 'retention';
 
+/** A time limit may only run after the course item has been reviewed. */
+export interface TimedPracticePolicy {
+  reviewStatus: 'pending' | 'approved';
+}
+
 export interface Question {
   id: string;
   type: GameType;
@@ -174,6 +179,7 @@ export interface Question {
   explanation: string;
   dragItems?: DragItemSpec[];    // 拖拽匹配 / 拖拽拼装用
   timeLimit?: number;            // 限时挑战（秒）
+  timing?: TimedPracticePolicy;  // 限时题的教学审查状态
   points: number;
   // ===== 知识图谱技能映射（向后兼容可选字段）=====
   primarySkillId?: string;       // 主技能 ID（如 'frac.notation'）

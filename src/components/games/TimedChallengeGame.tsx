@@ -9,6 +9,14 @@ interface TimedChallengeGameProps {
 
 const optionLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
+function hasApprovedTimeLimit(question: Question): question is Question & { timeLimit: number } {
+  const timeLimit = question.timeLimit;
+  return question.timing?.reviewStatus === 'approved'
+    && typeof timeLimit === 'number'
+    && Number.isSafeInteger(timeLimit)
+    && timeLimit > 0;
+}
+
 function ClockIcon() {
   return (
     <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
@@ -22,10 +30,14 @@ function ClockIcon() {
 }
 
 export default function TimedChallengeGame({ question, onAnswer }: TimedChallengeGameProps) {
-  const timeLimit = question.timeLimit ?? 30;
+  const timedPractice = hasApprovedTimeLimit(question);
+  const timeLimit = timedPractice ? question.timeLimit : 0;
   const options = useMemo(() => question.options ?? [], [question.options]);
 
   const [timeLeft, setTimeLeft] = useState(timeLimit);
+  const [practiceMode, setPracticeMode] = useState<'choose' | 'timed' | 'untimed'>(
+    timedPractice ? 'choose' : 'untimed',
+  );
   const [hasAnswered, setHasAnswered] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState(false);
@@ -33,24 +45,24 @@ export default function TimedChallengeGame({ question, onAnswer }: TimedChalleng
 
   // Countdown timer
   useEffect(() => {
-    if (hasAnswered) return;
+    if (hasAnswered || practiceMode !== 'timed') return;
 
     const interval = setInterval(() => {
       setTimeLeft((prev) => Math.max(0, prev - 1));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [hasAnswered]);
+  }, [hasAnswered, practiceMode]);
 
   // Handle timeout
   useEffect(() => {
-    if (timeLeft === 0 && !hasAnswered) {
+    if (practiceMode === 'timed' && timeLeft === 0 && !hasAnswered) {
       setTimedOut(true);
       setHasAnswered(true);
       setIsCorrect(false);
       onAnswer('超时', false);
     }
-  }, [timeLeft, hasAnswered, onAnswer]);
+  }, [timeLeft, hasAnswered, onAnswer, practiceMode]);
 
   const checkCorrect = useCallback((selected: string): boolean => {
     if (Array.isArray(question.correctAnswer)) {
@@ -70,13 +82,13 @@ export default function TimedChallengeGame({ question, onAnswer }: TimedChalleng
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      if (hasAnswered || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (practiceMode === 'choose' || hasAnswered || event.altKey || event.ctrlKey || event.metaKey) return;
       const index = ({ '1': 0, '2': 1, '3': 2, '4': 3, a: 0, b: 1, c: 2, d: 3 } as Record<string, number>)[event.key.toLowerCase()];
       if (index !== undefined && options[index]) handleSelect(options[index]);
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [hasAnswered, options, handleSelect]);
+  }, [hasAnswered, options, handleSelect, practiceMode]);
 
   const getOptionState = (option: string): 'correct' | 'wrong' | 'dimmed' | 'default' => {
     if (!hasAnswered) return 'default';
@@ -86,49 +98,73 @@ export default function TimedChallengeGame({ question, onAnswer }: TimedChalleng
     return 'dimmed';
   };
 
-  const isUrgent = timeLeft <= 10 && !hasAnswered;
-  const progressPercent = (timeLeft / timeLimit) * 100;
+  const isUrgent = practiceMode === 'timed' && timeLeft <= 10 && !hasAnswered;
+  const progressPercent = timeLimit > 0 ? (timeLeft / timeLimit) * 100 : 0;
 
   return (
     <div className="space-y-4">
       {/* 计时器 */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <div
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-lg tabular-nums transition-colors ${
-              hasAnswered
-                ? 'bg-slate-100 text-slate-500'
-                : isUrgent
-                  ? 'bg-red-100 text-red-600'
-                  : 'bg-indigo-50 text-indigo-600'
-            }`}
-          >
-            <ClockIcon />
-            <span>{hasAnswered ? '已结束' : `${timeLeft}s`}</span>
-          </div>
-          {!hasAnswered && (
+          {practiceMode === 'choose' ? (
+            <div className="flex flex-wrap gap-3">
+              <button
+                autoFocus
+                onClick={() => setPracticeMode('timed')}
+                className="px-4 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[48px]"
+              >
+                开始 {timeLimit} 秒练习
+              </button>
+              <button
+                onClick={() => setPracticeMode('untimed')}
+                className="px-4 py-3 rounded-xl bg-white border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 transition-colors min-h-[48px]"
+              >
+                不限时练习
+              </button>
+            </div>
+          ) : practiceMode === 'timed' || hasAnswered ? (
+            <div
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-lg tabular-nums transition-colors ${
+                hasAnswered
+                  ? 'bg-slate-100 text-slate-500'
+                  : isUrgent
+                    ? 'bg-red-100 text-red-600'
+                    : 'bg-indigo-50 text-indigo-600'
+              }`}
+            >
+              <ClockIcon />
+              <span>{hasAnswered ? '已结束' : `${timeLeft}s`}</span>
+            </div>
+          ) : (
+            <span className="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 font-medium">不限时练习</span>
+          )}
+          {practiceMode === 'timed' && !hasAnswered && (
             <span className="text-sm text-slate-500 font-medium">
               ⚡ 限时挑战 · 按 1–4 或 A–D 作答
             </span>
           )}
         </div>
         {/* 进度条 */}
-        <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
-          <div
-            className={`h-full rounded-full transition-all duration-1000 ease-linear ${
-              isUrgent
-                ? 'bg-gradient-to-r from-red-500 to-red-600'
-                : 'bg-gradient-to-r from-indigo-500 to-indigo-600'
-            }`}
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
+        {practiceMode === 'timed' && (
+          <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-1000 ease-linear ${
+                isUrgent
+                  ? 'bg-gradient-to-r from-red-500 to-red-600'
+                  : 'bg-gradient-to-r from-indigo-500 to-indigo-600'
+              }`}
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        )}
       </div>
 
       {/* 题目 */}
-      <p className="text-lg font-medium text-slate-800 leading-relaxed">
-        {question.prompt}
-      </p>
+      {practiceMode !== 'choose' && (
+        <p className="text-lg font-medium text-slate-800 leading-relaxed">
+          {question.prompt}
+        </p>
+      )}
 
       {/* 超时提示 */}
       {timedOut && (
@@ -146,7 +182,7 @@ export default function TimedChallengeGame({ question, onAnswer }: TimedChalleng
       )}
 
       {/* 选项 */}
-      <div className="space-y-3">
+      {practiceMode !== 'choose' && <div className="space-y-3">
         {options.map((option, index) => {
           const state = getOptionState(option);
           const letter = optionLetters[index] ?? String(index + 1);
@@ -197,7 +233,7 @@ export default function TimedChallengeGame({ question, onAnswer }: TimedChalleng
             </button>
           );
         })}
-      </div>
+      </div>}
 
       {/* 解析（答题后或超时后都显示） */}
       {hasAnswered && !timedOut && (
