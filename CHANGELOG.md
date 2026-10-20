@@ -1,5 +1,15 @@
 # Changelog
 
+## v2026.10.20 — Retry focus continuity
+
+### Fixed
+
+- 选择题和判断题首次答错后，焦点现在会自动移到仍可作答的选项，不再停留在已禁用的错误答案上。
+
+### Known Issues
+
+- 已登录课程、云端进度同步与重登回读仍需要受控账号验收。
+
 ## v2026.10.19 — Timed practice admission
 
 ### Changed

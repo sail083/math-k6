@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Question } from '@/lib/types';
 import { CheckIcon, XIcon, InfoIcon } from './shared';
 
@@ -15,6 +15,7 @@ export default function ChoiceGame({ question, onAnswer }: ChoiceGameProps) {
   const [resolved, setResolved] = useState(false);
   const [resolvedCorrect, setResolvedCorrect] = useState(false);
   const [finalSelection, setFinalSelection] = useState<string | null>(null);
+  const optionRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const options = question.options ?? [];
 
@@ -63,6 +64,12 @@ export default function ChoiceGame({ question, onAnswer }: ChoiceGameProps) {
     return () => window.removeEventListener('keydown', handler);
   }, [resolved, wrongOptions, attemptCount, options, handleSelect]);
 
+  useEffect(() => {
+    if (wrongOptions.length === 1 && !resolved) {
+      optionRefs.current.find((button) => button && !button.disabled)?.focus();
+    }
+  }, [wrongOptions, resolved]);
+
   const getOptionState = (option: string): 'correct' | 'wrong' | 'dimmed' | 'default' => {
     if (!resolved) {
       // Before resolution, only show tried-wrong options as wrong
@@ -91,6 +98,7 @@ export default function ChoiceGame({ question, onAnswer }: ChoiceGameProps) {
           return (
             <button
               key={index}
+              ref={(button) => { optionRefs.current[index] = button; }}
               onClick={() => handleSelect(option)}
               disabled={isDisabled}
               autoFocus={index === 0}

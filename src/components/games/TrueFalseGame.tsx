@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Question } from '@/lib/types';
 import { CheckIcon, XIcon, InfoIcon } from './shared';
 
@@ -12,6 +12,7 @@ export default function TrueFalseGame({ question, onAnswer }: TrueFalseGameProps
   const [resolved, setResolved] = useState(false);
   const [resolvedCorrect, setResolvedCorrect] = useState(false);
   const [finalSelection, setFinalSelection] = useState<string | null>(null);
+  const optionRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   // 选项优先取 question.options，否则回退为 ["对", "错"]
   const options = useMemo(
@@ -53,6 +54,12 @@ export default function TrueFalseGame({ question, onAnswer }: TrueFalseGameProps
     return () => window.removeEventListener('keydown', handler);
   }, [resolved, options, handleSelect]);
 
+  useEffect(() => {
+    if (wrongOptions.length === 1 && !resolved) {
+      optionRefs.current.find((button) => button && !button.disabled)?.focus();
+    }
+  }, [wrongOptions, resolved]);
+
   const getButtonState = (
     option: string,
   ): 'correct' | 'wrong' | 'dimmed' | 'default' => {
@@ -82,6 +89,7 @@ export default function TrueFalseGame({ question, onAnswer }: TrueFalseGameProps
           return (
             <button
               key={index}
+              ref={(button) => { optionRefs.current[index] = button; }}
               autoFocus={index === 0}
               onClick={() => handleSelect(option)}
               disabled={resolved || wrongOptions.includes(option)}

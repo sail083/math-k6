@@ -38,9 +38,12 @@ describe('first-error retry feedback', () => {
     const onAnswer = vi.fn();
     render(<ChoiceGame question={choiceQuestion} onAnswer={onAnswer} />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'B5' }));
+    const wrongChoice = screen.getByRole('button', { name: 'B5' });
+    wrongChoice.focus();
+    fireEvent.click(wrongChoice);
 
     expect(screen.getByRole('status')).toHaveTextContent('再想想');
+    expect(screen.getByRole('button', { name: 'A4' })).toHaveFocus();
     expect(onAnswer).not.toHaveBeenCalled();
   });
 
@@ -59,9 +62,12 @@ describe('first-error retry feedback', () => {
     const onAnswer = vi.fn();
     render(<TrueFalseGame question={trueFalseQuestion} onAnswer={onAnswer} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /错/ }));
+    const wrongJudgement = screen.getByRole('button', { name: /错/ });
+    wrongJudgement.focus();
+    fireEvent.click(wrongJudgement);
 
     expect(screen.getByRole('status')).toHaveTextContent('再想想');
+    expect(screen.getByRole('button', { name: /对/ })).toHaveFocus();
     expect(onAnswer).not.toHaveBeenCalled();
   });
 });
