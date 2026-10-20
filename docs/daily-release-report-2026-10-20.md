@@ -81,7 +81,13 @@ v2026.10.20 · Retry focus continuity
 
 ## Release Status
 
-待完成提交、推送和正式部署后更新；本地工程与公开入口门禁已通过。
+`DONE`。
+
+- 代码提交：`629ff92 fix: keep retry focus on answer`，已推送至 `main` 与 `release/daily-20261020-retry-focus`。
+- 正式部署命令：`vercel deploy . --prod -y --scope logsail --project math-k6`。
+- 正式部署：`dpl_8cK1KPDAmwCGWE9mZYb4TXqYLTmh`，状态 `READY`，地址 <https://math-k6-22m8e4rpw-logsail.vercel.app>，已别名至 <https://math.logsail.lat>。
+- 线上公开验收：`/login` 正常渲染；未登录访问 `/math/kp/g3-mult-1digit` 正确跳转 `/login`。未将其表述为已登录课程验收。
+- 回滚候选：上一日的已就绪生产部署 `dpl_GPg3DXwyfaNgvQieapjKA2ejAt6w`（<https://math-k6-odl0jouci-logsail.vercel.app>）；恢复别名前须核验其内容。
 
 ## Product Impact
 
@@ -107,4 +113,4 @@ v2026.10.20 · Retry focus continuity
 
 ## Final Status
 
-待发布门禁完成后更新。
+`DONE`：唯一版本目标、红灯复现、定向与全量回归、工程门禁、公开入口浏览器检查、提交、推送与正式部署均已完成。认证课程与云端进度仍保留为受控账号验收边界。
