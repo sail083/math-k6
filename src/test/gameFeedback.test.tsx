@@ -51,10 +51,14 @@ describe('first-error retry feedback', () => {
     const onAnswer = vi.fn();
     render(<FillBlankGame question={fillBlankQuestion} onAnswer={onAnswer} />);
 
-    fireEvent.change(screen.getByPlaceholderText('在此输入你的答案'), { target: { value: '6' } });
-    fireEvent.click(screen.getByRole('button', { name: '确认' }));
+    const input = screen.getByPlaceholderText('在此输入你的答案');
+    const submit = screen.getByRole('button', { name: '确认' });
+    fireEvent.change(input, { target: { value: '6' } });
+    submit.focus();
+    fireEvent.click(submit);
 
     expect(screen.getByRole('status')).toHaveTextContent('再想想');
+    expect(input).toHaveFocus();
     expect(onAnswer).not.toHaveBeenCalled();
   });
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## v2026.10.21 — Fill-blank retry focus
+
+### Fixed
+
+- 填空题首次答错并清空输入后，焦点现在会回到输入框；学生可以立即键入修正答案，不会停在已禁用的“确认”按钮上。
+
+### Known Issues
+
+- 已登录课程、云端进度同步与重登回读仍需要受控账号验收。
+
 ## v2026.10.20 — Retry focus continuity
 
 ### Fixed

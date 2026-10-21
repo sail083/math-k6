@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { Question } from '@/lib/types';
 import { CheckIcon, XIcon, InfoIcon } from './shared';
 
@@ -8,6 +8,7 @@ interface FillBlankGameProps {
 }
 
 export default function FillBlankGame({ question, onAnswer }: FillBlankGameProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState('');
   const [attemptCount, setAttemptCount] = useState(0);
   const [resolved, setResolved] = useState(false);
@@ -49,6 +50,7 @@ export default function FillBlankGame({ question, onAnswer }: FillBlankGameProps
       } else {
         // First wrong — clear input for retry, don't reveal answer
         setInputValue('');
+        inputRef.current?.focus();
       }
     }
   };
@@ -73,6 +75,7 @@ export default function FillBlankGame({ question, onAnswer }: FillBlankGameProps
       {/* 输入框 + 确认按钮 */}
       <div className="flex gap-3">
         <input
+          ref={inputRef}
           type="text"
           autoFocus
           value={resolved ? submittedValue : inputValue}
