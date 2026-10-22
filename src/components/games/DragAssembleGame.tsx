@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Question } from '@/lib/types';
 import { CheckIcon, XIcon, InfoIcon, ArrowUpIcon, ArrowDownIcon, shuffleArray } from './shared';
 
@@ -21,6 +21,13 @@ export default function DragAssembleGame({ question, onAnswer }: DragAssembleGam
   const [isCorrect, setIsCorrect] = useState(false);
   const [attemptCount, setAttemptCount] = useState(0);
   const [showRetryFeedback, setShowRetryFeedback] = useState(false);
+  const sortControlRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  useEffect(() => {
+    if (showRetryFeedback && !hasAnswered) {
+      sortControlRefs.current.find((button) => button && !button.disabled)?.focus();
+    }
+  }, [hasAnswered, showRetryFeedback]);
 
   const correctOrder = useMemo<string[]>(() => {
     if (Array.isArray(question.correctAnswer)) {
@@ -135,6 +142,7 @@ export default function DragAssembleGame({ question, onAnswer }: DragAssembleGam
                     <ArrowUpIcon />
                   </button>
                   <button
+                    ref={(button) => { sortControlRefs.current[index] = button; }}
                     onClick={() => moveDown(index)}
                     disabled={index === order.length - 1}
                     autoFocus={index === 0 && canReorder}

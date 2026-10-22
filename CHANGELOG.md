@@ -1,5 +1,15 @@
 # Changelog
 
+## v2026.10.22 — Ordering retry focus
+
+### Fixed
+
+- 排列题与时间线题首次答错后，焦点现在会回到可用的排序按钮；学生可以立即调整顺序，不会停在“确认”按钮上。
+
+### Known Issues
+
+- 已登录课程、云端进度同步与重登回读仍需要受控账号验收。
+
 ## v2026.10.21 — Fill-blank retry focus
 
 ### Fixed

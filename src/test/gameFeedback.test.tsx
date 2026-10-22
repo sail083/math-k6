@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import ChoiceGame from '@/components/games/ChoiceGame';
+import DragAssembleGame from '@/components/games/DragAssembleGame';
 import FillBlankGame from '@/components/games/FillBlankGame';
+import TimelineGame from '@/components/games/TimelineGame';
 import TrueFalseGame from '@/components/games/TrueFalseGame';
 import type { Question } from '@/lib/types';
 
@@ -31,6 +33,19 @@ const trueFalseQuestion: Question = {
   correctAnswer: '对',
   explanation: '1 加 1 等于 2。',
   points: 10,
+};
+
+const orderingQuestion: Question = {
+  id: 'ordering-retry-feedback',
+  type: 'drag-assemble',
+  prompt: '按正确顺序排列。',
+  correctAnswer: ['first', 'second'],
+  explanation: '按步骤依次完成。',
+  points: 10,
+  dragItems: [
+    { id: 'first', label: '第一步' },
+    { id: 'second', label: '第二步' },
+  ],
 };
 
 describe('first-error retry feedback', () => {
@@ -73,5 +88,23 @@ describe('first-error retry feedback', () => {
     expect(screen.getByRole('status')).toHaveTextContent('再想想');
     expect(screen.getByRole('button', { name: /对/ })).toHaveFocus();
     expect(onAnswer).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['drag-assemble', DragAssembleGame],
+    ['timeline', TimelineGame],
+  ])('moves focus to a sort control after a %s retry prompt', (_, Game) => {
+    const random = vi.spyOn(Math, 'random').mockReturnValue(0);
+    const onAnswer = vi.fn();
+    render(<Game question={orderingQuestion} onAnswer={onAnswer} />);
+
+    const submit = screen.getByRole('button', { name: '确认' });
+    submit.focus();
+    fireEvent.click(submit);
+
+    expect(screen.getByRole('status')).toHaveTextContent('还差一点');
+    expect(screen.getAllByRole('button', { name: '下移' })[0]).toHaveFocus();
+    expect(onAnswer).not.toHaveBeenCalled();
+    random.mockRestore();
   });
 });
