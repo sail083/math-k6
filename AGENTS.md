@@ -31,12 +31,23 @@ math-k6 是基于 Vite + React 19 + TypeScript 的小学数学（三至六年级
 ## 验证命令
 
 ```bash
-npm run test && npm run build
+npm ci --include=dev --no-audit --no-fund
+npm run lint
+npm run typecheck
+npm run test:ci
+npm run test:content:ci
+npm run build
 ```
 
+- 使用 `.node-version` 固定 Node.js，使用 `package.json#packageManager` 固定 npm；依赖以 `package-lock.json` 为准，不以本地已有 `node_modules` 代替干净安装。
 - `npm run test` — 运行 Vitest 单元测试（`vitest run`）
+- `npm run test:ci` — 全量单测，限制 2 个 worker，输出逐例日志、GitHub 注解和 `reports/unit/junit.xml`
+- `npm run test:content:ci` — 独立执行数学内容、知识图谱、课程模型与语文/英语回归，输出 `reports/content/junit.xml`；不代替全量单测
+- `npm run typecheck` — 独立 TypeScript 类型检查
 - `npm run build` — TypeScript 类型检查 + Vite 生产构建（`tsc -b && vite build`）
 - `npm run lint` — oxlint 代码检查
+
+GitHub 的 `Code quality` 工作流在 PR、main 提交和 merge queue 上执行以上检查。提交沿用 `ci:` / `fix:` / `docs:` 等仓库惯例；本地 Husky 不能替代 GitHub 检查。提交 PR 后，必须确认最新测试提交的 `CI required` 成功并在交付记录中保留 run 链接；没有 run 证据时标记“等待 GitHub CI 验证”，不得用跳过测试、`continue-on-error` 或删除质量检查来获得通过。CI 只检查代码，不执行部署或数据库迁移。环境复现、失败定位和必需检查配置见 [CI 说明](docs/ci-quality-checks.md)。
 
 ## 高风险区域
 
