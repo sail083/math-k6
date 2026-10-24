@@ -1,5 +1,23 @@
 # Changelog
 
+## v2026.10.24 — Match retry focus
+
+### Added
+
+- 无。
+
+### Changed
+
+- 无。
+
+### Fixed
+
+- 配对题放错目标后，焦点现在会回到仍待匹配的项目，学生可立即重新选择继续作答。
+
+### Known Issues
+
+- 已登录课程、云端进度同步与重登回读仍需要受控账号验收。
+
 ## v2026.10.22 — Ordering retry focus
 
 ### Fixed

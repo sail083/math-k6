@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import ChoiceGame from '@/components/games/ChoiceGame';
 import DragAssembleGame from '@/components/games/DragAssembleGame';
+import DragMatchGame from '@/components/games/DragMatchGame';
 import FillBlankGame from '@/components/games/FillBlankGame';
 import TimelineGame from '@/components/games/TimelineGame';
 import TrueFalseGame from '@/components/games/TrueFalseGame';
@@ -46,6 +47,17 @@ const orderingQuestion: Question = {
     { id: 'first', label: '第一步' },
     { id: 'second', label: '第二步' },
   ],
+};
+
+const matchingQuestion: Question = {
+  id: 'matching-retry-focus',
+  type: 'drag-match',
+  prompt: '把数字配到对应分类。',
+  options: ['奇数', '偶数'],
+  correctAnswer: '1→奇数',
+  explanation: '1 是奇数。',
+  points: 10,
+  dragItems: [{ id: 'one', label: '数字 1', target: '奇数' }],
 };
 
 describe('first-error retry feedback', () => {
@@ -106,5 +118,18 @@ describe('first-error retry feedback', () => {
     expect(screen.getAllByRole('button', { name: '下移' })[0]).toHaveFocus();
     expect(onAnswer).not.toHaveBeenCalled();
     random.mockRestore();
+  });
+
+  it('returns focus to a match item after a wrong target', () => {
+    const onAnswer = vi.fn();
+    render(<DragMatchGame question={matchingQuestion} onAnswer={onAnswer} />);
+
+    fireEvent.click(screen.getByRole('button', { name: '数字 1' }));
+    const wrongTarget = screen.getByRole('button', { name: '偶数' });
+    wrongTarget.focus();
+    fireEvent.click(wrongTarget);
+
+    expect(screen.getByRole('button', { name: '数字 1' })).toHaveFocus();
+    expect(onAnswer).not.toHaveBeenCalled();
   });
 });

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Question } from '@/lib/types';
 import { CheckIcon, XIcon, InfoIcon, shuffleArray } from './shared';
 
@@ -31,9 +31,16 @@ export default function DragMatchGame({ question, onAnswer }: DragMatchGameProps
   const [wrongFlash, setWrongFlash] = useState<string | null>(null);
   const [hasAnswered, setHasAnswered] = useState(false);
   const [hadMistake, setHadMistake] = useState(false);
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const placedItemIds = new Set(Object.values(placements));
   const remainingItems = shuffledItems.filter((item) => !placedItemIds.has(item.id));
+
+  useEffect(() => {
+    if (wrongFlash && !hasAnswered) {
+      itemRefs.current.find((button) => button && !button.disabled)?.focus();
+    }
+  }, [hasAnswered, wrongFlash]);
 
   const handleItemClick = (itemId: string) => {
     if (hasAnswered) return;
@@ -110,6 +117,7 @@ export default function DragMatchGame({ question, onAnswer }: DragMatchGameProps
             return (
               <button
                 key={item.id}
+                ref={(button) => { itemRefs.current[index] = button; }}
                 autoFocus={index === 0}
                 onClick={() => handleItemClick(item.id)}
                 disabled={hasAnswered}
