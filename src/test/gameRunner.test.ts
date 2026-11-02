@@ -123,7 +123,7 @@ describe('frozen review mode (defect A regression)', () => {
     // Before D1: review_due at NOW+DAY
     expect(getReviewMode(p, 'kp1', NOW + DAY)).toBe('d1');
     // Simulate D1 pass — mastery becomes provisional with count=1
-    p = markDelayedReviewPass(p, 'kp1', NOW + DAY);
+    p = markDelayedReviewPass(p, 'kp1', NOW + DAY, 'd1');
     // Now getReviewMode returns null (no longer review_due)
     expect(getReviewMode(p, 'kp1', NOW + DAY)).toBeNull();
     // This proves why the frozen ref is necessary: without it, the

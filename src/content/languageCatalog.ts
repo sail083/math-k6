@@ -1,0 +1,114 @@
+import type { LanguageUnit } from '@/lib/types';
+
+export const chineseUnits: LanguageUnit[] = [
+  { id: 'zh-g3-context', grade: 3, title: '读不懂时，回到句子里', curriculumLabel: '原创阅读方法 · 非教材同步', summary: '借相邻句子的线索理解词语和代词，写一张有依据的阅读自助卡。', lessonIds: ['zh-g3-context-words', 'zh-g3-context-references', 'zh-g3-context-reading-card'] },
+  { id: 'zh-g3-oral', grade: 3, title: '听清楚，再回应', curriculumLabel: '原创口语交际 · 非教材同步', summary: '从文字模拟对话中抓要点、复述并提出清楚的问题。', lessonIds: ['zh-g3-oral-listen', 'zh-g3-oral-retell', 'zh-g3-oral-respond'] },
+  { id: 'zh-campus', grade: 3, title: '校园里的小发现', curriculumLabel: '原创观察表达 · 非教材同步', summary: '观察、阅读和表达，记下一件具体的小事。', lessonIds: ['zh-campus-words', 'zh-campus-reading', 'zh-campus-speaking'] },
+  { id: 'zh-g4-library', grade: 4, title: '把一件事写清楚', curriculumLabel: '原创记事表达 · 非教材同步', summary: '选准动作词，读懂事情经过，写一次合作。', lessonIds: ['zh-g4-library-words', 'zh-g4-library-reading', 'zh-g4-library-writing'] },
+  { id: 'zh-g4-explain', grade: 4, title: '把一个事物介绍清楚', curriculumLabel: '原创说明表达 · 非教材同步', summary: '找主题、排要点，写一张具体的事物介绍卡。', lessonIds: ['zh-g4-explain-main', 'zh-g4-explain-order', 'zh-g4-explain-card'] },
+  { id: 'zh-g4-dialogue', grade: 4, title: '听懂同伴，再回应', curriculumLabel: '原创对话理解 · 非教材同步', summary: '抓住建议、理由和条件，写一张确认回应卡。', lessonIds: ['zh-g4-dialogue-key', 'zh-g4-dialogue-confirm', 'zh-g4-dialogue-card'] },
+  { id: 'zh-g4-poetry', grade: 4, title: '从小细节读写诗歌', curriculumLabel: '原创能力课程 · 非教材同步', summary: '读出动作、画面与感觉，用自己的句子写一小节诗。', lessonIds: ['zh-g4-poetry-notice', 'zh-g4-poetry-images', 'zh-g4-poetry-writing'] },
+  { id: 'zh-g5-water', grade: 5, title: '用资料说明白', curriculumLabel: '原创资料说明 · 非教材同步', summary: '读懂记录与备注，用可靠细节介绍事物。', lessonIds: ['zh-g5-water-methods', 'zh-g5-water-reading', 'zh-g5-water-writing'] },
+  { id: 'zh-g5-merge', grade: 5, title: '把要点合成一段说明', curriculumLabel: '原创说明迁移 · 非教材同步', summary: '筛选要点、使用连接词，写给具体读者的操作说明。', lessonIds: ['zh-g5-merge-select', 'zh-g5-merge-connect', 'zh-g5-merge-card'] },
+  { id: 'zh-g5-report', grade: 5, title: '把资料讲给别人听', curriculumLabel: '原创口头汇报 · 非教材同步', summary: '筛选资料、按序讲述，写一张口述提纲卡；文字练习不等同真实听说达标。', lessonIds: ['zh-g5-report-select', 'zh-g5-report-order', 'zh-g5-report-card'] },
+  { id: 'zh-g5-poetry', grade: 5, title: '换个角度读写诗', curriculumLabel: '原创能力课程 · 非教材同步', summary: '比较讲述位置，分清诗句与推想，用细节修改一小节诗。', lessonIds: ['zh-g5-poetry-perspectives', 'zh-g5-poetry-unsaid', 'zh-g5-poetry-revision'] },
+  { id: 'zh-g6-reading-corner', grade: 6, title: '有依据地提建议', curriculumLabel: '原创建议表达 · 非教材同步', summary: '比较不同意见，用依据和可执行办法写建议。', lessonIds: ['zh-g6-reading-corner-evidence', 'zh-g6-reading-corner-reading', 'zh-g6-reading-corner-writing'] },
+  { id: 'zh-g6-speech', grade: 6, title: '把观点说得有依据', curriculumLabel: '原创观点表达 · 非教材同步', summary: '区分观点与事实，用理由和建议写一张发言卡。', lessonIds: ['zh-g6-speech-claim', 'zh-g6-speech-reason', 'zh-g6-speech-card'] },
+  { id: 'zh-g6-character', grade: 6, title: '用行为证据读人物', curriculumLabel: '原创阅读迁移 · 非教材同步', summary: '从动作和语言推断人物心情，写一张有边界的证据卡。', lessonIds: ['zh-g6-character-action', 'zh-g6-character-language', 'zh-g6-character-card'] },
+  { id: 'zh-g6-information', grade: 6, title: '把多份信息核对清楚', curriculumLabel: '原创能力课程 · 非教材同步', summary: '合并安排与通知，分清冲突和待核事项，写一份独立可读的说明。', lessonIds: ['zh-g6-information-combine', 'zh-g6-information-conflict', 'zh-g6-information-explain'] },
+  { id: 'zh-g6-reading-summary', grade: 6, title: '把一篇文章讲给别人听', curriculumLabel: '原创阅读迁移 · 非教材同步', summary: '抓主线、重组信息，写一张给缺席读者看的摘要卡。', lessonIds: ['zh-g6-reading-summary-main', 'zh-g6-reading-summary-order', 'zh-g6-reading-summary-card'] },
+];
+
+export const englishUnits: LanguageUnit[] = [
+  {
+    id: 'g3a-u1-friends',
+    grade: 3,
+    semester: '上册',
+    unit: 1,
+    title: "Let's be friends!",
+    curriculumLabel: '单元主题原创练习 · 非教材全文',
+    summary: '围绕结识朋友主题，练习问候、合作表达和朋友卡；不等同外研社2022课标版三上Unit 1完整教材单元。',
+    lessonIds: ['en-g3a-u1-meet', 'en-g3a-u1-help', 'en-g3a-u1-friend-card'],
+  },
+  {
+    id: 'g3a-u2-school-things', grade: 3, semester: '上册', unit: 2, title: 'My school things',
+    curriculumLabel: '单元主题原创练习 · 完整教材内容与版次待核',
+    summary: '认识学习用品、读懂物品位置，写一张介绍卡；字母活动仅作听读与字形观察。',
+    lessonIds: ['en-g3a-u2-things', 'en-g3a-u2-bag', 'en-g3a-u2-care-card'],
+  },
+  {
+    id: 'g3a-u3-colourful-world', grade: 3, semester: '上册', unit: 3, title: "It's a colourful world!",
+    curriculumLabel: '单元主题原创练习 · 完整教材内容与版次待核',
+    summary: '用颜色描述物品，听清肯定与否定，写一张想象画面卡；不要求辨认色块或上传图片。',
+    lessonIds: ['en-g3a-u3-colours', 'en-g3a-u3-find', 'en-g3a-u3-picture-card'],
+  },
+  {
+    id: 'g3b-u1-animals',
+    grade: 3,
+    semester: '下册',
+    unit: 1,
+    title: 'Animal friends',
+    curriculumLabel: '原创动物主题练习 · 非外研社2022教材同步',
+    summary: '原“公园里的动物”三课保留为三年级下册 Unit 1 的预备内容，不等同完整教材单元。',
+    lessonIds: ['en-park-animals', 'en-park-sentences', 'en-park-listen-read'],
+  },
+  {
+    id: 'g3b-short-word-bridge', grade: 3, semester: '下册', unit: 2, title: '从熟词读出短词',
+    curriculumLabel: '原创基础拓展 · 非外研社教材同步',
+    summary: '比较受控短词的词尾与开头，把词放进位置句；不等同完整自然拼读体系。',
+    lessonIds: ['en-g3-short-word-at', 'en-g3-short-word-en', 'en-g3-short-word-scene'],
+  },
+  { id:'g3b-routine', grade:3, semester:'下册', unit:3, title:'听懂课堂步骤', curriculumLabel:'原创能力拓展 · 非外研社2022教材同步', summary:'理解课堂动作顺序并写步骤卡。', lessonIds:['en-g3-routine-actions','en-g3-routine-order','en-g3-routine-card'] },
+  { id:'g3b-short-i', grade:3, semester:'下册', unit:4, title:'短元音 i 的短词', curriculumLabel:'原创自然拼读拓展 · 非外研社2022教材同步', summary:'用受控例词练习短元音 i、听辨和画面句；不等同完整教材单元。', lessonIds:['en-g3-short-i-sit-fit','en-g3-short-i-six-mix','en-g3-short-i-scene-card'] },
+  { id:'g3b-short-o', grade:3, semester:'下册', unit:5, title:'短元音 o 的短词', curriculumLabel:'原创自然拼读拓展 · 非外研社2022教材同步', summary:'用受控例词练习短元音 o、听辨和画面句；不等同完整教材单元。', lessonIds:['en-g3-short-o-hot-pot','en-g3-short-o-box-fox','en-g3-short-o-scene-card'] },
+  {
+    id: 'en-g4-sports', grade: 4, title: '运动与友好邀请',
+    curriculumLabel: '原创能力拓展 · 教材映射待复核',
+    summary: '表达能力、理解邀请，再写一张活动卡。教材单元映射尚待核验，这里是原创练习。',
+    lessonIds: ['en-g4-sports-abilities', 'en-g4-sports-invitation', 'en-g4-sports-card'],
+  },
+  {
+    id: 'en-g4-helping-plan', grade: 4, title: '一起把学习用品收好',
+    curriculumLabel: '原创能力拓展 · 非教材同步',
+    summary: '用已学词句请求帮助、说明角色分工，再写两个有顺序的步骤。',
+    lessonIds: ['en-g4-helping-ask', 'en-g4-helping-order', 'en-g4-helping-card'],
+  },
+  {
+    id: 'en-g4-notice-change', grade: 4, title: '听懂安排，改写并说清楚',
+    curriculumLabel: '原创能力拓展 · 非外研社2022教材同步',
+    summary: '从虚构通知中提取日期、地点、时间，比较变化并写确认卡。',
+    lessonIds: ['en-g4-notice-listen', 'en-g4-notice-update', 'en-g4-notice-confirm'],
+  },
+  { id:'en-g4-weather', grade:4, title:'看懂天气并给建议', curriculumLabel:'原创能力拓展 · 非外研社2022教材同步', summary:'理解虚构天气报告，写出对应穿着建议。', lessonIds:['en-g4-weather-read','en-g4-weather-advice','en-g4-weather-card'] },
+  { id:'en-g4-community', grade:4, semester:'下册', title:'在社区里请求帮助并说明路线', curriculumLabel:'原创能力拓展 · 非外研社2022教材同步', summary:'听懂礼貌请求和路线顺序，制作一个虚构地点卡。', lessonIds:['en-g4-community-help','en-g4-community-route','en-g4-community-card'] },
+  {
+    id: 'en-g5-plate', grade: 5, semester: '上册', unit: 1, title: "What's on your plate?",
+    curriculumLabel: '已核主题 · 原创练习 · 非外研社2022教材全文',
+    summary: '对应外研社2022课标新修订版五上Unit 1主题，练习餐盘描述与礼貌选择；不等同完整教材单元。',
+    lessonIds: ['en-g5-plate-food', 'en-g5-plate-menu', 'en-g5-plate-plan'],
+  },
+  { id: 'en-g5-habits', grade: 5, semester: '上册', unit: 2, title: '读懂一天的小习惯', curriculumLabel: '原创能力拓展 · 非外研社2022教材同步', summary: '按顺序说明虚构日常习惯并给出理由。', lessonIds: ['en-g5-habits-read','en-g5-habits-compare','en-g5-habits-card'] },
+  { id:'g5-long-listening', grade:5, semester:'上册', unit:3, title:'听懂连续通知', curriculumLabel:'原创连续听力拓展 · 非外研社2022教材同步', summary:'从较长原创通知中提取变化与行动顺序；无真实音频文件，不等同教材单元。', lessonIds:['en-g5-listen-plan','en-g5-listen-update','en-g5-listen-plan-card'] },
+  {
+    id: 'en-g6-money', grade: 6, title: '安排一笔虚构零用钱',
+    curriculumLabel: '原创能力拓展 · 教材映射待复核',
+    summary: '在假想商店里理解价格、理由和计划。教材单元映射尚待核验；不需要填写真实家庭金额。',
+    lessonIds: ['en-g6-money-choices', 'en-g6-money-reason', 'en-g6-money-plan'],
+  },
+  {
+    id: 'en-g6-story-plans', grade: 6, title: '给故事选一种表达方案',
+    curriculumLabel: '原创能力拓展 · 非教材同步',
+    summary: '比较讲述与写卡，区分偏好和条件，再写可调整的假想表达计划。',
+    lessonIds: ['en-g6-story-compare', 'en-g6-story-conditions', 'en-g6-story-flexible-plan'],
+  },
+  { id:'en-g6-opinions', grade:6, title:'比较看法并说明理由', curriculumLabel:'原创能力拓展 · 非外研社2022教材同步', summary:'比较虚构偏好并用because说明理由。', lessonIds:['en-g6-opinions-hear','en-g6-opinions-reason','en-g6-opinions-card'] },
+  {
+    id: 'en-g6-reflect', grade: 6, title: '读懂反馈并修改一处',
+    curriculumLabel: '原创能力拓展 · 非外研社2022教材同步',
+    summary: '读取反馈、落实一处修改并写说明卡；不等同完整教材单元。',
+    lessonIds: ['en-g6-reflect-notice', 'en-g6-reflect-revise', 'en-g6-reflect-card'],
+  },
+];
+
+export const chineseLessonIds = chineseUnits.flatMap((unit) => unit.lessonIds);
+export const englishLessonIds = englishUnits.flatMap((unit) => unit.lessonIds);

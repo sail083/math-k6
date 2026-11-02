@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { chineseLessonIds } from '@/content/chinese';
+import { chineseLessonIds, chineseUnits } from '@/content/chinese';
 import { englishLessonIds, englishUnits } from '@/content/english';
 import { getAllKnowledgePoints, getCourseTrack } from '@/lib/content';
 import { getPrimaryLearningTask } from '@/lib/platformTasks';
@@ -8,7 +8,7 @@ import type { ProgressData, SkillReviewSchedule } from '@/lib/types';
 const NOW = 1_700_000_000_000;
 const baseCourses = getAllKnowledgePoints().filter((course) => getCourseTrack(course.meta) === 'base');
 const firstMath = baseCourses[0];
-const allBasePassed = baseCourses.map((course) => course.meta.id);
+const allMathPassed = getAllKnowledgePoints().map((course) => course.meta.id);
 const empty = (): ProgressData => ({ passedKnowledgePoints: [], stars: {} });
 
 function dueSkill(skillId = 'frac.whole'): SkillReviewSchedule {
@@ -27,6 +27,31 @@ function dueSkill(skillId = 'frac.whole'): SkillReviewSchedule {
 }
 
 describe('getPrimaryLearningTask', () => {
+  it('uses catalog order for new tasks and resumes within the second unit of a grade', () => {
+    const poetry = chineseUnits.find((unit) => unit.id === 'zh-g4-poetry')!;
+    const beforePoetry = chineseUnits.slice(0, chineseUnits.indexOf(poetry)).flatMap((unit) => unit.lessonIds);
+    const progress: ProgressData = { ...empty(), passedKnowledgePoints: allMathPassed, languageLessons: {
+      chinese: { completedLessonIds: beforePoetry, currentLessonId: null, updatedAt: NOW },
+      english: { completedLessonIds: englishLessonIds, currentLessonId: null, updatedAt: NOW },
+    } };
+    expect(getPrimaryLearningTask(progress, NOW)?.link).toBe(`/chinese/${poetry.lessonIds[0]}`);
+    progress.languageLessons!.chinese = { completedLessonIds: [poetry.lessonIds[0]], currentLessonId: poetry.lessonIds[1], updatedAt: NOW };
+    expect(getPrimaryLearningTask(progress, NOW)).toMatchObject({ phase: 'resume', link: `/chinese/${poetry.lessonIds[1]}` });
+  });
+  it('resumes a grade-six English unit without requiring younger lessons', () => {
+    const current = englishUnits.find((unit) => unit.grade === 6)!.lessonIds[0];
+    const task = getPrimaryLearningTask({ ...empty(), languageLessons: {
+      english: { completedLessonIds: [], currentLessonId: current, updatedAt: NOW },
+    } }, NOW);
+    expect(task).toMatchObject({ subject: 'english', phase: 'resume', link: `/english/${current}` });
+  });
+  it('resumes an independently started grade-six Chinese unit before suggesting grade three', () => {
+    const current = chineseUnits.find((unit) => unit.grade === 6)!.lessonIds[0];
+    const task = getPrimaryLearningTask({ passedKnowledgePoints: [], stars: {}, languageLessons: {
+      chinese: { completedLessonIds: [], currentLessonId: current, updatedAt: NOW },
+    } }, NOW);
+    expect(task).toMatchObject({ subject: 'chinese', phase: 'resume', link: `/chinese/${current}` });
+  });
   it('puts a due review ahead of current work in all three subjects', () => {
     const progress: ProgressData = {
       ...empty(),
@@ -123,7 +148,7 @@ describe('getPrimaryLearningTask', () => {
 
   it('resumes a valid current Chinese lesson when math has no remaining base course', () => {
     const progress: ProgressData = {
-      passedKnowledgePoints: allBasePassed,
+      passedKnowledgePoints: allMathPassed,
       stars: {},
       languageLessons: {
         chinese: { completedLessonIds: [], currentLessonId: chineseLessonIds[0], updatedAt: NOW },
@@ -139,7 +164,7 @@ describe('getPrimaryLearningTask', () => {
 
   it('ignores a jumping language current and selects the first incomplete lesson', () => {
     const progress: ProgressData = {
-      passedKnowledgePoints: allBasePassed,
+      passedKnowledgePoints: allMathPassed,
       stars: {},
       languageLessons: {
         chinese: { completedLessonIds: [], currentLessonId: chineseLessonIds[2], updatedAt: NOW },
@@ -155,7 +180,7 @@ describe('getPrimaryLearningTask', () => {
 
   it('ignores a completed language current and advances to the first incomplete lesson', () => {
     const progress: ProgressData = {
-      passedKnowledgePoints: allBasePassed,
+      passedKnowledgePoints: allMathPassed,
       stars: {},
       languageLessons: {
         chinese: {
@@ -175,7 +200,7 @@ describe('getPrimaryLearningTask', () => {
 
   it('chooses Chinese when Chinese and English resume tasks tie', () => {
     const progress: ProgressData = {
-      passedKnowledgePoints: allBasePassed,
+      passedKnowledgePoints: allMathPassed,
       stars: {},
       languageLessons: {
         chinese: { completedLessonIds: [], currentLessonId: chineseLessonIds[0], updatedAt: NOW },
@@ -187,9 +212,9 @@ describe('getPrimaryLearningTask', () => {
   });
 
   it('resumes preserved animal-unit progress even while the new first unit is incomplete', () => {
-    const legacyLessonId = englishUnits[1].lessonIds[0];
+    const legacyLessonId = englishUnits.find((unit) => unit.id === 'g3b-u1-animals')!.lessonIds[0];
     const progress: ProgressData = {
-      passedKnowledgePoints: allBasePassed,
+      passedKnowledgePoints: allMathPassed,
       stars: {},
       languageLessons: {
         chinese: { completedLessonIds: chineseLessonIds, currentLessonId: null, updatedAt: NOW },
@@ -215,9 +240,36 @@ describe('getPrimaryLearningTask', () => {
     });
   });
 
-  it('returns null only when all base math and language lessons are complete with nothing due', () => {
+  it('recommends an eligible extension before unrelated base courses', () => {
+    const task = getPrimaryLearningTask({
+      passedKnowledgePoints: ['g3-add-sub-10000', 'g3-mult-1digit'],
+      stars: {},
+    }, NOW);
+
+    expect(task).toMatchObject({
+      subject: 'math',
+      phase: 'next',
+      courseId: 'g3-systematic-enumeration',
+      track: 'extension',
+      reason: '前置知识已完成，可以开始能力拓展',
+      link: '/math/kp/g3-systematic-enumeration',
+    });
+  });
+
+  it('recommends a challenge when no extension is eligible', () => {
+    expect(getPrimaryLearningTask({
+      passedKnowledgePoints: ['g3-division-remainder'],
+      stars: {},
+    }, NOW)).toMatchObject({
+      courseId: 'g3-cycle-pattern',
+      track: 'challenge',
+      reason: '前置知识已完成，可以开始浅奥挑战',
+    });
+  });
+
+  it('returns null only when all math and language lessons are complete with nothing due', () => {
     const progress: ProgressData = {
-      passedKnowledgePoints: allBasePassed,
+      passedKnowledgePoints: allMathPassed,
       stars: {},
       languageLessons: {
         chinese: { completedLessonIds: chineseLessonIds, currentLessonId: null, updatedAt: NOW },
@@ -230,7 +282,7 @@ describe('getPrimaryLearningTask', () => {
 
   it('does not throw on unknown skill and language current IDs', () => {
     const progress: ProgressData = {
-      passedKnowledgePoints: allBasePassed,
+      passedKnowledgePoints: allMathPassed,
       stars: {},
       learningGoal: { skillId: 'unknown-skill', source: 'home', startedAt: NOW, updatedAt: NOW },
       languageLessons: {

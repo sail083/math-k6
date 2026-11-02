@@ -1,0 +1,3 @@
+-- Historical local marker only: this file never updated the database function.
+-- The executable correction is 20260914095810_reconcile_published_language_lessons.sql.
+-- Do not treat comments or this marker as evidence that a lesson can save progress.

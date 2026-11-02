@@ -1,13 +1,15 @@
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useProgress } from '@/context/ProgressContext';
-import { englishLessonIds } from '@/content/english';
+import { englishLessonIds, chineseLessonIds } from '@/content/languageCatalog';
 import { getAllKnowledgePoints, getCourseTrack } from '@/lib/content';
 import { getPrimaryLearningTask, type PrimaryTask } from '@/lib/platformTasks';
 
 const mathCourses = getAllKnowledgePoints().filter((course) => getCourseTrack(course.meta) === 'base');
 const subjectLabels: Record<PrimaryTask['subject'], string> = { math: '数学', chinese: '语文', english: '英语' };
 const phaseLabels: Record<PrimaryTask['phase'], string> = { review: '待复习', resume: '继续学习', next: '下一课' };
+const trackLabels = { extension: '能力拓展', challenge: '浅奥挑战' } as const;
 
 interface LearningCenterProps {
   primaryTask: PrimaryTask | null;
@@ -21,6 +23,7 @@ interface LearningCenterProps {
   onImportLegacy: () => void;
   onDismissLegacy: () => void;
   onLogout: () => void | Promise<void>;
+  onPrimaryTaskOpen?: (task: PrimaryTask) => void;
 }
 
 export function LearningCenter({
@@ -35,15 +38,18 @@ export function LearningCenter({
   onImportLegacy,
   onDismissLegacy,
   onLogout,
+  onPrimaryTaskOpen,
 }: LearningCenterProps) {
   const mathDone = Math.max(0, Math.min(completedCount, mathTotalCount));
-  const chineseDone = Math.max(0, Math.min(chineseCompletedCount, 3));
+  const chineseTotalCount = chineseLessonIds.length;
+  const chineseDone = Math.max(0, Math.min(chineseCompletedCount, chineseTotalCount));
   const englishDone = Math.max(0, Math.min(englishCompletedCount, englishTotalCount));
   const mathProgress = mathTotalCount > 0 ? Math.round(mathDone / mathTotalCount * 100) : 0;
-  const chineseProgress = Math.round(chineseDone / 3 * 100);
+  const chineseProgress = chineseTotalCount > 0 ? Math.round(chineseDone / chineseTotalCount * 100) : 0;
   const englishProgress = englishTotalCount > 0 ? Math.round(englishDone / englishTotalCount * 100) : 0;
   const subjectLabel = primaryTask ? subjectLabels[primaryTask.subject] : '';
   const phaseLabel = primaryTask ? phaseLabels[primaryTask.phase] : '';
+  const trackLabel = primaryTask?.track ? trackLabels[primaryTask.track] : '';
 
   return (
     <div className="app-frame min-h-screen flex flex-col">
@@ -105,6 +111,7 @@ export function LearningCenter({
           {primaryTask ? (
             <Link
               to={primaryTask.link}
+              onClick={() => onPrimaryTaskOpen?.(primaryTask)}
               aria-label={`${primaryTask.cta}：${primaryTask.title}`}
               className={`group mt-4 block rounded-2xl border-2 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 motion-reduce:transform-none motion-reduce:transition-none sm:p-6 ${
                 primaryTask.phase === 'review'
@@ -123,7 +130,7 @@ export function LearningCenter({
                         ? 'text-indigo-700'
                         : 'text-emerald-700'
                   }`}>
-                    {subjectLabel} · {phaseLabel}
+                    {subjectLabel} · {phaseLabel}{trackLabel ? ` · ${trackLabel}` : ''}
                   </p>
                   <h3 className="mt-2 text-xl font-bold text-slate-900 sm:text-2xl">{primaryTask.title}</h3>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
@@ -139,8 +146,8 @@ export function LearningCenter({
           ) : (
             <div role="status" className="mt-4 rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-5 sm:p-6">
               <p className="text-xs font-bold text-emerald-700">已完成</p>
-              <h3 className="mt-2 text-xl font-bold text-slate-900 sm:text-2xl">本阶段学习已完成</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">语文、数学、英语当前课程都已完成，没有待复习任务。</p>
+              <h3 className="mt-2 text-xl font-bold text-slate-900 sm:text-2xl">当前可用课程已完成</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">语文、数学、英语当前可用课程已完成，暂时没有到期的复习任务。</p>
             </div>
           )}
         </section>
@@ -192,15 +199,15 @@ export function LearningCenter({
                 </div>
                 <h3 id="subject-chinese-title" className="mt-5 text-2xl font-bold text-slate-900">语文</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-500">
-                  已完成 {chineseDone} / 3 课
+                  已完成 {chineseDone} / {chineseTotalCount} 课
                 </p>
                 <div
                   role="progressbar"
                   aria-label="语文学习进度"
                   aria-valuemin={0}
-                  aria-valuemax={3}
+                  aria-valuemax={Math.max(chineseTotalCount, 1)}
                   aria-valuenow={chineseDone}
-                  aria-valuetext={`已完成 ${chineseDone} / 3 课`}
+                  aria-valuetext={`已完成 ${chineseDone} / ${chineseTotalCount} 课`}
                   className="mt-3 h-2 overflow-hidden rounded-full bg-rose-100"
                 >
                   <span className="block h-full rounded-full bg-rose-600" style={{ width: `${chineseProgress}%` }} />
@@ -256,22 +263,51 @@ export function LearningCenter({
 }
 
 export default function LearningCenterPage() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const {
     progress,
     legacyProgressAvailable,
     legacyCompletedKnowledgePointCount,
     importLegacyProgress,
     dismissLegacyProgress,
+    emitEvent,
   } = useProgress();
   const passed = new Set(progress.passedKnowledgePoints);
+  const primaryTask = getPrimaryLearningTask(progress, Date.now());
+  const viewedTaskId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (
+      !user
+      || !primaryTask?.track
+      || !primaryTask.courseId
+      || viewedTaskId.current === primaryTask.id
+    ) return;
+    viewedTaskId.current = primaryTask.id;
+    emitEvent({
+      clientEventId: `lc:htv:${primaryTask.id}`,
+      eventName: 'home_task_viewed',
+      courseId: primaryTask.courseId,
+      properties: { surface: 'learning-center', track: primaryTask.track, taskId: primaryTask.id },
+    });
+  }, [emitEvent, primaryTask, user]);
+
+  const handlePrimaryTaskOpen = (task: PrimaryTask) => {
+    if (!task.track || !task.courseId) return;
+    emitEvent({
+      clientEventId: `lc:hto:${task.id}`,
+      eventName: 'home_task_opened',
+      courseId: task.courseId,
+      properties: { surface: 'learning-center', track: task.track, taskId: task.id },
+    });
+  };
 
   return (
     <LearningCenter
-      primaryTask={getPrimaryLearningTask(progress, Date.now())}
+      primaryTask={primaryTask}
       completedCount={mathCourses.filter((course) => passed.has(course.meta.id)).length}
       mathTotalCount={mathCourses.length}
-      chineseCompletedCount={progress.languageLessons?.chinese?.completedLessonIds.length ?? 0}
+      chineseCompletedCount={chineseLessonIds.filter((id) => progress.languageLessons?.chinese?.completedLessonIds.includes(id)).length}
       englishCompletedCount={englishLessonIds.filter((id) => progress.languageLessons?.english?.completedLessonIds.includes(id)).length}
       englishTotalCount={englishLessonIds.length}
       legacyProgressAvailable={legacyProgressAvailable}
@@ -279,6 +315,7 @@ export default function LearningCenterPage() {
       onImportLegacy={importLegacyProgress}
       onDismissLegacy={dismissLegacyProgress}
       onLogout={logout}
+      onPrimaryTaskOpen={handlePrimaryTaskOpen}
     />
   );
 }

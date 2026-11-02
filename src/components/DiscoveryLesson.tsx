@@ -72,15 +72,19 @@ export default function DiscoveryLesson({ meta, explanation, prediction, interac
   const [answer, setAnswer] = useState<string>();
   const [attempted, setAttempted] = useState(false);
   const content = useMemo(() => buildDiscoveryContent(meta, explanation), [explanation, meta]);
-  const correctRule = content.rule;
+  const correctRule = content.check?.correctAnswer ?? content.rule;
   const distractors = useMemo(() => generateDistractors(correctRule, content, meta), [correctRule, content, meta]);
-  const choices = useMemo(() => [correctRule, ...distractors], [correctRule, distractors]);
+  const choices = useMemo(() => {
+    const items = content.check?.options ?? [correctRule, ...distractors];
+    const offset = Array.from(meta.id).reduce((total, char) => total + char.charCodeAt(0), 0) % items.length;
+    return [...items.slice(offset), ...items.slice(0, offset)];
+  }, [content, correctRule, distractors, meta.id]);
   const isCorrect = answer === correctRule;
   const slides = [
-    { eyebrow: '刚才我做了什么', title: '你换了两个情况来试', body: `你先猜“${prediction}”，然后动手试了 ${interactionCount} 次。两次的数字不一样，现在看看它们为什么都能用同一个办法。` },
-    { eyebrow: '我发现', title: correctRule, body: content.evidence },
+    { eyebrow: '刚才我做了什么', title: '回想刚才的探索', body: `你先猜“${prediction}”，然后进行了 ${interactionCount} 次操作。回想你改变了什么，再对照接下来的示例检查自己的想法。` },
+    { eyebrow: '我发现', title: content.rule, body: content.evidence },
     { eyebrow: '为什么', title: content.whyTitle, body: content.reason },
-    { eyebrow: '不看提示想一想', title: '哪一句是这节课真正要记住的？', body: '先自己想一想。选错不会马上给答案，我们会提醒你回想刚才试过的两个情况。' },
+    { eyebrow: '不看提示想一想', title: content.check?.prompt ?? '哪一句是这节课真正要记住的？', body: '先自己想一想。需要帮助时，可以返回前页重新学习，再回来作答。' },
     { eyebrow: '准备好了', title: '换一道题，也用这个办法试试', body: content.transfer },
   ];
 
@@ -100,14 +104,14 @@ export default function DiscoveryLesson({ meta, explanation, prediction, interac
         <span>{slides[step].eyebrow}</span>
         <h3>{slides[step].title}</h3>
         <p>{slides[step].body}</p>
-        {step === 0 ? <div className="evidence-pair"><div><small>我猜</small><strong>{prediction}</strong></div><b>然后</b><div><small>我试了</small><strong>{interactionCount} 个不同情况</strong></div></div> : null}
+        {step === 0 ? <div className="evidence-pair"><div><small>我猜</small><strong>{prediction}</strong></div><b>然后</b><div><small>我操作了</small><strong>{interactionCount} 次</strong></div></div> : null}
         {step === 3 ? <div className="retrieval-check">
           {choices.map(choice => <button type="button" key={choice} className={answer === choice ? 'is-selected' : ''} onClick={() => { setAnswer(choice); setAttempted(false); }}>{choice}</button>)}
-          {attempted && !isCorrect ? <p className="retrieval-feedback is-error">再想想：哪一句能同时说明你刚才试过的两个情况？</p> : null}
+          {attempted && !isCorrect ? <p className="retrieval-feedback is-error">再想想：回到前页，检查示例中的条件和结论是否都符合。</p> : null}
           {attempted && isCorrect ? <p className="retrieval-feedback is-correct">答对了。你记住的是办法，不是例题里的数字。</p> : null}
         </div> : null}
       </div>
-      <ConceptSketch meta={meta} step={step} content={content}/>
+      {step !== 3 ? <ConceptSketch meta={meta} step={step} content={content}/> : null}
     </article>
     <div className="deck-controls discovery-controls">
       <button type="button" className="icon-control" aria-label="上一页" disabled={step === 0} onClick={() => setStep(value => value - 1)}><UiIcon name="arrow-left"/></button>

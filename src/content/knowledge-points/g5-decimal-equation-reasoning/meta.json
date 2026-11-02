@@ -1,0 +1,12 @@
+{
+  "id": "g5-decimal-equation-reasoning",
+  "grade": 5,
+  "unit": 4,
+  "title": "小数乘除与等量关系",
+  "objectives": ["理解小数乘除的单位意义", "能用乘除法表示简单等量关系", "能用估算检查结果合理性"],
+  "prerequisites": ["g5-decimal-mult", "g5-decimal-div", "g5-equation"],
+  "track": "base",
+  "textbookRefs": [{ "version": "人教版", "grade": 5, "chapter": "五上第4单元" }],
+  "vizType": "number-line",
+  "hasFormula": false
+}

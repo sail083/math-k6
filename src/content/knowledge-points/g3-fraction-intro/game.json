@@ -1,14 +1,20 @@
 {
   "knowledgePointId": "g3-fraction-intro",
+  "evidenceVersion": "fraction-intro-2026-09-11-v1",
   "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
       "type": "choice",
-      "prompt": "把一个饼平均分成4份，取其中的1份，用分数怎么表示？",
-      "options": ["1/4", "4/1", "1/3", "3/4"],
-      "correctAnswer": "1/4",
-      "explanation": "平均分成4份（分母=4），取1份（分子=1），所以是1/4，读作四分之一。",
+      "prompt": "一张纸切成6块，其中5块较小，另一块较大。小林只数了块数，就把每块都叫作整张纸的1/6。这样对吗？",
+      "options": [
+        "对，只要有6块，每块就是1/6",
+        "不对，大小不等，不能把每块都叫作1/6",
+        "对，较大的块也和小块一样多",
+        "不对，6块中的每块都应该叫6/1"
+      ],
+      "correctAnswer": "不对，大小不等，不能把每块都叫作1/6",
+      "explanation": "把每块叫作整体的1/6，需要6块同样大。这里有大有小，不能只数6块就这样判断。不等大的块仍可测量它占整体多少，但不能仅凭块数得出每块都是1/6。",
       "points": 10,
       "primarySkillId": "frac.equal_partition",
       "evidenceType": "conceptual"
@@ -16,10 +22,15 @@
     {
       "id": "q2",
       "type": "choice",
-      "prompt": "分数 3/5 中，5 是什么？",
-      "options": ["分子", "分母", "分数线", "整数"],
-      "correctAnswer": "分母",
-      "explanation": "分数中下面的数叫分母，表示平均分成几份。5在下面，是分母，表示平均分成5份。上面的3是分子，表示取了3份。",
+      "prompt": "一条彩纸平均分成9段，取了2段，记录为2/9。记录中的分子2说明什么？",
+      "options": [
+        "整条平均分成2段",
+        "已经取了9段",
+        "整条纸变成了2条",
+        "取了其中2段"
+      ],
+      "correctAnswer": "取了其中2段",
+      "explanation": "分子表示取了几份，所以2表示取了2段。分母9才表示整条彩纸平均分成9段。",
       "points": 10,
       "primarySkillId": "frac.notation",
       "evidenceType": "conceptual"
@@ -27,10 +38,15 @@
     {
       "id": "q3",
       "type": "choice",
-      "prompt": "3/4 读作什么？",
-      "options": ["三分之四", "四分之三", "三四", "三除以四"],
-      "correctAnswer": "四分之三",
-      "explanation": "读分数时先读分母再读分子。分母是4，分子是3，所以读作四分之三。",
+      "prompt": "小雨要把分数卡片5/8读给同桌听，正确的读法是哪一个？",
+      "options": [
+        "五分之八",
+        "五又八",
+        "八分之五",
+        "八分之一"
+      ],
+      "correctAnswer": "八分之五",
+      "explanation": "读分数先读分母8，再读“分之”，最后读分子5，所以5/8读作八分之五。",
       "points": 10,
       "primarySkillId": "frac.notation",
       "evidenceType": "procedural"
@@ -38,41 +54,153 @@
     {
       "id": "q4",
       "type": "choice",
-      "prompt": "下面哪种情况可以用分数 1/2 表示？",
+      "prompt": "把两条同样长的纸带合起来看作一个整体。拿出其中完整的一条，占这个整体的几分之几？",
       "options": [
-        "把一个西瓜随便切成两块，大的一块",
-        "把一个西瓜平均切成两块，取其中一块",
-        "把一个西瓜切成三块，取其中一块",
-        "把两个西瓜平均分给一个人"
+        "1/2",
+        "1",
+        "2/1",
+        "1/4"
       ],
-      "correctAnswer": "把一个西瓜平均切成两块，取其中一块",
-      "explanation": "分数必须是平均分的结果。只有平均分成2份，取1份，才是1/2。随便切不是平均分，切成3块也不是2份。",
+      "correctAnswer": "1/2",
+      "explanation": "这里的整体是两条纸带合起来，不是一条。两条同样长，每条就是这个整体的一个等份；整体有2个等份，拿出1份，就是1/2。",
       "points": 10,
       "primarySkillId": "frac.whole",
-      "secondarySkillIds": ["frac.equal_partition"],
+      "secondarySkillIds": [
+        "frac.equal_partition"
+      ],
       "evidenceType": "conceptual"
     },
     {
       "id": "q5",
       "type": "choice",
-      "prompt": "把一根绳子平均分成6份，取其中的5份，用分数怎么表示？",
-      "options": ["5/6", "6/5", "1/6", "5/1"],
-      "correctAnswer": "5/6",
-      "explanation": "平均分成6份（分母=6），取5份（分子=5），所以是5/6，读作六分之五。",
+      "prompt": "一整块巧克力分成2行，每行5个同样大的小块。小禾拿走一整行。拿走的部分占整块巧克力的几分之几？",
+      "options": [
+        "2/5",
+        "5/5",
+        "10/5",
+        "5/10"
+      ],
+      "correctAnswer": "5/10",
+      "explanation": "整体共有2×5=10个等大的小块。一整行有5块，拿走5份，全部有10份，所以是5/10。也就是拿走了一半；本题选项中只有5/10表示这个量。",
       "points": 10,
       "primarySkillId": "frac.multiple_units",
-      "secondarySkillIds": ["frac.notation"],
+      "secondarySkillIds": [
+        "frac.notation"
+      ],
       "evidenceType": "procedural"
     },
     {
       "id": "q6",
       "type": "fill-blank",
-      "prompt": "把一个整体平均分成5份，取其中3份，写成分数是____。",
-      "correctAnswer": "3/5",
-      "explanation": "分母5表示平均分成5份，分子3表示取了3份。",
+      "prompt": "一张书签平均分成9格，其中2格贴星星，另外3格贴小花，没有重复贴格。有图案的部分占整张书签的几分之几？请用数字和斜线填写分数。",
+      "correctAnswer": "5/9",
+      "explanation": "有图案的是2+3=5格。整张书签是9个等大的格子，取了其中5份，所以有图案的部分是5/9。",
       "points": 10,
       "primarySkillId": "frac.multiple_units",
-      "secondarySkillIds": ["frac.notation"],
+      "secondarySkillIds": [
+        "frac.notation"
+      ],
+      "evidenceType": "transfer"
+    }
+  ],
+  "alternateQuestions": [
+    {
+      "id": "b-q1",
+      "type": "choice",
+      "prompt": "一张纸分成8块，涂了其中3块。要只按块数把涂色部分写成3/8，还必须确认什么？",
+      "options": [
+        "纸必须是红色的",
+        "涂色的3块必须连在一起",
+        "这8块是否同样大",
+        "每块必须是三角形"
+      ],
+      "correctAnswer": "这8块是否同样大",
+      "explanation": "只有确认8块是等份，才可以直接用取了3份、共有8份写成3/8。颜色、形状名称和是否连在一起都不是这里的必要条件。不等份时，不能只凭块数判断涂色占比。",
+      "points": 10,
+      "primarySkillId": "frac.equal_partition",
+      "evidenceType": "conceptual"
+    },
+    {
+      "id": "b-q2",
+      "type": "choice",
+      "prompt": "分数3/10记录了一张贴纸的涂色情况。分母10说明下面哪件事？",
+      "options": [
+        "整张贴纸平均分成10份",
+        "涂了10份",
+        "每份长10厘米",
+        "一共有10张贴纸"
+      ],
+      "correctAnswer": "整张贴纸平均分成10份",
+      "explanation": "分母10表示把这个整体平均分成10份；分子3表示涂了其中3份。分母不表示厘米数，也不表示有几张贴纸。",
+      "points": 10,
+      "primarySkillId": "frac.notation",
+      "evidenceType": "conceptual"
+    },
+    {
+      "id": "b-q3",
+      "type": "choice",
+      "prompt": "广播员看到卡片6/7，应当怎样读这个分数？",
+      "options": [
+        "六分之七",
+        "七分之六",
+        "六又七",
+        "七分之一"
+      ],
+      "correctAnswer": "七分之六",
+      "explanation": "先读下面的分母7，再读上面的分子6，所以6/7读作七分之六。",
+      "points": 10,
+      "primarySkillId": "frac.notation",
+      "evidenceType": "procedural"
+    },
+    {
+      "id": "b-q4",
+      "type": "choice",
+      "prompt": "把6块同样大的积木看作一个整体，平均分成两组，每组3块。小北拿出1块就说拿出了一半，哪种解释正确？",
+      "options": [
+        "他说得对，拿出1块就一定是一半",
+        "他说得不对，一半要拿出全部6块",
+        "他说得对，分成两组后每一块都是一半",
+        "他说得不对，这个整体的一半是一整组3块"
+      ],
+      "correctAnswer": "他说得不对，这个整体的一半是一整组3块",
+      "explanation": "整体是6块积木，平均分成两组，每组3块。一半指这两组中的一整组，应该有3块，不能把其中1块误当成整个整体的一半。",
+      "points": 10,
+      "primarySkillId": "frac.whole",
+      "secondarySkillIds": [
+        "frac.equal_partition"
+      ],
+      "evidenceType": "conceptual"
+    },
+    {
+      "id": "b-q5",
+      "type": "choice",
+      "prompt": "把8个同样大的花盆看作一个整体。前面3个和后面3个各贴了标记，没有重复。贴标记的花盆占全部花盆的几分之几？",
+      "options": [
+        "3/8",
+        "6/8",
+        "8/6",
+        "6/6"
+      ],
+      "correctAnswer": "6/8",
+      "explanation": "标记了3+3=6个花盆。全部8个花盆作为整体，每个是一个等份，标记了其中6份，所以是6/8。不是只数前面3个，也不能把分子分母颠倒。",
+      "points": 10,
+      "primarySkillId": "frac.multiple_units",
+      "secondarySkillIds": [
+        "frac.notation"
+      ],
+      "evidenceType": "procedural"
+    },
+    {
+      "id": "b-q6",
+      "type": "fill-blank",
+      "prompt": "一条彩纸原来平均分成7段，剪下其中2段，其余留下。留下的部分占剪之前整条彩纸的几分之几？请用数字和斜线填写分数。",
+      "correctAnswer": "5/7",
+      "explanation": "原来有7个等长的小段，剪下2段，留下7−2=5段。比较的整体仍是剪之前整条彩纸，所以分母仍是7，留下的部分是5/7。",
+      "points": 10,
+      "primarySkillId": "frac.multiple_units",
+      "secondarySkillIds": [
+        "frac.notation"
+      ],
       "evidenceType": "transfer"
     }
   ],
@@ -82,10 +210,14 @@
         {
           "id": "d1-q1",
           "type": "choice",
-          "prompt": "把一条彩带平均分成7份，取其中2份，用分数怎么表示？",
-          "options": ["2/7", "7/2", "2/2"],
-          "correctAnswer": "2/7",
-          "explanation": "平均分成7份（分母=7），取2份（分子=2），所以是2/7，读作七分之二。",
+          "prompt": "拼图记录写着：“整幅图平均分成10块，已经拼好7块。”哪一个分数能准确记录拼好的部分？",
+          "options": [
+            "10/7",
+            "7/7",
+            "7/10"
+          ],
+          "correctAnswer": "7/10",
+          "explanation": "记录中的10是全部等份数，写作分母；7是已经拼好的份数，写作分子。所以拼好的是整幅图的7/10。",
           "points": 10,
           "primarySkillId": "frac.notation",
           "evidenceType": "transfer"
@@ -93,9 +225,36 @@
         {
           "id": "d1-q2",
           "type": "fill-blank",
-          "prompt": "把一张正方形纸平均分成6份，取其中1份，写成分数是____。",
-          "correctAnswer": "1/6",
-          "explanation": "分母6表示平均分成6份，分子1表示取了1份，所以是1/6。",
+          "prompt": "每一片拼图都同样大，都是完整图案的1/7。拼成这个完整图案，一共需要这样的拼图片____片。（请填片数）",
+          "correctAnswer": "7",
+          "explanation": "每片是整体的七分之一，说明完整图案平均分成7个这样的等份。集齐7片，才是整个图案。",
+          "points": 10,
+          "primarySkillId": "frac.unit_fraction",
+          "evidenceType": "transfer"
+        }
+      ],
+      "alternateQuestions": [
+        {
+          "id": "d1-b-q1",
+          "type": "choice",
+          "prompt": "老师说：“请把九分之四写在记录卡上。”下面哪一张记录正确？",
+          "options": [
+            "4/9",
+            "9/4",
+            "4/4"
+          ],
+          "correctAnswer": "4/9",
+          "explanation": "九分之四，先听到的九是分母，四是分子；写成数字分数就是4/9。不能把先读的分母写到分子的位置。",
+          "points": 10,
+          "primarySkillId": "frac.notation",
+          "evidenceType": "transfer"
+        },
+        {
+          "id": "d1-b-q2",
+          "type": "fill-blank",
+          "prompt": "每个等长小段都是完整纸条的1/10。现在有9个这样的小段，还差____个同样的小段才能拼回完整纸条。（请填段数）",
+          "correctAnswer": "1",
+          "explanation": "每段是十分之一，一个完整纸条需要10个这样的小段。现在有9段，还差10−9=1段。这里问还差几段，不是问每段对应的分数。",
           "points": 10,
           "primarySkillId": "frac.unit_fraction",
           "evidenceType": "transfer"
@@ -107,10 +266,14 @@
         {
           "id": "d7-q1",
           "type": "choice",
-          "prompt": "分数 4/9 中，9 是什么？",
-          "options": ["分子", "分母", "分数线"],
-          "correctAnswer": "分母",
-          "explanation": "分数中下面的数叫分母，表示平均分成几份。9在下面，是分母。",
+          "prompt": "记录卡写着3/8，小可把8圈了起来。圈出的这个数叫什么，表示什么？",
+          "options": [
+            "分子，表示取了8份",
+            "分母，表示整体平均分成8份",
+            "分数线，表示3条线"
+          ],
+          "correctAnswer": "分母，表示整体平均分成8份",
+          "explanation": "3/8中，8在分母的位置，说明整体平均分成8份。分子是3，说明取了其中3份。",
           "points": 10,
           "primarySkillId": "frac.notation",
           "evidenceType": "retention"
@@ -118,12 +281,44 @@
         {
           "id": "d7-q2",
           "type": "fill-blank",
-          "prompt": "3/5 读作____（请写中文）。",
-          "correctAnswer": "五分之三",
-          "explanation": "读分数时先读分母再读分子。分母是5，分子是3，所以读作五分之三。",
+          "prompt": "请把分数4/7的读法写成中文：____。（只填读法，不加标点）",
+          "correctAnswer": "七分之四",
+          "explanation": "先读分母7，再读分子4，4/7读作七分之四。它也表示把整体平均分成7份，取其中4份。",
           "points": 10,
           "primarySkillId": "frac.notation",
-          "secondarySkillIds": ["frac.multiple_units"],
+          "secondarySkillIds": [
+            "frac.multiple_units"
+          ],
+          "evidenceType": "retention"
+        }
+      ],
+      "alternateQuestions": [
+        {
+          "id": "d7-b-q1",
+          "type": "choice",
+          "prompt": "一张图片的涂色记录为4/5。记录中的分子4告诉了我们什么？",
+          "options": [
+            "整体平均分成4份",
+            "这个整体有4张图片",
+            "取了5个等份中的4份"
+          ],
+          "correctAnswer": "取了5个等份中的4份",
+          "explanation": "分子4表示取了4份；分母5表示整体平均分成5份。因此4/5表示取了5个等份中的4份。",
+          "points": 10,
+          "primarySkillId": "frac.notation",
+          "evidenceType": "retention"
+        },
+        {
+          "id": "d7-b-q2",
+          "type": "fill-blank",
+          "prompt": "请把分数7/9的读法写成中文：____。（只填读法，不加标点）",
+          "correctAnswer": "九分之七",
+          "explanation": "分母9先读，分子7后读，所以7/9读作九分之七，表示把整体平均分成9份，取其中7份。",
+          "points": 10,
+          "primarySkillId": "frac.notation",
+          "secondarySkillIds": [
+            "frac.multiple_units"
+          ],
           "evidenceType": "retention"
         }
       ]

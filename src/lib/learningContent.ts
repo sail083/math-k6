@@ -1,4 +1,5 @@
 import type { KnowledgePointMeta } from '@/lib/types';
+import { discoveryOverrides } from '@/content/discovery-overrides';
 
 interface MarkdownSection {
   title: string;
@@ -7,6 +8,7 @@ interface MarkdownSection {
 }
 
 export interface DiscoveryContent {
+  check?: { prompt: string; options: string[]; correctAnswer: string };
   rule: string;
   evidence: string;
   whyTitle: string;
@@ -66,6 +68,7 @@ function scoreSection(section: MarkdownSection): number {
 }
 
 export function buildDiscoveryContent(meta: KnowledgePointMeta, markdown: string): DiscoveryContent {
+  if (discoveryOverrides[meta.id]) return discoveryOverrides[meta.id];
   const sections = getSections(markdown);
   const ranked = sections.map((section, index) => ({ section, index, score: scoreSection(section) }))
     .sort((a, b) => b.score - a.score || a.index - b.index);

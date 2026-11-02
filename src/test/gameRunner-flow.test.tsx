@@ -16,7 +16,7 @@ import GameRunner from '@/components/GameRunner';
 
 const progressMocks = {
   markInitialPass: vi.fn(),
-  markDelayedReviewPass: vi.fn(),
+  markDelayedReviewPass: vi.fn(() => true),
   markDelayedReviewFail: vi.fn(),
   recordSkillEvidence: vi.fn(),
 };
@@ -138,6 +138,19 @@ describe('GameRunner rendered regression', () => {
     vi.clearAllMocks();
   });
 
+  it('does not announce a pass or call completion when the frozen review stage is rejected', () => {
+    progressMocks.markDelayedReviewPass.mockReturnValueOnce(false);
+    const onPassed = vi.fn();
+    render(<GameRunner game={gameWithReview} knowledgePointId="kp-review" reviewMode="d1" onPassed={onPassed} />);
+    fireEvent.click(screen.getByText('P'));
+    fireEvent.click(screen.getByText('下一题'));
+    fireEvent.click(screen.getByTestId('fill-submit'));
+    fireEvent.click(screen.getByText('查看结果'));
+    expect(onPassed).not.toHaveBeenCalled();
+    expect(screen.getByRole('status')).toHaveTextContent('复习状态已更新');
+    expect(screen.queryByText('第一次复习通过')).not.toBeInTheDocument();
+  });
+
   it('calls onPassed once for an initial pass and displays the exact next action label', () => {
     const onPassed = vi.fn();
     render(
@@ -245,7 +258,7 @@ describe('GameRunner rendered regression', () => {
     expect(screen.getByText('20')).toBeInTheDocument();
     expect(screen.getByText('/ 20')).toBeInTheDocument();
 
-    expect(progressMocks.markDelayedReviewPass).toHaveBeenCalledWith('kp-review');
+    expect(progressMocks.markDelayedReviewPass).toHaveBeenCalledWith('kp-review', 'd1');
 
     // --- Simulate parent re-render with reviewMode=null ---
     act(() => {

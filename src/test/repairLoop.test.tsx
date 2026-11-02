@@ -1414,8 +1414,8 @@ describe('R4: Repair questions vs existing game.json dedup', () => {
     import: 'default',
   }) as Record<string, { questions: Array<{ prompt: string; correctAnswer: string | string[] }>; reviewSets?: { d1?: { questions: Array<{ prompt: string; correctAnswer: string | string[] }> }; d7?: { questions: Array<{ prompt: string; correctAnswer: string | string[] }> } } }>;
 
-  it('loads all 57 game.json files', () => {
-    expect(Object.keys(gameModules).length).toBe(57);
+  it('loads all registered game.json files', () => {
+    expect(Object.keys(gameModules).length).toBe(65);
   });
 
   it('36 repair questions have no exact prompt+answer match with existing initial/D1/D7 questions', () => {
@@ -3488,7 +3488,7 @@ describe('F10–F16 focused regression suite', () => {
       first_try: null,
       duration_ms: null,
       due_at: null,
-      app_version: '1.0.0',
+      app_version: '1.1.0',
       content_version: '1.0.0',
       properties: {},
     });

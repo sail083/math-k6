@@ -12,8 +12,15 @@ import {
   getDueReviewIds as getDueReviewIdsUtil,
   getReviewMode as getReviewModeUtil,
   setCurrentLearning as setCurrentLearningUtil,
-  pickBetterMastery,
+  mergeMasteryRecords,
   saveProgress,
+  captureCorruptProgress,
+  recoverCorruptProgress,
+  type CorruptProgressCapture,
+  claimCourseAttempt,
+  settleCourseAttempt,
+  mergeCourseAttempts,
+  isCourseAttemptModeCurrent,
   recordSkillEvidence as recordSkillEvidenceUtil,
   getSkillDisplayStatus as getSkillDisplayStatusUtil,
   hasDirectSkillEvidence as hasDirectSkillEvidenceUtil,
@@ -63,14 +70,17 @@ import {
 
 interface ProgressContextValue {
   progress: ProgressData;
+  assessmentOwnerId: string | undefined;
+  beginCourseAttempt: (key: string) => string | null;
+  finishCourseAttempt: (key: string, claim: string, passed: boolean, stars: number, hasReviewSets: boolean) => boolean;
   legacyProgressAvailable: boolean;
   legacyCompletedKnowledgePointCount: number;
   importLegacyProgress: () => void;
   dismissLegacyProgress: () => void;
   markPassed: (kpId: string, stars: number) => void;
   markInitialPass: (kpId: string, stars: number, hasReviewSets: boolean) => void;
-  markDelayedReviewPass: (kpId: string) => void;
-  markDelayedReviewFail: (kpId: string) => void;
+  markDelayedReviewPass: (kpId: string, expectedMode: 'd1' | 'd7') => boolean;
+  markDelayedReviewFail: (kpId: string, expectedMode: 'd1' | 'd7') => boolean;
   isPassed: (kpId: string) => boolean;
   isUnlocked: (prerequisites: string[]) => boolean;
   getStars: (kpId: string) => number;
@@ -79,7 +89,7 @@ interface ProgressContextValue {
   getReviewMode: (kpId: string) => 'd1' | 'd7' | null;
   setCurrentLearning: (kpId: string) => void;
   // ===== 技能证据 =====
-  recordSkillEvidence: (skillId: string, isCorrect: boolean, isFirstTry: boolean, evidenceType: EvidenceType, mode: SkillEvidenceMode) => void;
+  recordSkillEvidence: (skillId: string, isCorrect: boolean, isFirstTry: boolean, evidenceType: EvidenceType, mode: SkillEvidenceMode, claim?: { key: string; id: string | null }) => void;
   getSkillDisplayStatus: (skillId: string) => SkillDisplayStatus;
   hasDirectSkillEvidence: (skillId: string) => boolean;
   isSkillReadyForPath: (skillId: string) => boolean;
@@ -126,20 +136,7 @@ function mergeProgress(local: ProgressData, remote: ProgressData): ProgressData 
     stars[kpId] = Math.max(localStars[kpId] ?? 0, remoteStars[kpId] ?? 0);
   }
   // Merge mastery: prefer the record with higher delayedReviewCount (or stable)
-  const mastery: Record<string, import('@/lib/types').MasteryRecord> = {};
-  const allMasteryIds = new Set([
-    ...Object.keys(local.mastery ?? {}),
-    ...Object.keys(remote.mastery ?? {}),
-  ]);
-  for (const id of allMasteryIds) {
-    const l = local.mastery?.[id];
-    const r = remote.mastery?.[id];
-    if (l && r) {
-      mastery[id] = pickBetterMastery(l, r);
-    } else {
-      mastery[id] = l ?? r!;
-    }
-  }
+  const mastery = mergeMasteryRecords(local.mastery, remote.mastery);
   // Parse skillEvidence from both sides to ensure safe objects before merging
   const localEvidence = parseSkillEvidence(local.skillEvidence);
   const remoteEvidence = parseSkillEvidence(remote.skillEvidence);
@@ -205,6 +202,7 @@ function mergeProgress(local: ProgressData, remote: ProgressData): ProgressData 
     experimentAssignments,
     courseIntervention,
     languageLessons: Object.keys(languageLessons).length > 0 ? languageLessons : undefined,
+    courseAttempts: mergeCourseAttempts(local.courseAttempts, remote.courseAttempts),
   };
 }
 
@@ -215,6 +213,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const [legacyProgressAvailable, setLegacyProgressAvailable] = useState(false);
   const [legacyCompletedKnowledgePointCount, setLegacyCompletedKnowledgePointCount] = useState(0);
   const [syncAttempt, setSyncAttempt] = useState(0);
+  const [cacheRecovery, setCacheRecovery] = useState<'none' | 'recovering' | 'recovered' | 'failed'>('none');
   const progressRef = useRef(progress);
   progressRef.current = progress;
 
@@ -287,45 +286,63 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     return allSucceeded;
   }, [isActiveSync, syncLanguageCompletion]);
 
+  const getPersistedSnapshot = useCallback((expectedUserId?: string): ProgressData | null => {
+    if (!activeRef.current || activeUserIdRef.current !== expectedUserId) return null;
+    const latest = mergeProgress(progressRef.current, loadProgress(expectedUserId));
+    if (!saveProgress(latest, expectedUserId)) return null;
+    const saved = mergeProgress(latest, loadProgress(expectedUserId));
+    if (JSON.stringify(saved) !== JSON.stringify(progressRef.current)) {
+      progressRef.current = saved;
+      setProgress(saved);
+    }
+    return progressRef.current;
+  }, []);
+
   const syncCurrentProgress = useCallback(async (expectedUserId: string): Promise<boolean> => {
+    if (!activeRef.current || activeUserIdRef.current !== expectedUserId) return false;
     const generation = syncGenerationRef.current + 1;
     syncGenerationRef.current = generation;
     languageSyncReadyUserIdRef.current = null;
 
-    let snapshot = progressRef.current;
+    let snapshot = getPersistedSnapshot(expectedUserId);
+    if (!snapshot) return false;
     let allSucceeded = await syncLanguageCompletions(snapshot, expectedUserId, generation);
     if (!isActiveSync(expectedUserId, generation)) return false;
 
     while (allSucceeded && progressRef.current !== snapshot) {
-      snapshot = progressRef.current;
+      snapshot = getPersistedSnapshot(expectedUserId);
+      if (!snapshot) return false;
       allSucceeded = await syncLanguageCompletions(snapshot, expectedUserId, generation);
       if (!isActiveSync(expectedUserId, generation)) return false;
     }
 
     if (!allSucceeded) return false;
-    const latestProgress = progressRef.current;
-    if (latestProgress === snapshot) {
-      languageSyncReadyUserIdRef.current = expectedUserId;
-    }
+    const latestProgress = getPersistedSnapshot(expectedUserId);
+    if (!latestProgress) return false;
+    if (latestProgress !== snapshot) return syncCurrentProgress(expectedUserId);
+    languageSyncReadyUserIdRef.current = expectedUserId;
     if (!isActiveSync(expectedUserId, generation)) return false;
 
+    let writeSucceeded = false;
     try {
       const { error } = await supabase
         .from('profiles')
         .update({ progress: toRemoteMathProgress(latestProgress) })
         .eq('id', expectedUserId);
-      if (!isActiveSync(expectedUserId, generation)) return false;
+      if (!activeRef.current || activeUserIdRef.current !== expectedUserId) return false;
+      writeSucceeded = !error;
       if (error) console.error('[ProgressSync] Failed to save progress to Supabase:', error);
     } catch (error) {
-      if (!isActiveSync(expectedUserId, generation)) return false;
+      if (!activeRef.current || activeUserIdRef.current !== expectedUserId) return false;
       console.error('[ProgressSync] Failed to save progress to Supabase:', error);
-      return false;
     }
-    if (progressRef.current !== latestProgress) {
+    // 旧批次也可能已写到服务端；同账号迟到响应仍须纠偏，换账号则上面已经退出。
+    const afterWrite = getPersistedSnapshot(expectedUserId);
+    if (afterWrite && afterWrite !== latestProgress) {
       return syncCurrentProgress(expectedUserId);
     }
-    return allSucceeded;
-  }, [isActiveSync, syncLanguageCompletions]);
+    return writeSucceeded && allSucceeded && isActiveSync(expectedUserId, generation);
+  }, [isActiveSync, syncLanguageCompletions, getPersistedSnapshot]);
 
   // When user changes (login/logout), sync remote progress
   useEffect(() => {
@@ -337,6 +354,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       prevUserIdRef.current = userId ?? null;
       setLegacyProgressAvailable(false);
       setLegacyCompletedKnowledgePointCount(0);
+      setCacheRecovery('none');
     }
 
     if (!userId) return;
@@ -348,7 +366,14 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     );
 
     (async () => {
+      let corrupt: CorruptProgressCapture | null = null;
       try {
+        corrupt = captureCorruptProgress(userId);
+        if (corrupt) {
+          syncReadyUserIdRef.current = null;
+          languageSyncReadyUserIdRef.current = null;
+          setCacheRecovery('recovering');
+        }
         // Load legacy math and dedicated language progress together.
         const { data: profile, error: readError } = await supabase
           .from('profiles')
@@ -358,27 +383,62 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         if (readError) throw readError;
         if (!readIsActive()) return;
 
+        // A missing/malformed response is not a verified empty profile.
+        if (!profile || typeof profile.progress !== 'object' || profile.progress === null
+          || Array.isArray(profile.progress)) throw new Error('Invalid remote progress snapshot');
+        corrupt ??= captureCorruptProgress(userId);
+        let recoveryKeys: string[] = [];
+        if (corrupt) {
+          syncReadyUserIdRef.current = null;
+          languageSyncReadyUserIdRef.current = null;
+          setCacheRecovery('recovering');
+          const generation = syncGenerationRef.current;
+          const { loadPublishedCourseAttemptKeys } = await import('@/lib/content');
+          recoveryKeys = await loadPublishedCourseAttemptKeys();
+          if (!readIsActive() || syncGenerationRef.current !== generation) return;
+        }
+
         const localProgress = progressRef.current;
         const remoteProgress = parseProgress(profile?.progress);
         const dedicatedLanguage = parseRemoteLanguageProgress(profile?.language_progress);
         const legacyLanguage = parseRemoteLanguageProgress(remoteProgress.languageLessons);
         remoteProgress.languageLessons = mergeLanguageLessons(legacyLanguage, dedicatedLanguage);
-        const merged = hasMeaningfulProgress(remoteProgress)
+        let merged = hasMeaningfulProgress(remoteProgress)
           ? mergeProgress(localProgress, remoteProgress)
           : localProgress;
+        if (corrupt) {
+          merged = { ...merged, courseAttempts: mergeCourseAttempts(merged.courseAttempts,
+            Object.fromEntries(recoveryKeys.map((key) => [key, { id: 'cache-recovery', settled: true }]))) };
+          if (!recoverCorruptProgress(corrupt, merged, userId, readIsActive)) {
+            setCacheRecovery('failed');
+            return;
+          }
+          setCacheRecovery('recovered');
+        } else if (!saveProgress(merged, userId)) {
+          setCacheRecovery('failed');
+          return;
+        } else {
+          setCacheRecovery((state) => state === 'recovered' ? state : 'none');
+        }
         progressRef.current = merged;
         setProgress(merged);
-        saveProgress(merged, userId);
 
         const legacy = getLegacyProgressForImport(userId);
         setLegacyProgressAvailable(legacy !== null);
         setLegacyCompletedKnowledgePointCount(legacy?.passedKnowledgePoints.length ?? 0);
 
-        await syncCurrentProgress(userId);
+        const synced = await syncCurrentProgress(userId);
         if (!readIsActive()) return;
+        if (!synced) {
+          syncReadyUserIdRef.current = null;
+          languageSyncReadyUserIdRef.current = null;
+          setCacheRecovery('failed');
+          return;
+        }
         syncReadyUserIdRef.current = userId;
       } catch (err) {
         if (!readIsActive()) return;
+        setCacheRecovery('failed');
         console.error('[ProgressSync] Failed to sync on login:', err);
       }
     })();
@@ -394,7 +454,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
-      saveProgress(progress, userId);
+      const snapshot = getPersistedSnapshot(userId);
+      if (!snapshot) return;
 
       // Never overwrite an unknown remote snapshot before the initial read/merge succeeds.
       if (
@@ -406,18 +467,20 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       ) {
         supabase
           .from('profiles')
-          .update({ progress: toRemoteMathProgress(progress) })
+          .update({ progress: toRemoteMathProgress(snapshot) })
           .eq('id', userId)
           .then(({ error }) => {
             if (!activeRef.current || activeUserIdRef.current !== userId) return;
             if (error) {
               console.error('[ProgressSync] Failed to save progress to Supabase:', error);
             }
+            const latest = getPersistedSnapshot(userId);
+            if (latest && latest !== snapshot) void syncCurrentProgress(userId);
           });
       }
     }, 500);
     return () => clearTimeout(saveTimer.current);
-  }, [progress, userId]);
+  }, [progress, userId, getPersistedSnapshot, syncCurrentProgress]);
 
   useEffect(() => {
     if (!userId) return;
@@ -446,6 +509,42 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     setProgress((prev) => markPassedUtil(prev, kpId, stars));
   }, []);
 
+  const beginCourseAttempt = useCallback((key: string) => {
+    if (!userId || activeUserIdRef.current !== userId) return null;
+    progressRef.current = mergeProgress(progressRef.current, loadProgress(userId));
+    const result = claimCourseAttempt(progressRef.current, key, crypto.randomUUID(), userId);
+    clearTimeout(saveTimer.current);
+    progressRef.current = result.progress;
+    setProgress(result.progress);
+    return syncReadyUserIdRef.current === userId && isCourseAttemptModeCurrent(result.progress, key, Date.now()) ? result.claim : null;
+  }, [userId]);
+
+  const finishCourseAttempt = useCallback((key: string, claim: string, passed: boolean, stars: number, hasReviewSets: boolean) => {
+    if (!userId || activeUserIdRef.current !== userId || syncReadyUserIdRef.current !== userId) return false;
+    progressRef.current = mergeProgress(progressRef.current, loadProgress(userId));
+    const settled = settleCourseAttempt(progressRef.current, key, claim);
+    if (settled === progressRef.current) return false;
+    const [courseId, mode] = key.split('|');
+    let next = settled;
+    let events: TransitionEvent[] = [];
+    let accepted = true;
+    if (mode === 'initial' && passed) {
+      const result = markInitialPassTransition(settled, courseId, stars, Date.now(), hasReviewSets);
+      next = result.progress; events = result.events;
+    } else if (mode === 'd1' || mode === 'd7') {
+      next = passed ? markDelayedReviewPassUtil(settled, courseId, Date.now(), mode)
+        : markDelayedReviewFailUtil(settled, courseId, Date.now(), mode);
+      accepted = next !== settled;
+    }
+    clearTimeout(saveTimer.current);
+    const saved = saveProgress(next, userId);
+    // 无法持久化时不发放完成/目标事件；消费记录仍保留在当前会话。
+    progressRef.current = saved ? next : settled;
+    setProgress(progressRef.current);
+    if (saved && accepted) for (const event of events) emitEventInternal(event);
+    return saved && accepted;
+  }, [userId, emitEventInternal]);
+
   const markInitialPass = useCallback((kpId: string, stars: number, hasReviewSets: boolean) => {
     const now = Date.now();
     const result = markInitialPassTransition(progress, kpId, stars, now, hasReviewSets);
@@ -455,12 +554,20 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     }
   }, [progress, emitEventInternal]);
 
-  const markDelayedReviewPass = useCallback((kpId: string) => {
-    setProgress((prev) => markDelayedReviewPassUtil(prev, kpId, Date.now()));
+  const markDelayedReviewPass = useCallback((kpId: string, expectedMode: 'd1' | 'd7') => {
+    const next = markDelayedReviewPassUtil(progressRef.current, kpId, Date.now(), expectedMode);
+    if (next === progressRef.current) return false;
+    progressRef.current = next;
+    setProgress(next);
+    return true;
   }, []);
 
-  const markDelayedReviewFail = useCallback((kpId: string) => {
-    setProgress((prev) => markDelayedReviewFailUtil(prev, kpId, Date.now()));
+  const markDelayedReviewFail = useCallback((kpId: string, expectedMode: 'd1' | 'd7') => {
+    const next = markDelayedReviewFailUtil(progressRef.current, kpId, Date.now(), expectedMode);
+    if (next === progressRef.current) return false;
+    progressRef.current = next;
+    setProgress(next);
+    return true;
   }, []);
 
   const isPassed = useCallback(
@@ -554,9 +661,17 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     isFirstTry: boolean,
     evidenceType: EvidenceType,
     mode: SkillEvidenceMode,
+    claim?: { key: string; id: string | null },
   ) => {
-    setProgress((prev) => recordSkillEvidenceUtil(prev, skillId, isCorrect, isFirstTry, evidenceType, mode, Date.now()));
-  }, []);
+    if (claim && userId) progressRef.current = mergeProgress(progressRef.current, loadProgress(userId));
+    const record = claim ? progressRef.current.courseAttempts?.[claim.key] : undefined;
+    const eligible = !claim || (!!claim.id && record?.id === claim.id && !record.settled
+      && !!userId && syncReadyUserIdRef.current === userId && mode === claim.key.split('|')[1]
+      && isCourseAttemptModeCurrent(progressRef.current, claim.key, Date.now()));
+    const next = recordSkillEvidenceUtil(progressRef.current, skillId, isCorrect, isFirstTry && eligible, evidenceType, mode, Date.now());
+    progressRef.current = next;
+    setProgress(next);
+  }, [userId]);
 
   const getSkillDisplayStatus = useCallback(
     (skillId: string) => getSkillDisplayStatusUtil(progress, skillId),
@@ -687,6 +802,9 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       progress,
+      assessmentOwnerId: userId,
+      beginCourseAttempt,
+      finishCourseAttempt,
       legacyProgressAvailable,
       legacyCompletedKnowledgePointCount,
       importLegacyProgress,
@@ -725,6 +843,9 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     }),
     [
       progress,
+      userId,
+      beginCourseAttempt,
+      finishCourseAttempt,
       legacyProgressAvailable,
       legacyCompletedKnowledgePointCount,
       importLegacyProgress,
@@ -761,7 +882,23 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     ],
   );
 
-  return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;
+  return <ProgressContext.Provider value={value}>
+    {cacheRecovery !== 'none' && <aside aria-label="学习进度恢复" className="mx-auto max-w-5xl px-4 py-3 text-sm leading-relaxed">
+      <div role="status" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-950">
+        {cacheRecovery === 'recovering' && <p>正在安全恢复本机学习进度，请不要清理浏览器数据。</p>}
+        {cacheRecovery === 'failed' && <>
+          <p>学习进度恢复或同步尚未完成。请不要清理浏览器数据；可以联网后重试。</p>
+          <button type="button" className="mt-2 min-h-11 rounded-lg border border-amber-800 px-4 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2"
+            onClick={() => { setCacheRecovery('recovering'); setSyncAttempt((attempt) => attempt + 1); }}>重试恢复进度</button>
+        </>}
+        {cacheRecovery === 'recovered' && <>
+          <p>已用云端记录恢复本机进度，损坏记录已原样备份在本机。尚未同步的旧进度可能无法自动找回。</p>
+          <p>现有数学测评题组因作答历史无法确认，仍可练习，但不再新增首次作答证据。已确认的完成记录保留。</p>
+        </>}
+      </div>
+    </aside>}
+    {children}
+  </ProgressContext.Provider>;
 }
 
 /** 获取进度上下文，必须在 ProgressProvider 内使用 */

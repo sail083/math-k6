@@ -183,6 +183,7 @@ export interface Question {
 
 export interface ReviewSet {
   questions: Question[];              // form A (backward-compatible)
+  alternateQuestions?: Question[];
 }
 
 /** Skill-repair review set: extends ReviewSet with a required form-B alternate set */
@@ -194,6 +195,8 @@ export interface GameConfig {
   knowledgePointId: string;
   passThreshold: number;         // 如 0.8 表示需要 80% 正确率才能过关
   questions: Question[];
+  alternateQuestions?: Question[];
+  evidenceVersion?: string;     // 仅题组实质替换时更新；不能用版本号重置旧题资格
   reviewSets?: {                 // 可选：延迟复习题集（仅试点课程有）
     d1?: ReviewSet;              // D1 复习：初次通过后 1 天
     d7?: ReviewSet;              // D7 复习：D1 通过后 6 天
@@ -203,8 +206,20 @@ export interface GameConfig {
 // ===== 语文 / 英语顺序课程（独立于数学知识点内容模型）=====
 export type LanguageSubject = 'chinese' | 'english';
 
+export interface LanguageUnit {
+  id: string;
+  grade: Grade;
+  semester?: Semester;
+  unit?: number;
+  title: string;
+  summary: string;
+  curriculumLabel?: string;
+  lessonIds: string[];
+}
+
 export type LanguageQuestion = Question & {
   type: 'choice' | 'fill-blank';
+  listeningText?: string;
 };
 
 export interface LanguageLesson {
@@ -213,10 +228,13 @@ export interface LanguageLesson {
   summary: string;
   body: string;
   speakable?: boolean;
+  readAloudText?: string;
+  studyGuide?: string[];
   project?: {
     title: string;
     prompt: string;
     placeholder: string;
+    checklist: string[];
   };
   questions: LanguageQuestion[];
 }
@@ -273,6 +291,7 @@ export interface LanguageLessonProgress {
 export interface ProgressData {
   passedKnowledgePoints: string[];
   stars: Record<string, number>; // 知识点 ID -> 1-3 星
+  courseAttempts?: Record<string, { id: string; settled: boolean }>;
   mastery?: Record<string, MasteryRecord>; // 知识点 ID -> 掌握记录（仅含复习题集的课程）
   currentLearning?: string | null;          // 当前学习中课程 ID（用于恢复）
   // ===== 知识图谱技能证据（向后兼容可选字段）=====

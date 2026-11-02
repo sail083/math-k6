@@ -1,0 +1,3 @@
+import { describe, expect, it } from 'vitest';
+import { getKnowledgePointById, loadKnowledgePointDetail } from '@/lib/content';
+describe('g6 ratio percent modeling',()=>{it('prerequisites exist',()=>{const m=getKnowledgePointById('g6-ratio-percent-modeling')!.meta; expect(m.prerequisites.every(id=>getKnowledgePointById(id))).toBe(true)});it('has A/B and unique answers',async()=>{const g=(await loadKnowledgePointDetail('g6-ratio-percent-modeling'))!.game!;expect(g.questions).toHaveLength(6);expect(g.alternateQuestions).toHaveLength(6);expect(g.questions[0].options!.filter(x=>x===g.questions[0].correctAnswer)).toHaveLength(1)})});

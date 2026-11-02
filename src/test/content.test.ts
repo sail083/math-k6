@@ -18,9 +18,9 @@ import { buildDiscoveryContent } from '@/lib/learningContent';
 
 describe('content loading', () => {
   describe('getAllKnowledgePoints', () => {
-    it('returns all 57 knowledge points', () => {
+    it('returns all 65 knowledge points', () => {
       const kps = getAllKnowledgePoints();
-      expect(kps).toHaveLength(57);
+      expect(kps).toHaveLength(65);
     });
 
     it('gives every course enough questions and a non-choice mastery check', async () => {
@@ -49,8 +49,10 @@ describe('content loading', () => {
 
       expect(additionRule).toContain('相同数位对齐');
       expect(additionRule).toContain('满十进一');
-      expect(fractionRule).toContain('平均分成几份');
-      expect(fractionRule).toContain('就是分数');
+      expect(fractionRule).toContain('平均分');
+      expect(fractionRule).toContain('分母表示全部等份数');
+      expect(fractionRule).toContain('分子表示取了几份');
+      expect(fractionRule).toContain('整体');
     });
   });
 
@@ -59,16 +61,16 @@ describe('content loading', () => {
       expect(getKnowledgePointsByGrade(3)).toHaveLength(15);
     });
 
-    it('returns 16 KPs for grade 4 including progression courses', () => {
-      expect(getKnowledgePointsByGrade(4)).toHaveLength(16);
+    it('returns 17 KPs for grade 4 including progression courses', () => {
+      expect(getKnowledgePointsByGrade(4)).toHaveLength(17);
     });
 
-    it('returns 14 KPs for grade 5 including challenges', () => {
-      expect(getKnowledgePointsByGrade(5)).toHaveLength(14);
+    it('returns 17 KPs for grade 5 including the decimal reasoning unit', () => {
+      expect(getKnowledgePointsByGrade(5)).toHaveLength(17);
     });
 
-    it('returns 12 KPs for grade 6', () => {
-      expect(getKnowledgePointsByGrade(6)).toHaveLength(12);
+    it('returns 16 KPs for grade 6', () => {
+      expect(getKnowledgePointsByGrade(6)).toHaveLength(16);
     });
   });
 
@@ -79,16 +81,19 @@ describe('content loading', () => {
       'g3-perimeter-area-puzzle',
       'g3-fraction-visual-reasoning',
       'g4-sum-difference',
+      'g5-decimal-fraction-modeling',
+      'g6-ratio-percent-modeling',
     ];
     const challengeIds = [
       'g3-cycle-pattern',
       'g4-sum-difference-multiple',
       'g4-operation-patterns',
       'g4-angle-shape-reasoning',
+      'g6-fraction-strategy',
       'g5-chicken-rabbit',
     ];
 
-    it('keeps five extension and five challenge courses in prerequisite order', () => {
+    it('keeps seven extension and six challenge courses in prerequisite order', () => {
       expect(getTrackCourses('extension').map((kp) => kp.meta.id)).toEqual(extensionIds);
       expect(getChallengeCourses().map((kp) => kp.meta.id)).toEqual(challengeIds);
       const allIds = new Set(getAllKnowledgePoints().map((kp) => kp.meta.id));
@@ -106,9 +111,9 @@ describe('content loading', () => {
         expect(getCurriculum(grade).every((kp) => getCourseTrack(kp.meta) === 'base')).toBe(true);
       }
       expect(getCurriculum(3)).toHaveLength(10);
-      expect(getCurriculum(4)).toHaveLength(12);
-      expect(getCurriculum(5)).toHaveLength(13);
-      expect(getCurriculum(6)).toHaveLength(12);
+      expect(getCurriculum(4)).toHaveLength(13);
+      expect(getCurriculum(5)).toHaveLength(15);
+      expect(getCurriculum(6)).toHaveLength(14);
     });
 
     it('ships each progression course with six questions, one constructed transfer, and complete D1/D7 reviews', async () => {
@@ -385,9 +390,9 @@ describe('content loading', () => {
   });
 
   describe('delayed review sets (all 57 courses)', () => {
-    it('covers all 57 courses — none missing reviewSets', async () => {
+    it('covers all 64 courses — none missing reviewSets', async () => {
       const kps = getAllKnowledgePoints();
-      expect(kps).toHaveLength(57);
+      expect(kps).toHaveLength(65);
       for (const kp of kps) {
         const detail = await loadKnowledgePointDetail(kp.meta.id);
         expect(detail?.game?.reviewSets?.d1, kp.meta.id).toBeDefined();

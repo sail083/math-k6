@@ -1,14 +1,20 @@
 {
   "knowledgePointId": "g3-fraction-add-sub",
+  "evidenceVersion": "fraction-add-sub-2026-09-11-v1",
   "passThreshold": 0.8,
   "questions": [
     {
       "id": "q1",
       "type": "choice",
-      "prompt": "1/5 + 2/5 = ？",
-      "options": ["3/10", "3/5", "2/5", "1/5"],
-      "correctAnswer": "3/5",
-      "explanation": "同分母分数加法：分母不变，分子相加。1/5 + 2/5 = (1+2)/5 = 3/5。分母还是5，分子1+2=3。",
+      "prompt": "把3个1/7和1个1/7合起来：3/7 + 1/7 = ？",
+      "options": [
+        "4/14",
+        "4/7",
+        "3/7",
+        "2/7"
+      ],
+      "correctAnswer": "4/7",
+      "explanation": "每份都是1/7，3份加1份一共4份，所以3/7+1/7=4/7。每份的大小没有改变，分母不能加成14。",
       "points": 10,
       "primarySkillId": "frac.add_sub_same_denominator",
       "evidenceType": "procedural"
@@ -16,10 +22,15 @@
     {
       "id": "q2",
       "type": "choice",
-      "prompt": "5/8 - 2/8 = ？",
-      "options": ["3/0", "3/8", "3/16", "3/4"],
-      "correctAnswer": "3/8",
-      "explanation": "同分母分数减法：分母不变，分子相减。5/8 - 2/8 = (5-2)/8 = 3/8。分母还是8，分子5-2=3。",
+      "prompt": "从8个1/9中拿走3个1/9：8/9 − 3/9 = ？",
+      "options": [
+        "5/18",
+        "11/9",
+        "5/9",
+        "3/9"
+      ],
+      "correctAnswer": "5/9",
+      "explanation": "8份拿走3份，剩5份；每份仍是1/9，所以8/9−3/9=5/9。",
       "points": 10,
       "primarySkillId": "frac.add_sub_same_denominator",
       "evidenceType": "procedural"
@@ -27,15 +38,15 @@
     {
       "id": "q3",
       "type": "choice",
-      "prompt": "同分母分数加减法的计算规则是什么？",
+      "prompt": "小雨把2/10 + 5/10算成7/20。怎样用“每一份”解释她错在哪里？",
       "options": [
-        "分母相加，分子不变",
-        "分母不变，分子相加减",
-        "分母和分子都相加",
-        "分母相乘，分子相加"
+        "她算得对，合并两部分必须把分母也相加",
+        "只应把分母相加，分子仍写2",
+        "分母相同，就不能把这两部分相加",
+        "每份仍是1/10，只把2份和5份合成7份，应该是7/10"
       ],
-      "correctAnswer": "分母不变，分子相加减",
-      "explanation": "同分母分数加减法，分母不变（因为每一份大小一样），只把分子相加或相减。这是最核心的规则。",
+      "correctAnswer": "每份仍是1/10，只把2份和5份合成7份，应该是7/10",
+      "explanation": "同分母说明这里的单位分数都是1/10。合并的是份数，2+5=7，每份并没有变成1/20，所以结果是7/10。",
       "points": 10,
       "primarySkillId": "frac.add_sub_same_denominator",
       "evidenceType": "conceptual"
@@ -43,36 +54,156 @@
     {
       "id": "q4",
       "type": "choice",
-      "prompt": "1/3 + 2/3 = ？",
-      "options": ["3/6", "3/3", "1", "3/3或1"],
-      "correctAnswer": "3/3或1",
-      "explanation": "1/3 + 2/3 = (1+2)/3 = 3/3。当分子等于分母时，就是整体1，所以3/3 = 1。",
+      "prompt": "同一条绳子平均分成7段，小安用了其中4段，小禾用了另外3段，没有重叠。他们一共用了原来整条绳子的多少？",
+      "options": [
+        "1",
+        "1/2",
+        "4/7",
+        "3/7"
+      ],
+      "correctAnswer": "1",
+      "explanation": "4段加3段正好用完7段，4/7+3/7=7/7=1。他们用的是同一个整体，且两部分没有重复计算，所以正好用完原来整条绳子。",
       "points": 10,
       "primarySkillId": "frac.one_boundary",
-      "secondarySkillIds": ["frac.add_sub_same_denominator"],
+      "secondarySkillIds": [
+        "frac.add_sub_same_denominator"
+      ],
       "evidenceType": "conceptual"
     },
     {
       "id": "q5",
       "type": "choice",
-      "prompt": "妈妈把蛋糕平均分成6份，你吃了1份（1/6），爸爸吃了3份（3/6），一共吃了几分之几？",
-      "options": ["4/12", "4/6", "3/6", "1/2"],
-      "correctAnswer": "4/6",
-      "explanation": "1/6 + 3/6 = (1+3)/6 = 4/6。分母不变还是6，分子1+3=4。两人一共吃了蛋糕的4/6。",
+      "prompt": "同一块布的1/9染成红色，另外5/9染成蓝色，两块区域不重叠。染色部分一共占整块布的几分之几？",
+      "options": [
+        "6/18",
+        "5/9",
+        "6/9",
+        "4/9"
+      ],
+      "correctAnswer": "6/9",
+      "explanation": "两部分都以同一块布为整体，每份都是1/9。1份加5份是6份，所以1/9+5/9=6/9。这里按九等份记录即可，不要求约分。",
       "points": 10,
       "primarySkillId": "frac.add_sub_same_denominator",
-      "secondarySkillIds": ["frac.same_whole"],
+      "secondarySkillIds": [
+        "frac.same_whole"
+      ],
       "evidenceType": "procedural"
     },
     {
       "id": "q6",
       "type": "fill-blank",
-      "prompt": "2/7 + 3/7 = ____。",
-      "correctAnswer": "5/7",
-      "explanation": "单位分数都是1/7，合并2份和3份得到5份，分母不变。",
+      "prompt": "一张方格纸原来有7/10涂了颜色。从涂色部分擦去相当于整张纸1/10的部分，现在仍涂色的部分占整张纸多少？请用数字和斜线填写分数。",
+      "correctAnswer": [
+        "6/10",
+        "3/5"
+      ],
+      "explanation": "把整张纸看成10个等份，原来涂7份，擦去1份，还涂6份，所以7/10−1/10=6/10。写6/10即可；已经会写等值分数的同学写3/5也正确，本题不要求约分。",
       "points": 10,
       "primarySkillId": "frac.add_sub_same_denominator",
-      "secondarySkillIds": ["frac.multiple_units"],
+      "secondarySkillIds": [
+        "frac.multiple_units"
+      ],
+      "evidenceType": "transfer"
+    }
+  ],
+  "alternateQuestions": [
+    {
+      "id": "b-q1",
+      "type": "choice",
+      "prompt": "合并1个1/7和5个1/7，得到哪个结果？也就是1/7 + 5/7 = ？",
+      "options": [
+        "6/7",
+        "6/14",
+        "5/7",
+        "4/7"
+      ],
+      "correctAnswer": "6/7",
+      "explanation": "每份大小相同，1份加5份等于6份，所以1/7+5/7=6/7。分母仍是7。",
+      "points": 10,
+      "primarySkillId": "frac.add_sub_same_denominator",
+      "evidenceType": "procedural"
+    },
+    {
+      "id": "b-q2",
+      "type": "choice",
+      "prompt": "一张图原来涂色5/7，把这5/7的涂色全部擦掉。5/7 − 5/7 = ？",
+      "options": [
+        "5/7",
+        "0",
+        "1",
+        "10/7"
+      ],
+      "correctAnswer": "0",
+      "explanation": "原来有5个1/7，现在5个全部拿走，剩0份，所以5/7−5/7=0。分母不需要变成0。",
+      "points": 10,
+      "primarySkillId": "frac.add_sub_same_denominator",
+      "evidenceType": "procedural"
+    },
+    {
+      "id": "b-q3",
+      "type": "choice",
+      "prompt": "计算8/10 − 3/10时，哪一种想法用对了同分母分数减法？",
+      "options": [
+        "分子相减，分母也要相减，写成5/0",
+        "拿走3份就把原整体改成7份，写成5/7",
+        "每份仍是1/10，8份拿走3份，剩5份，写成5/10",
+        "把8份和3份相加，写成11/10"
+      ],
+      "correctAnswer": "每份仍是1/10，8份拿走3份，剩5份，写成5/10",
+      "explanation": "同分母分数减法拿走的是同样大小的份。8−3=5，单位分数仍是1/10，所以结果是5/10。不能把分母也相减，也不能把原来的整体改成剩下的份数。",
+      "points": 10,
+      "primarySkillId": "frac.add_sub_same_denominator",
+      "evidenceType": "conceptual"
+    },
+    {
+      "id": "b-q4",
+      "type": "choice",
+      "prompt": "把一整块饼看作1，平均分成9份，吃掉其中4份。剩下的部分占原来整个饼多少？也就是1 − 4/9 = ？",
+      "options": [
+        "1/9",
+        "4/9",
+        "1",
+        "5/9"
+      ],
+      "correctAnswer": "5/9",
+      "explanation": "原来整个饼是9个1/9，可以把1写成9/9。9份吃掉4份，剩5份，所以1−4/9=9/9−4/9=5/9。",
+      "points": 10,
+      "primarySkillId": "frac.one_boundary",
+      "secondarySkillIds": [
+        "frac.add_sub_same_denominator"
+      ],
+      "evidenceType": "conceptual"
+    },
+    {
+      "id": "b-q5",
+      "type": "choice",
+      "prompt": "同一袋纽扣分成7个数量相同的等份。先取出原袋的3/7，再从袋中取出另外3个等份，两次没有重复。一共取出了原袋的多少？",
+      "options": [
+        "6/14",
+        "6/7",
+        "3/7",
+        "1"
+      ],
+      "correctAnswer": "6/7",
+      "explanation": "每次取的等份都按原来整袋划分。先取3份，再取另外3份，一共6份，所以3/7+3/7=6/7。这里不是把剩余纽扣重新分成7份。",
+      "points": 10,
+      "primarySkillId": "frac.add_sub_same_denominator",
+      "secondarySkillIds": [
+        "frac.same_whole"
+      ],
+      "evidenceType": "procedural"
+    },
+    {
+      "id": "b-q6",
+      "type": "fill-blank",
+      "prompt": "同一块菜地，2/5种白菜，另外2/5种萝卜，两部分不重叠。已经种菜的部分一共占整块地多少？请用数字和斜线填写分数。",
+      "correctAnswer": "4/5",
+      "explanation": "每份都是整块地的1/5，2份加2份得到4份，所以2/5+2/5=4/5。两部分属于同一个整体，而且没有重叠。",
+      "points": 10,
+      "primarySkillId": "frac.add_sub_same_denominator",
+      "secondarySkillIds": [
+        "frac.multiple_units"
+      ],
       "evidenceType": "transfer"
     }
   ],
@@ -82,10 +213,14 @@
         {
           "id": "d1-q1",
           "type": "choice",
-          "prompt": "3/8 + 4/8 = ？",
-          "options": ["7/16", "3/8", "7/8"],
-          "correctAnswer": "7/8",
-          "explanation": "同分母分数加法：分母不变，分子相加。3/8+4/8=(3+4)/8=7/8。",
+          "prompt": "把2个1/9和3个1/9合起来，2/9 + 3/9 = ？",
+          "options": [
+            "5/18",
+            "5/9",
+            "6/9"
+          ],
+          "correctAnswer": "5/9",
+          "explanation": "2份加3份是5份，单位分数仍是1/9，所以结果是5/9。",
           "points": 10,
           "primarySkillId": "frac.add_sub_same_denominator",
           "evidenceType": "procedural"
@@ -93,9 +228,42 @@
         {
           "id": "d1-q2",
           "type": "fill-blank",
-          "prompt": "6/7 − 2/7 = ____。",
-          "correctAnswer": "4/7",
-          "explanation": "同分母分数减法：分母不变，分子相减。6/7−2/7=(6−2)/7=4/7。",
+          "prompt": "一张展板原来有9/10铺上了彩纸，取下相当于整张展板4/10的彩纸。现在还铺着彩纸的部分占整张展板多少？请用数字和斜线填写分数。",
+          "correctAnswer": [
+            "5/10",
+            "1/2"
+          ],
+          "explanation": "原来铺9份，取下4份，还铺5份，所以9/10−4/10=5/10。5个十分之一正好是一半，写1/2也正确。",
+          "points": 10,
+          "primarySkillId": "frac.add_sub_same_denominator",
+          "evidenceType": "transfer"
+        }
+      ],
+      "alternateQuestions": [
+        {
+          "id": "d1-b-q1",
+          "type": "choice",
+          "prompt": "两个不重叠的涂色区域分别占同一张纸的4/9和4/9。一共涂色多少？",
+          "options": [
+            "8/18",
+            "4/9",
+            "8/9"
+          ],
+          "correctAnswer": "8/9",
+          "explanation": "两部分都是按这同一张纸九等分后的份数计算。4份加4份是8份，所以4/9+4/9=8/9。",
+          "points": 10,
+          "primarySkillId": "frac.add_sub_same_denominator",
+          "evidenceType": "procedural"
+        },
+        {
+          "id": "d1-b-q2",
+          "type": "fill-blank",
+          "prompt": "一条彩绳原来剩原长的5/6。再剪去相当于原长1/6的一段，还剩原长的多少？请用数字和斜线填写分数。",
+          "correctAnswer": [
+            "4/6",
+            "2/3"
+          ],
+          "explanation": "按原长六等分，原来剩5份，再剪去1份，剩4份，所以5/6−1/6=4/6。写4/6即可；已会写等值分数的同学写2/3也正确。",
           "points": 10,
           "primarySkillId": "frac.add_sub_same_denominator",
           "evidenceType": "transfer"
@@ -107,10 +275,14 @@
         {
           "id": "d7-q1",
           "type": "choice",
-          "prompt": "5/9 − 2/9 = ？",
-          "options": ["3/9", "7/9", "3/18"],
-          "correctAnswer": "3/9",
-          "explanation": "同分母分数减法：分母不变，分子相减。5/9−2/9=(5−2)/9=3/9。",
+          "prompt": "5/7 − 1/7 = ？注意这是拿走一份，不是合并一份。",
+          "options": [
+            "4/7",
+            "6/7",
+            "4/14"
+          ],
+          "correctAnswer": "4/7",
+          "explanation": "5个1/7拿走1个1/7，剩4个1/7，结果为4/7。分母7不变。",
           "points": 10,
           "primarySkillId": "frac.add_sub_same_denominator",
           "evidenceType": "retention"
@@ -118,9 +290,36 @@
         {
           "id": "d7-q2",
           "type": "fill-blank",
-          "prompt": "2/6 + 3/6 = ____。",
-          "correctAnswer": "5/6",
-          "explanation": "同分母分数加法：分母不变，分子相加。2/6+3/6=(2+3)/6=5/6。",
+          "prompt": "读同一本书，第一天读了整本的3/10，第二天又读了整本书的另外4/10，两天读过的页没有重复。一共读了整本书的多少？请用数字和斜线填写分数。",
+          "correctAnswer": "7/10",
+          "explanation": "两次都按整本书的十分之一计数。3份加4份是7份，所以3/10+4/10=7/10。",
+          "points": 10,
+          "primarySkillId": "frac.add_sub_same_denominator",
+          "evidenceType": "retention"
+        }
+      ],
+      "alternateQuestions": [
+        {
+          "id": "d7-b-q1",
+          "type": "choice",
+          "prompt": "从7个1/10中拿走2个1/10，7/10 − 2/10 = ？",
+          "options": [
+            "5/20",
+            "5/10",
+            "9/10"
+          ],
+          "correctAnswer": "5/10",
+          "explanation": "7份减去2份剩5份，每份仍是1/10，所以结果为5/10。这里不用把分母相减，也不要求约分。",
+          "points": 10,
+          "primarySkillId": "frac.add_sub_same_denominator",
+          "evidenceType": "retention"
+        },
+        {
+          "id": "d7-b-q2",
+          "type": "fill-blank",
+          "prompt": "同一条长画卷，上午完成整条的1/10，下午又完成整条的另外8/10，两部分不重叠。当天一共完成整条的多少？请用数字和斜线填写分数。",
+          "correctAnswer": "9/10",
+          "explanation": "单位分数都是整条画卷的1/10，1份加8份一共9份，所以1/10+8/10=9/10。",
           "points": 10,
           "primarySkillId": "frac.add_sub_same_denominator",
           "evidenceType": "retention"

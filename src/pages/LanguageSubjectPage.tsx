@@ -1,12 +1,18 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ReadAloudButton } from '@/components/ReadAloudButton';
+import ListeningExercise from '@/components/ListeningExercise';
+export { ReadAloudButton } from '@/components/ReadAloudButton';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import ChoiceGame from '@/components/games/ChoiceGame';
 import FillBlankGame from '@/components/games/FillBlankGame';
-import { chineseLessonIds, chineseLessons } from '@/content/chinese';
+import LessonProject from '@/components/LessonProject';
+import { LocalSpeakingPractice } from '@/components/LocalSpeakingPractice';
+import { useAuth } from '@/context/AuthContext';
+import { chineseLessonIds, chineseLessons, chineseUnits } from '@/content/chinese';
 import { englishLessonIds, englishLessons, englishUnits } from '@/content/english';
 import { useProgress } from '@/context/ProgressContext';
 import { getNextLanguageLessonId } from '@/lib/progress';
-import type { LanguageLesson, LanguageSubject } from '@/lib/types';
+import type { LanguageLesson, LanguageSubject, LanguageUnit } from '@/lib/types';
 
 const PASS_COUNT = 2;
 
@@ -50,6 +56,7 @@ interface SubjectConfig {
   unitSummary: string;
   lessons: LanguageLesson[];
   lessonIds: string[];
+  units: LanguageUnit[];
   theme: keyof typeof THEMES;
 }
 
@@ -57,138 +64,55 @@ const SUBJECTS: Record<LanguageSubject, SubjectConfig> = {
   chinese: {
     label: '语文',
     mark: '文',
-    unitTitle: '校园里的小发现',
-    unitSummary: '从词语、阅读到表达，把一次校园观察说清楚。',
+    unitTitle: '语文自学课程',
+    unitSummary: '按年级选择原创能力单元，从读懂到写清楚。每个单元都可以独立开始。',
     lessons: chineseLessons,
     lessonIds: chineseLessonIds,
+    units: chineseUnits,
     theme: 'rose',
   },
   english: {
     label: '英语',
     mark: 'Aa',
     unitTitle: '外研版英语课程',
-    unitSummary: '按外研社《英语（新标准）》2022课标新修订版，从三年级上册开始学习。',
+    unitSummary: '以外研社《英语（新标准）》2022课标新修订版为教材方向，按年级选择原创练习。每个单元可独立开始，教材映射状态见各单元。',
     lessons: englishLessons,
     lessonIds: englishLessonIds,
+    units: englishUnits,
     theme: 'sky',
   },
 };
 
-function LessonProject({ project }: { project: NonNullable<LanguageLesson['project']> }) {
-  const [draft, setDraft] = useState('');
-  const ready = draft.trim().length >= 10;
 
-  // ponytail: 草稿只保留在当前页面；需要作品集时再接持久化。
-  return (
-    <section aria-labelledby="lesson-project-title" className="rounded-2xl border border-sky-200 bg-white p-5 shadow-sm sm:p-6">
-      <p className="text-xs font-bold uppercase tracking-wider text-sky-700">单元任务</p>
-      <h2 id="lesson-project-title" className="mt-1 text-xl font-bold text-slate-900">{project.title}</h2>
-      <p id="lesson-project-help" className="mt-2 text-sm leading-6 text-slate-600">{project.prompt}</p>
-      <label htmlFor="lesson-project-draft" className="mt-5 block text-sm font-bold text-slate-800">朋友卡内容</label>
-      <textarea
-        id="lesson-project-draft"
-        lang="en"
-        rows={5}
-        maxLength={240}
-        value={draft}
-        placeholder={project.placeholder}
-        aria-describedby="lesson-project-help lesson-project-status"
-        onChange={(event) => setDraft(event.target.value)}
-        className="mt-2 min-h-32 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-base leading-7 text-slate-900 outline-none placeholder:text-slate-400 focus-visible:border-sky-600 focus-visible:ring-4 focus-visible:ring-sky-100"
-      />
-      <p id="lesson-project-status" role="status" className={`mt-2 text-sm font-semibold ${ready ? 'text-emerald-700' : 'text-slate-500'}`}>
-        {ready ? '朋友卡已写好，可以继续完成小练习。' : '至少写一句完整的英文，再继续练习。'}
-      </p>
-    </section>
-  );
-}
 
-export function ReadAloudButton({ text }: { text: string }) {
-  const synthesis = typeof window === 'undefined' ? undefined : window.speechSynthesis;
-  const supported = !!synthesis && typeof SpeechSynthesisUtterance !== 'undefined';
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const [speaking, setSpeaking] = useState(false);
-  const [error, setError] = useState('');
-
-  useEffect(() => () => {
-    if (utteranceRef.current) {
-      utteranceRef.current.onend = null;
-      utteranceRef.current.onerror = null;
-      utteranceRef.current = null;
-    }
-    synthesis?.cancel();
-  }, [synthesis]);
-
-  const readAloud = () => {
-    if (!supported || !synthesis) return;
-    if (utteranceRef.current) {
-      utteranceRef.current.onend = null;
-      utteranceRef.current.onerror = null;
-    }
-    synthesis.cancel();
-
-    try {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.85;
-      utterance.onend = () => {
-        if (utteranceRef.current === utterance) utteranceRef.current = null;
-        setSpeaking(false);
-      };
-      utterance.onerror = () => {
-        if (utteranceRef.current === utterance) utteranceRef.current = null;
-        setSpeaking(false);
-        setError('朗读暂时不可用，请直接阅读下方英文正文。');
-      };
-      utteranceRef.current = utterance;
-      setError('');
-      setSpeaking(true);
-      synthesis.speak(utterance);
-    } catch {
-      utteranceRef.current = null;
-      setSpeaking(false);
-      setError('朗读暂时不可用，请直接阅读下方英文正文。');
-    }
-  };
-
-  return (
-    <div className="mt-6 rounded-xl border border-sky-200 bg-sky-50 p-4">
-      <button
-        type="button"
-        onClick={readAloud}
-        disabled={!supported}
-        aria-busy={speaking}
-        className="inline-flex min-h-11 items-center rounded-xl bg-sky-700 px-5 font-semibold text-white hover:bg-sky-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky-200 disabled:cursor-not-allowed disabled:bg-slate-400"
-      >
-        {speaking ? '正在朗读' : '朗读英文正文'}
-      </button>
-      <p className="mt-2 text-sm leading-6 text-slate-600">朗读用于辅助听读，英文正文始终显示在下方。</p>
-      {!supported ? (
-        <p role="status" className="mt-2 text-sm font-semibold text-amber-800">当前浏览器不支持朗读，请直接阅读下方英文正文。</p>
-      ) : error ? (
-        <p role="status" className="mt-2 text-sm font-semibold text-amber-800">{error}</p>
-      ) : null}
-    </div>
-  );
-}
-
-export function LessonPractice({
-  lesson,
-  onPassed,
-  nextLessonId,
-  subject,
-}: {
+interface LessonPracticeProps {
   lesson: LanguageLesson;
   onPassed: () => void;
   nextLessonId: string | null;
   subject: LanguageSubject;
-}) {
+}
+
+export function LessonPractice(props: LessonPracticeProps) {
+  const { user } = useAuth();
+  return <LessonPracticeSession key={JSON.stringify([user?.id, props.subject, props.lesson.id])} {...props} ownerId={user?.id ?? null} />;
+}
+
+function LessonPracticeSession({
+  lesson,
+  onPassed,
+  nextLessonId,
+  subject,
+  ownerId,
+}: LessonPracticeProps & { ownerId: string | null }) {
   const config = SUBJECTS[subject];
   const theme = THEMES[config.theme];
   const basePath = `/${subject}`;
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
-  const [status, setStatus] = useState<'playing' | 'passed' | 'failed'>('playing');
+  const [status, setStatus] = useState<'playing' | 'passed' | 'failed' | 'project_pending'>('playing');
+  const [projectReady, setProjectReady] = useState(false);
+  const [usedReadingHelp, setUsedReadingHelp] = useState(false);
+  const markReadingHelp = useCallback(() => setUsedReadingHelp(true), []);
   const [attempt, setAttempt] = useState(0);
   const question = lesson.questions[questionIndex];
   const answered = answers[question.id] !== undefined;
@@ -196,6 +120,8 @@ export function LessonPractice({
     (total, item) => total + (answers[item.id] ? item.points : 0),
     0,
   );
+  const projectEditor = lesson.project ? <LessonProject project={lesson.project} ownerId={ownerId}
+    subject={subject} lessonId={lesson.id} onReady={setProjectReady} /> : null;
 
   const handleAnswer = useCallback((_selected: string, isCorrect: boolean) => {
     setAnswers((current) => current[question.id] === undefined
@@ -207,20 +133,25 @@ export function LessonPractice({
     setQuestionIndex(0);
     setAnswers({});
     setStatus('playing');
+    setUsedReadingHelp(false);
     setAttempt((value) => value + 1);
   };
 
   if (status !== 'playing') {
     const passed = status === 'passed';
-    return (
+    return (<>
+      {projectEditor}
       <section aria-live="polite" className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className={`text-2xl font-bold ${passed ? 'text-emerald-700' : 'text-slate-800'}`}>
-          {passed ? '本课完成' : '再练一次'}
+          {passed ? '本课完成' : status === 'project_pending' ? '练习达标，请完成作品自检' : '再练一次'}
         </h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">
-          {passed ? `答对 ${score / 10} 题，已经达到本课要求。` : `答对 ${score / 10} 题，需要至少答对 2 题。`}
+          {passed ? `答对 ${score / 10} 题，${lesson.project ? '本次练习与作品自检已完成' : '本次练习已完成'}。` : status === 'project_pending'
+            ? '小练习已经达标。请完成上方作品并逐项自检，然后确认完成本课。'
+            : `答对 ${score / 10} 题，需要至少答对 2 题。`}
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
+          {usedReadingHelp ? <p role="note" className="w-full text-sm text-slate-600">本次使用了阅读辅助，成绩表示练习完成，不作为独立听辨结果。</p> : null}
           {passed ? (
             nextLessonId ? (
               <Link to={`${basePath}/${nextLessonId}`} className={`inline-flex min-h-11 items-center rounded-xl px-5 font-semibold text-white ${theme.action}`}>
@@ -231,16 +162,23 @@ export function LessonPractice({
                 返回{config.label}课程
               </Link>
             )
+          ) : status === 'project_pending' ? (
+            <button type="button" disabled={!projectReady} onClick={() => {
+              if (!projectReady) return;
+              setStatus('passed');
+              onPassed();
+            }} className={`min-h-11 rounded-xl px-5 font-semibold text-white disabled:bg-slate-400 ${theme.action}`}>完成自检，确认完成本课</button>
           ) : (
             <button type="button" onClick={restart} className={`min-h-11 rounded-xl px-5 font-semibold text-white ${theme.action}`}>
               重新练习
             </button>
           )}
           <Link to={basePath} className="inline-flex min-h-11 items-center rounded-xl border border-slate-300 bg-white px-5 font-semibold text-slate-600 hover:bg-slate-50">
-            查看三课
+            查看课程
           </Link>
         </div>
       </section>
+      </>
     );
   }
 
@@ -251,6 +189,10 @@ export function LessonPractice({
     }
     const correctCount = Object.values(answers).filter(Boolean).length;
     if (correctCount >= PASS_COUNT) {
+      if (lesson.project && !projectReady) {
+        setStatus('project_pending');
+        return;
+      }
       setStatus('passed');
       onPassed();
     } else {
@@ -258,12 +200,13 @@ export function LessonPractice({
     }
   };
 
-  return (
+  return (<>
+    {projectEditor}
     <section aria-labelledby="practice-title" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className={`text-xs font-bold uppercase tracking-wider ${theme.kicker}`}>小练习</p>
-          <h2 id="practice-title" className="mt-1 text-xl font-bold text-slate-900">答对 2 题即可完成本课</h2>
+          <h2 id="practice-title" className="mt-1 text-xl font-bold text-slate-900">{lesson.project ? '答对 2 题并完成作品自检' : '答对 2 题即可完成本课'}</h2>
         </div>
         <span className={`shrink-0 rounded-full px-3 py-1 text-sm font-semibold ${theme.chip}`}>
           {questionIndex + 1} / {lesson.questions.length}
@@ -273,11 +216,13 @@ export function LessonPractice({
         <div className={`h-full rounded-full ${theme.progress}`} style={{ width: `${((questionIndex + 1) / lesson.questions.length) * 100}%` }} />
       </div>
       <div className="mt-6" key={`${question.id}:${attempt}`}>
+        <ListeningExercise text={question.listeningText} prompt={question.prompt} onReadingHelp={markReadingHelp}>
         {question.type === 'choice' ? (
           <ChoiceGame question={question} onAnswer={handleAnswer} />
         ) : (
           <FillBlankGame question={question} onAnswer={handleAnswer} />
         )}
+        </ListeningExercise>
       </div>
       {answered ? (
         <div className="mt-5 flex justify-end">
@@ -287,6 +232,7 @@ export function LessonPractice({
         </div>
       ) : null}
     </section>
+    </>
   );
 }
 
@@ -295,10 +241,11 @@ export default function LanguageSubjectPage({ subject }: { subject: LanguageSubj
   const theme = THEMES[config.theme];
   const basePath = `/${subject}`;
   const { lessonId } = useParams<{ lessonId: string }>();
+  const units = config.units;
   const { progress, startLanguageLesson, completeLanguageLesson } = useProgress();
   const lesson = lessonId ? config.lessons.find((item) => item.id === lessonId) : undefined;
-  const activeUnit = lesson && subject === 'english'
-    ? englishUnits.find((unit) => unit.lessonIds.includes(lesson.id))
+  const activeUnit = lesson
+    ? config.units.find((unit) => unit.lessonIds.includes(lesson.id))
     : undefined;
   const orderedLessonIds = activeUnit?.lessonIds ?? config.lessonIds;
   const subjectProgress = progress.languageLessons?.[subject];
@@ -328,12 +275,21 @@ export default function LanguageSubjectPage({ subject }: { subject: LanguageSubj
         <p className={`text-sm font-bold ${theme.kicker}`}>{activeUnit?.title ?? config.unitTitle} · 第 {orderedLessonIds.indexOf(lesson.id) + 1} 课</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">{lesson.title}</h1>
         <p className="mt-3 text-sm leading-6 text-slate-500">{lesson.summary}</p>
-        {lesson.speakable ? <ReadAloudButton text={lesson.body} /> : null}
+        {lesson.studyGuide ? (
+          <section aria-label="自学提示" className="mt-5 rounded-xl bg-sky-50 p-4">
+            <h2 className="font-bold text-slate-900">先这样学</h2>
+            <ol className="mt-2 list-decimal space-y-2 pl-5 text-sm leading-6 text-slate-700">
+              {lesson.studyGuide.map((step) => <li key={step}>{step}</li>)}
+            </ol>
+          </section>
+        ) : null}
+        {lesson.speakable || lesson.readAloudText ? <ReadAloudButton key={lesson.id} text={lesson.readAloudText ?? lesson.body} /> : null}
+        {lesson.speakable ? <LocalSpeakingPractice prompt={subject === 'chinese' ? '可选：用自己的话复述本课要点。' : '可选：朗读或用自己的话回答本课提示。'} /> : null}
+        {lesson.readAloudText ? <p lang="en" className="mt-4 text-base leading-8">{lesson.readAloudText}</p> : null}
         <div lang={lesson.speakable ? 'en' : undefined} className="mt-7 space-y-4 text-base leading-8 text-slate-700">
           {lesson.body.split('\n\n').map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
         </div>
       </article>
-      {lesson.project ? <LessonProject project={lesson.project} /> : null}
       <LessonPractice
         key={lesson.id}
         lesson={lesson}
@@ -345,22 +301,19 @@ export default function LanguageSubjectPage({ subject }: { subject: LanguageSubj
   ) : (
     <div>
       <section className={`rounded-2xl bg-gradient-to-br px-6 py-8 text-white shadow-lg sm:px-8 ${theme.hero}`}>
-        <p className={`text-sm font-semibold ${theme.heroKicker}`}>{subject === 'english' ? '英语 · 外研社三年级起点' : '语文 · 三课小单元'}</p>
+        <p className={`text-sm font-semibold ${theme.heroKicker}`}>{subject === 'english' ? '英语 · 外研社三年级起点' : '语文 · 3—6年级原创能力课程'}</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">{config.unitTitle}</h1>
         <p className={`mt-3 max-w-2xl text-sm leading-6 ${theme.heroCopy}`}>{config.unitSummary}</p>
         <p className="mt-5 text-sm font-bold">已完成 {config.lessonIds.filter((id) => completed.has(id)).length} / {config.lessons.length} 课</p>
       </section>
       <section aria-labelledby="lesson-list-title" className="mt-7 space-y-7">
-        <h2 id="lesson-list-title" className="text-xl font-bold text-slate-900">{subject === 'english' ? '已发布课程' : '三课学习顺序'}</h2>
-        {(subject === 'english' ? englishUnits : [{
-          id: 'zh-campus',
-          grade: 3,
-          semester: '上册' as const,
-          unit: 1,
-          title: config.unitTitle,
-          summary: config.unitSummary,
-          lessonIds: config.lessonIds,
-        }]).map((unit) => {
+        <h2 id="lesson-list-title" className="text-xl font-bold text-slate-900">选择学习单元</h2>
+        <nav aria-label="年级单元导航" className="flex flex-wrap gap-2">
+          {units.filter((unit, index) => index === 0 || unit.grade !== units[index - 1].grade).map((unit) => <a key={unit.id} href={`#${unit.id}-title`} className="inline-flex min-h-11 items-center rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold focus-visible:ring-4 focus-visible:ring-sky-200">
+            {unit.grade}年级
+          </a>)}
+        </nav>
+        {units.map((unit) => {
           const unitLessons = unit.lessonIds.map((id) => config.lessons.find((item) => item.id === id)).filter((item): item is LanguageLesson => !!item);
           const unitNextLessonId = getNextLanguageLessonId(progress, subject, unit.lessonIds);
           const unitCompleted = unit.lessonIds.filter((id) => completed.has(id)).length;
@@ -368,8 +321,9 @@ export default function LanguageSubjectPage({ subject }: { subject: LanguageSubj
             <section key={unit.id} aria-labelledby={`${unit.id}-title`} className="rounded-2xl border border-slate-200 bg-white/60 p-4 sm:p-5">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  {subject === 'english' ? <p className={`text-xs font-bold ${theme.kicker}`}>{unit.grade}年级{unit.semester} · Unit {unit.unit}</p> : null}
-                  <h3 id={`${unit.id}-title`} className="mt-1 text-xl font-bold text-slate-900">{unit.title}</h3>
+                  <p className={`text-xs font-bold ${theme.kicker}`}>{unit.grade}年级{unit.semester ?? ''} · {subject === 'english' && unit.unit ? `Unit ${unit.unit}` : '原创能力课程'}</p>
+                  {unit.curriculumLabel ? <p className="mt-1 text-xs leading-5 text-slate-600">{unit.curriculumLabel}</p> : null}
+                  <h3 id={`${unit.id}-title`} tabIndex={-1} className="mt-1 scroll-mt-24 text-xl font-bold text-slate-900">{unit.title}</h3>
                   <p className="mt-2 text-sm leading-6 text-slate-500">{unit.summary}</p>
                 </div>
                 <span className="shrink-0 text-sm font-bold text-slate-600">已完成 {unitCompleted} / {unit.lessonIds.length} 课</span>

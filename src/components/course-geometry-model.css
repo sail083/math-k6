@@ -21,10 +21,8 @@
 .geo-angle-sum { position: relative; width: 190px; height: 48px; margin: -22px auto 16px; border-bottom: 3px solid #334155; }
 .geo-angle-sum i { position: absolute; bottom: 0; left: 50%; width: 52px; height: 2px; transform-origin: left center; background: #f59e0b; }
 .geo-angle-sum strong { position: absolute; right: -48px; bottom: -7px; color: #4f46e5; font-size: 12px; }
-.geo-sector { fill: #c7d2fe; stroke: #4f46e5; stroke-width: 1; transition: d .4s ease; }
+.geo-sector { fill: #c7d2fe; stroke: #4f46e5; stroke-width: 1; }
 .geo-sector.alt { fill: #a5f3fc; stroke: #0891b2; }
-.circle-rearrange > g:first-child { transform-origin: 130px 125px; animation: geo-spin-in .45s ease-out; }
-@keyframes geo-spin-in { from { opacity: .4; transform: scale(.9) rotate(-8deg); } }
 @media (max-width: 560px) {
   .geometry-model .model-controls { align-items: stretch; flex-direction: column; }
   .geometry-model .model-controls label input { min-width: 0; width: 100%; }

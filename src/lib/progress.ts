@@ -1,5 +1,7 @@
 import type { ProgressData, MasteryStatus, MasteryRecord, SkillEvidenceRecord, EvidenceType, SkillEvidenceMode, SkillReviewSchedule, ExperimentAssignment, CourseIntervention, LearningEventName, LearningGoalSource, LanguageSubject, LanguageLessonProgress } from './types';
 
+import { chineseLessonIds, englishLessonIds } from '@/content/languageCatalog';
+
 const STORAGE_KEY = 'math-k6-progress';
 const STORAGE_OWNER_KEY = `${STORAGE_KEY}-owner`;
 const LEGACY_DISMISS_KEY = `${STORAGE_KEY}-legacy-dismissed`;
@@ -22,7 +24,7 @@ function readStoredProgress(userId?: string): string | null {
   if (!userId) return localStorage.getItem(STORAGE_KEY);
 
   const scoped = localStorage.getItem(userStorageKey(userId));
-  if (scoped) return scoped;
+  if (scoped !== null) return scoped;
   return localStorage.getItem(STORAGE_OWNER_KEY) === userId
     ? localStorage.getItem(STORAGE_KEY)
     : null;
@@ -104,6 +106,7 @@ export function parseProgress(raw: unknown): ProgressData {
       experimentAssignments,
       courseIntervention,
       languageLessons: Object.keys(languageLessons).length > 0 ? languageLessons : undefined,
+      courseAttempts: parseCourseAttempts(parsed.courseAttempts),
     };
 }
 
@@ -117,13 +120,130 @@ export function loadProgress(userId?: string): ProgressData {
   }
 }
 
-/** 将进度数据保存到 localStorage */
-export function saveProgress(progress: ProgressData, userId?: string): void {
+export interface CorruptProgressCapture {
+  key: string;
+  raw: string;
+}
+
+/** 捕获当前账号损坏的原文；读取失败不能当作没有坏缓存，异常不携带缓存内容。 */
+export function captureCorruptProgress(userId: string): CorruptProgressCapture | null {
+  if (!userId) throw new Error('An account is required to inspect progress storage.');
+  let key = userStorageKey(userId);
+  let raw: string | null;
   try {
-    localStorage.setItem(userId ? userStorageKey(userId) : STORAGE_KEY, JSON.stringify(progress));
-  } catch (e) {
-    console.error('Failed to save progress:', e);
+    raw = localStorage.getItem(key);
+    if (raw === null && localStorage.getItem(STORAGE_OWNER_KEY) === userId) {
+      key = STORAGE_KEY;
+      raw = localStorage.getItem(key);
+    }
+  } catch {
+    throw new Error('Unable to read account progress storage.');
   }
+  if (raw === null) return null;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) return null;
+  } catch { /* 原文仅留在捕获对象中，禁止输出解析异常。 */ }
+  return { key, raw };
+}
+
+/** 仅在可信远端读取成功后调用；candidate 的未知题组封禁由调用方负责。 */
+export function recoverCorruptProgress(
+  capture: CorruptProgressCapture,
+  candidate: ProgressData,
+  userId: string,
+  isActive: () => boolean,
+): boolean {
+  try {
+    const stillCurrent = () => {
+      if (!isActive()) return false;
+      const current = captureCorruptProgress(userId);
+      return current?.key === capture.key && current.raw === capture.raw;
+    };
+    if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate) || !stillCurrent()) return false;
+    const serialized = JSON.stringify(parseProgress(candidate));
+    const backupKey = `${userStorageKey(userId)}:corrupt-backup:${crypto.randomUUID()}`;
+    if (localStorage.getItem(backupKey) !== null) return false;
+    localStorage.setItem(backupKey, capture.raw);
+    if (localStorage.getItem(backupKey) !== capture.raw || !stillCurrent()) return false;
+    // Legacy 原文不覆盖；当前账号的独立缓存恢复后会优先于 legacy 读取。
+    const targetKey = userStorageKey(userId);
+    localStorage.setItem(targetKey, serialized);
+    return isActive() && localStorage.getItem(targetKey) === serialized;
+  } catch {
+    return false;
+  }
+}
+
+/** 将进度数据保存到 localStorage */
+export function saveProgress(progress: ProgressData, userId?: string): boolean {
+  try {
+    const stored = readStoredProgress(userId);
+    const disk = stored === null ? null : JSON.parse(stored);
+    if (stored !== null && (disk === null || typeof disk !== 'object' || Array.isArray(disk))) return false;
+    const diskProgress = parseProgress(disk);
+    const courseAttempts = mergeCourseAttempts(progress.courseAttempts, disk?.courseAttempts);
+    const mastery = mergeMasteryRecords(progress.mastery, diskProgress.mastery);
+    const passedKnowledgePoints = [...new Set([...progress.passedKnowledgePoints, ...diskProgress.passedKnowledgePoints])];
+    const stars = Object.fromEntries([...new Set([...Object.keys(progress.stars), ...Object.keys(diskProgress.stars)])].map(id => [id, Math.max(progress.stars[id] ?? 0, diskProgress.stars[id] ?? 0)]));
+    const next = { ...progress, passedKnowledgePoints, stars, ...(courseAttempts ? { courseAttempts } : {}), ...(Object.keys(mastery).length ? { mastery } : {}) };
+    localStorage.setItem(userId ? userStorageKey(userId) : STORAGE_KEY, JSON.stringify(next));
+    return true;
+  } catch {
+    console.error('Failed to save progress.');
+    return false;
+  }
+}
+
+const COURSE_ATTEMPT_KEY = /^[a-z0-9-]{1,100}\|(initial|d1|d7)\|[ab]\|[a-z0-9-]{1,80}$/;
+
+export function parseCourseAttempts(raw: unknown): ProgressData['courseAttempts'] {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined;
+  const entries = Object.entries(raw).filter(([key]) => COURSE_ATTEMPT_KEY.test(key)).map(([key, value]) => {
+    const record = value && typeof value === 'object' ? value as Record<string, unknown> : {};
+    const valid = typeof record.id === 'string' && /^[a-zA-Z0-9-]{1,100}$/.test(record.id) && typeof record.settled === 'boolean';
+    // 已有但损坏的消费记录不恢复成一次新的机会。
+    return [key, valid ? { id: record.id as string, settled: record.settled as boolean } : { id: 'invalid-record', settled: true }] as const;
+  });
+  return entries.length ? Object.fromEntries(entries) : undefined;
+}
+
+export function mergeCourseAttempts(left: unknown, right: unknown): ProgressData['courseAttempts'] {
+  const merged = { ...parseCourseAttempts(left) };
+  for (const [key, record] of Object.entries(parseCourseAttempts(right) ?? {})) {
+    const old = merged[key];
+    merged[key] = old ? { id: old.id < record.id ? old.id : record.id, settled: old.settled || record.settled } : record;
+  }
+  return Object.keys(merged).length ? merged : undefined;
+}
+
+export function mergeMasteryRecords(left: ProgressData['mastery'], right: ProgressData['mastery']): Record<string, MasteryRecord> {
+  const result = { ...left };
+  for (const [key, record] of Object.entries(right ?? {})) {
+    result[key] = result[key] ? pickBetterMastery(result[key], record) : record;
+  }
+  return result;
+}
+
+/** 反馈前同步消费题组；只读题目/输入未提交不消费。失败时仍允许普通练习。 */
+export function claimCourseAttempt(progress: ProgressData, key: string, id: string, userId: string): { progress: ProgressData; claim: string | null } {
+  if (!COURSE_ATTEMPT_KEY.test(key) || !/^[a-zA-Z0-9-]{1,100}$/.test(id) || !userId) return { progress, claim: null };
+  try {
+    const stored = readStoredProgress(userId);
+    const disk = stored ? parseProgress(JSON.parse(stored)) : defaultProgress;
+    const attempts = mergeCourseAttempts(progress.courseAttempts, disk.courseAttempts) ?? {};
+    if (attempts[key]) return { progress: { ...progress, courseAttempts: attempts }, claim: null };
+    const next = { ...progress, courseAttempts: { ...attempts, [key]: { id, settled: false } } };
+    return { progress: next, claim: saveProgress(next, userId) ? id : null };
+  } catch {
+    return { progress, claim: null };
+  }
+}
+
+export function settleCourseAttempt(progress: ProgressData, key: string, id: string): ProgressData {
+  const record = progress.courseAttempts?.[key];
+  if (!record || record.id !== id || record.settled) return progress;
+  return { ...progress, courseAttempts: { ...progress.courseAttempts, [key]: { ...record, settled: true } } };
 }
 
 /** Return unowned device progress without mutating ownership or account storage. */
@@ -176,15 +296,8 @@ export function toRemoteMathProgress(progress: ProgressData): ProgressData {
 
 const LANGUAGE_SUBJECTS: LanguageSubject[] = ['chinese', 'english'];
 export const PUBLISHED_LANGUAGE_LESSON_IDS: Record<LanguageSubject, readonly string[]> = {
-  chinese: ['zh-campus-words', 'zh-campus-reading', 'zh-campus-speaking'],
-  english: [
-    'en-g3a-u1-meet',
-    'en-g3a-u1-help',
-    'en-g3a-u1-friend-card',
-    'en-park-animals',
-    'en-park-sentences',
-    'en-park-listen-read',
-  ],
+  chinese: chineseLessonIds,
+  english: englishLessonIds,
 };
 
 export function parseLanguageLessons(
@@ -440,13 +553,27 @@ export function markInitialPass(
  * - 第 1 次复习通过（count 0→1）：provisional，下次复习 6 天后
  * - 第 2 次复习通过（count 1→2）：stable
  */
+function isExpectedCourseReview(record: MasteryRecord | undefined, now: number, expectedMode: 'd1' | 'd7'): record is MasteryRecord {
+  return !!record && (record.status === 'provisional' || record.status === 'review_due')
+    && record.delayedReviewCount === (expectedMode === 'd1' ? 0 : expectedMode === 'd7' ? 1 : -1)
+    && Number.isFinite(now) && Number.isFinite(record.nextReviewAt)
+    && record.nextReviewAt > 0 && record.nextReviewAt <= now;
+}
+
+export function isCourseAttemptModeCurrent(progress: ProgressData, key: string, now: number): boolean {
+  if (!COURSE_ATTEMPT_KEY.test(key)) return false;
+  const [courseId, mode] = key.split('|');
+  return mode === 'initial' || ((mode === 'd1' || mode === 'd7') && isExpectedCourseReview(progress.mastery?.[courseId], now, mode));
+}
+
 export function markDelayedReviewPass(
   progress: ProgressData,
   kpId: string,
   now: number,
+  expectedMode: 'd1' | 'd7',
 ): ProgressData {
   const record = progress.mastery?.[kpId];
-  if (!record || record.delayedReviewCount >= 2) return progress;
+  if (!isExpectedCourseReview(record, now, expectedMode)) return progress;
   const mastery = { ...progress.mastery! };
   const newCount = record.delayedReviewCount + 1;
   if (newCount >= 2) {
@@ -474,9 +601,10 @@ export function markDelayedReviewFail(
   progress: ProgressData,
   kpId: string,
   now: number,
+  expectedMode: 'd1' | 'd7',
 ): ProgressData {
   const record = progress.mastery?.[kpId];
-  if (!record) return progress;
+  if (!isExpectedCourseReview(record, now, expectedMode)) return progress;
   const mastery = { ...progress.mastery! };
   mastery[kpId] = {
     ...record,
@@ -932,6 +1060,7 @@ export function mergeRepairSession(
  * 而是综合判断 passed / stars / mastery / currentLearning / skillEvidence / goal / repair。
  */
 export function hasMeaningfulProgress(progress: ProgressData): boolean {
+  if (Object.keys(progress.courseAttempts ?? {}).length) return true;
   if (progress.passedKnowledgePoints?.length > 0) return true;
   const stars = progress.stars ?? {};
   if (Object.values(stars).some((v) => v > 0)) return true;

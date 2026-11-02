@@ -123,7 +123,7 @@ export default function LoginPage() {
 
         <p className="text-center text-sm mt-6" style={{ color: 'var(--color-muted)' }}>
           还没有账户?{' '}
-          <Link to="/register" className="font-semibold hover:underline" style={{ color: 'var(--color-primary)' }}>
+          <Link to="/register" state={fromLocation ? { from: fromLocation } : undefined} className="font-semibold hover:underline" style={{ color: 'var(--color-primary)' }}>
             立即注册
           </Link>
         </p>

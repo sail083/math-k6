@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '@/App';
 import { englishLessonIds } from '@/content/english';
+import { chineseLessonIds } from '@/content/chinese';
 import { LearningCenter } from '@/pages/LearningCenterPage';
 import type { PrimaryTask } from '@/lib/platformTasks';
 
@@ -17,6 +18,11 @@ const primaryTask: PrimaryTask = {
   cta: '继续学习',
   link: '/chinese/zh-campus-words',
 };
+
+const progressState = vi.hoisted(() => ({
+  progress: { passedKnowledgePoints: [] as string[], stars: {} as Record<string, number> },
+}));
+const mockEmitEvent = vi.hoisted(() => vi.fn());
 
 const authState = vi.hoisted(() => ({
   user: { id: 'student-1', user_metadata: { username: '小航' } } as {
@@ -43,13 +49,14 @@ vi.mock('@/context/AuthContext', () => ({
 vi.mock('@/context/ProgressContext', () => ({
   ProgressProvider: ({ children }: { children: ReactNode }) => children,
   useProgress: () => ({
-    progress: { passedKnowledgePoints: [], stars: {} },
+    progress: progressState.progress,
     legacyProgressAvailable: false,
     legacyCompletedKnowledgePointCount: 0,
     importLegacyProgress: vi.fn(),
     dismissLegacyProgress: vi.fn(),
     startLanguageLesson: vi.fn(),
     completeLanguageLesson: vi.fn(),
+    emitEvent: mockEmitEvent,
   }),
 }));
 
@@ -64,6 +71,8 @@ beforeEach(() => {
   authState.user = { id: 'student-1', user_metadata: { username: '小航' } };
   authState.login.mockReset();
   authState.logout.mockReset();
+  progressState.progress = { passedKnowledgePoints: [], stars: {} };
+  mockEmitEvent.mockReset();
   window.history.replaceState({}, '', '/');
 });
 
@@ -101,9 +110,42 @@ describe('integrated learning center', () => {
     expect(screen.getByRole('progressbar', { name: '数学学习进度' })).toHaveAttribute('aria-valuenow', '6');
     expect(screen.getByRole('progressbar', { name: '语文学习进度' })).toHaveAttribute('aria-valuenow', '1');
     expect(screen.getByRole('progressbar', { name: '英语学习进度' })).toHaveAttribute('aria-valuenow', '0');
-    expect(screen.getByText('已完成 1 / 3 课')).toBeInTheDocument();
+    expect(screen.getByText(`已完成 1 / ${chineseLessonIds.length} 课`)).toBeInTheDocument();
     expect(screen.getByText(`已完成 0 / ${englishLessonIds.length} 课`)).toBeInTheDocument();
     expect(screen.getByText('词汇、句型与听读')).toBeInTheDocument();
+  });
+
+  it('labels and records an eligible extension primary task', async () => {
+    progressState.progress = {
+      passedKnowledgePoints: ['g3-add-sub-10000', 'g3-mult-1digit'],
+      stars: {},
+    };
+    render(<App />);
+
+    const taskLink = await screen.findByRole('link', { name: '开始学习：分类枚举' });
+    expect(screen.getByText('数学 · 下一课 · 能力拓展')).toBeVisible();
+    await waitFor(() => expect(mockEmitEvent).toHaveBeenCalledWith({
+      clientEventId: 'lc:htv:math:next:g3-systematic-enumeration',
+      eventName: 'home_task_viewed',
+      courseId: 'g3-systematic-enumeration',
+      properties: {
+        surface: 'learning-center',
+        track: 'extension',
+        taskId: 'math:next:g3-systematic-enumeration',
+      },
+    }));
+
+    fireEvent.click(taskLink);
+    expect(mockEmitEvent).toHaveBeenCalledWith({
+      clientEventId: 'lc:hto:math:next:g3-systematic-enumeration',
+      eventName: 'home_task_opened',
+      courseId: 'g3-systematic-enumeration',
+      properties: {
+        surface: 'learning-center',
+        track: 'extension',
+        taskId: 'math:next:g3-systematic-enumeration',
+      },
+    });
   });
 
   it('asks before importing unowned device progress', () => {
@@ -153,7 +195,7 @@ describe('integrated learning center', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole('status')).toHaveTextContent('本阶段学习已完成');
+    expect(screen.getByRole('status')).toHaveTextContent('当前可用课程已完成');
     expect(screen.queryByText('最近学习')).not.toBeInTheDocument();
   });
 
@@ -161,7 +203,7 @@ describe('integrated learning center', () => {
     window.history.replaceState({}, '', '/chinese');
     const view = render(<App />);
 
-    expect(await screen.findByRole('heading', { level: 1, name: '校园里的小发现' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: '语文自学课程' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /会观察，也会用词/ })).toHaveAttribute('href', '/chinese/zh-campus-words');
     expect(document.title).toBe('语文学习 · 语数英综合学习平台');
     view.unmount();

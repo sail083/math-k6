@@ -1,0 +1,1 @@
+{"id":"g6-solid-geometry-reasoning","grade":6,"unit":11,"title":"立体几何综合推理","objectives":["理解展开图与表面积关系","用等底等高比较体积","检查单位和边界"],"prerequisites":["g6-cylinder-surface","g6-cylinder-volume","g6-cone-volume"],"track":"base","textbookRefs":[{"version":"人教版","grade":6,"chapter":"六下第3单元"}],"vizType":"cylinder-layers","hasFormula":false}

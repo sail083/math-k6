@@ -1,0 +1,13 @@
+{
+  "knowledgePointId": "g5-decimal-equation-reasoning",
+  "passThreshold": 0.8,
+  "questions": [
+    {"id":"q1","type":"choice","prompt":"2.4×3表示几个2.4？","options":["2个","3个","4个","7个"],"correctAnswer":"3个","explanation":"乘以3就是3个2.4相加。","points":10},
+    {"id":"q2","type":"fill-blank","prompt":"2.4×3=____。","correctAnswer":"7.2","explanation":"2.4+2.4+2.4=7.2。","points":10},
+    {"id":"q3","type":"choice","prompt":"7.2÷3的结果是（ ）。","options":["2.4","2.7","24","0.24"],"correctAnswer":"2.4","explanation":"72个十分之一平均分3份，每份24个十分之一，即2.4。","points":10},
+    {"id":"q4","type":"choice","prompt":"2.4×3的结果大约在哪个范围？","options":["1到2之间","2到3之间","6到9之间","20到30之间"],"correctAnswer":"6到9之间","explanation":"2×3=6，3×3=9，所以结果在6到9之间。","points":10},
+    {"id":"q5","type":"choice","prompt":"每支笔2.5元，买4支共多少元？","options":["6.5元","8元","10元","12.5元"],"correctAnswer":"10元","explanation":"单价×数量=总价，2.5×4=10。","points":10},
+    {"id":"q6","type":"true-false","prompt":"因为7.2÷3=2.4，所以2.4×3=7.2可以用来验算。","correctAnswer":"对","explanation":"乘法是除法的逆运算。","points":10}
+  ],
+  "reviewSets": {"d1":{"questions":[{"id":"d1q1","type":"choice","prompt":"3.6÷4=？","options":["0.9","9","1.2"],"correctAnswer":"0.9","explanation":"36个十分之一平均4份，每份9个十分之一。","points":10},{"id":"d1q2","type":"fill-blank","prompt":"1.8×5=____。","correctAnswer":"9","explanation":"1.8累加5次是9。","points":10}]},"d7":{"questions":[{"id":"d7q1","type":"choice","prompt":"每千克4.2元，买2千克需要？","options":["6.2元","8.4元","10.2元"],"correctAnswer":"8.4元","explanation":"4.2×2=8.4。","points":10},{"id":"d7q2","type":"fill-blank","prompt":"9.6÷3=____。","correctAnswer":"3.2","explanation":"96个十分之一平均3份，每份32个十分之一。","points":10}]}}
+}

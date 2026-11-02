@@ -1,0 +1,16 @@
+{
+  "id": "g6-fraction-strategy",
+  "grade": 6,
+  "unit": 13,
+  "title": "分数策略综合推理",
+  "objectives": [
+    "区分原来总量与剩余量两个单位“1”",
+    "用两次取份计算最终剩下的量",
+    "由最终剩余量倒推原量并代回验证"
+  ],
+  "prerequisites": ["g6-fraction-mult", "g6-fraction-div"],
+  "track": "challenge",
+  "textbookRefs": [],
+  "vizType": "fraction-product",
+  "hasFormula": false
+}

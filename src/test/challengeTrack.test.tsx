@@ -48,7 +48,7 @@ describe('challenge course track', () => {
     expect(screen.getByRole('tab', { name: '能力拓展' })).toHaveAttribute('aria-selected', 'true');
   });
 
-  it('hides unimplemented grade tracks and redirects a direct empty-track URL to base', async () => {
+  it('shows the newly implemented grade 6 extension track', async () => {
     render(
       <MemoryRouter initialEntries={['/grade/6?track=extension']}>
         <Routes>
@@ -57,9 +57,9 @@ describe('challenge course track', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole('heading', { name: '六年级课程' })).toBeInTheDocument();
-    expect(screen.queryByRole('tab', { name: '能力拓展' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('tab', { name: '浅奥挑战' })).not.toBeInTheDocument();
-    expect(await screen.findByTestId('location')).toHaveTextContent('/grade/6');
+    expect(screen.getByRole('heading', { name: '六年级能力拓展' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: '能力拓展' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByText('比、百分数与比例建模')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: '浅奥挑战' })).toBeInTheDocument();
   });
 });

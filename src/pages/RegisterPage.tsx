@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
 const PHONE_RE = /^1[3-9]\d{9}$/;
@@ -8,6 +8,14 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromLocation = (location.state as {
+    from?: { pathname: string; search?: string; hash?: string };
+  } | null)?.from;
+  const from = fromLocation
+    ? `${fromLocation.pathname}${fromLocation.search ?? ''}${fromLocation.hash ?? ''}`
+    : '/';
+  const loginState = fromLocation ? { from: fromLocation } : undefined;
 
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -44,10 +52,10 @@ export default function RegisterPage() {
     setSubmitting(false);
 
     if (regError) {
-      // If the message contains "确认邮箱", it's a success with email confirmation needed
-      if (regError.includes('确认邮箱')) {
+      // AuthContext returns this success state when email confirmation is required.
+      if (regError.includes('确认邮件')) {
         setSuccess(regError);
-        setTimeout(() => navigate('/login', { replace: true }), 3000);
+        setTimeout(() => navigate('/login', { replace: true, state: loginState }), 3000);
       } else {
         setError(regError);
       }
@@ -55,7 +63,7 @@ export default function RegisterPage() {
     }
 
     // Email confirmation disabled — user is auto-logged in
-    navigate('/', { replace: true });
+    navigate(from, { replace: true });
   };
 
   return (
@@ -173,7 +181,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm mt-6" style={{ color: 'var(--color-muted)' }}>
           已有账户?{' '}
-          <Link to="/login" className="font-semibold hover:underline" style={{ color: 'var(--color-primary)' }}>
+          <Link to="/login" state={loginState} className="font-semibold hover:underline" style={{ color: 'var(--color-primary)' }}>
             去登录
           </Link>
         </p>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useRef, useState } from 'react';
 import type { GameConfig, Question } from '@/lib/types';
 import { useProgress } from '@/context/ProgressContext';
 import ChoiceGame from '@/components/games/ChoiceGame';
@@ -22,7 +22,7 @@ interface GameRunnerProps {
   reviewMode?: 'd1' | 'd7' | null;
 }
 
-type GameStatus = 'playing' | 'passed' | 'failed';
+type GameStatus = 'playing' | 'passed' | 'failed' | 'practice';
 
 export interface AnswerRecord {
   selected: string | string[];
@@ -84,7 +84,12 @@ function NextArrowIcon() {
 
 const confettiColors = ['#4f46e5', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
 
-export default function GameRunner({
+export default function GameRunner(props: GameRunnerProps) {
+  const { assessmentOwnerId } = useProgress();
+  return <GameRunnerSession key={`${assessmentOwnerId ?? 'guest'}:${props.knowledgePointId}:${props.game.evidenceVersion ?? 'legacy'}`} {...props} />;
+}
+
+function GameRunnerSession({
   game,
   knowledgePointId,
   className,
@@ -95,10 +100,17 @@ export default function GameRunner({
   nextActionLabel,
   reviewMode = null,
 }: GameRunnerProps) {
-  const { markInitialPass, markDelayedReviewPass, markDelayedReviewFail, recordSkillEvidence } = useProgress();
+  const { progress, beginCourseAttempt, finishCourseAttempt, markInitialPass, markDelayedReviewPass, markDelayedReviewFail, recordSkillEvidence } = useProgress();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, AnswerRecord>>({});
   const [gameStatus, setGameStatus] = useState<GameStatus>('playing');
+  const [reviewOutdated, setReviewOutdated] = useState(false);
+  const [form, setForm] = useState<'a' | 'b'>('a');
+  const [run, setRun] = useState(0);
+  const [showRepair, setShowRepair] = useState(false);
+  const attemptClaim = useRef<string | null | undefined>(undefined);
+  const answerGuard = useRef(new Set<string>());
+  const resultGuard = useRef(false);
 
   // Freeze review mode for the lifetime of this course attempt.
   // Captured once when the component mounts; the React key on GameRunner
@@ -109,23 +121,24 @@ export default function GameRunner({
   const reviewQuestions: Question[] = isReview
     ? game.reviewSets?.[frozenReviewMode]?.questions ?? []
     : [];
-  const activeQuestions = isReview ? reviewQuestions : game.questions;
+  const primaryQuestions = isReview ? reviewQuestions : game.questions;
+  const alternateQuestions = isReview ? game.reviewSets?.[frozenReviewMode]?.alternateQuestions : game.alternateQuestions;
+  const activeQuestions = form === 'b' ? alternateQuestions ?? [] : primaryQuestions;
+  const strictEvidence = !!game.evidenceVersion;
+  const attemptMode = frozenReviewMode ?? 'initial';
+  const attemptKey = `${knowledgePointId}|${attemptMode}|${form}|${game.evidenceVersion}`;
+  const bKey = `${knowledgePointId}|${attemptMode}|b|${game.evidenceVersion}`;
+  const spent = !!progress?.courseAttempts?.[attemptKey];
+  const bSpent = !!progress?.courseAttempts?.[bKey];
   const hasReviewSets = !!(game.reviewSets?.d1 && game.reviewSets?.d7);
 
-  const maxScore = useMemo(
-    () => activeQuestions.reduce((sum, q) => sum + q.points, 0),
-    [activeQuestions],
-  );
+  const maxScore = activeQuestions.reduce((sum, q) => sum + q.points, 0);
   const requiredRate = masteryThreshold(game.passThreshold);
 
-  const score = useMemo(
-    () =>
-      activeQuestions.reduce((sum, q) => {
+  const score = activeQuestions.reduce((sum, q) => {
         const answer = answers[q.id];
         return sum + (answer?.correct ? q.points : 0);
-      }, 0),
-    [answers, activeQuestions],
-  );
+      }, 0);
 
   // 边界情况：没有题目
   if (activeQuestions.length === 0) {
@@ -143,7 +156,10 @@ export default function GameRunner({
   const progressPercent = ((currentQuestionIndex + 1) / activeQuestions.length) * 100;
 
   const handleAnswer = (selected: string, isCorrect: boolean, firstTry: boolean = true) => {
-    if (answers[currentQuestion.id]) return;
+    if (answerGuard.current.has(currentQuestion.id)) return;
+    answerGuard.current.add(currentQuestion.id);
+    const claim = ensureAttempt();
+    firstTry = firstTry && (!strictEvidence || !!claim);
     setAnswers((prev) => ({
       ...prev,
       [currentQuestion.id]: { selected, correct: isCorrect, firstTry },
@@ -153,30 +169,44 @@ export default function GameRunner({
       const mode: 'initial' | 'd1' | 'd7' =
         frozenReviewMode === 'd1' ? 'd1' :
         frozenReviewMode === 'd7' ? 'd7' : 'initial';
-      recordSkillEvidence(
-        currentQuestion.primarySkillId,
-        isCorrect,
-        firstTry,
-        currentQuestion.evidenceType,
-        mode,
-      );
+      const args = [currentQuestion.primarySkillId, isCorrect, firstTry, currentQuestion.evidenceType, mode] as const;
+      if (strictEvidence) recordSkillEvidence(...args, { key: attemptKey, id: claim });
+      else recordSkillEvidence(...args);
     }
   };
 
+  function ensureAttempt(): string | null {
+    if (!strictEvidence) return null;
+    if (attemptClaim.current === undefined) attemptClaim.current = beginCourseAttempt(attemptKey);
+    return attemptClaim.current;
+  }
+
   const handleNext = () => {
+    if (!isAnswered || resultGuard.current) return;
     if (!isLastQuestion) {
-      setCurrentQuestionIndex((prev) => prev + 1);
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
+      resultGuard.current = true;
       const correctRate = maxScore > 0 ? score / maxScore : 0;
-      if (isReview) {
+      if (strictEvidence) {
+        if (!attemptClaim.current) { setGameStatus('practice'); return; }
+        const passed = correctRate >= requiredRate && hasTransferEvidence(game, answers, activeQuestions);
+        const accepted = finishCourseAttempt(attemptKey, attemptClaim.current, passed, calculateStars(correctRate, requiredRate), hasReviewSets);
+        if (!accepted) { setReviewOutdated(true); return; }
+        setGameStatus(passed ? 'passed' : 'failed');
+        if (passed) onPassed?.();
+      } else if (isReview) {
         // Review pass requires: score >= threshold AND first-try transfer evidence on review questions
         if (correctRate >= requiredRate && hasTransferEvidence(game, answers, activeQuestions)) {
-          setGameStatus('passed');
-          markDelayedReviewPass(knowledgePointId);
-          onPassed?.();
+          if (markDelayedReviewPass(knowledgePointId, frozenReviewMode)) {
+            setGameStatus('passed');
+            onPassed?.();
+          } else {
+            setReviewOutdated(true);
+          }
         } else {
           setGameStatus('failed');
-          markDelayedReviewFail(knowledgePointId);
+          markDelayedReviewFail(knowledgePointId, frozenReviewMode);
         }
       } else {
         // Initial challenge: pass requires correct rate + transfer evidence
@@ -192,7 +222,14 @@ export default function GameRunner({
     }
   };
 
-  const handleRestart = () => {
+  const handleRestart = (nextForm = form) => {
+    setForm(nextForm);
+    setRun(value => value + 1);
+    setShowRepair(false);
+    setReviewOutdated(false);
+    attemptClaim.current = undefined;
+    answerGuard.current.clear();
+    resultGuard.current = false;
     setCurrentQuestionIndex(0);
     setAnswers({});
     setGameStatus('playing');
@@ -203,23 +240,25 @@ export default function GameRunner({
       case 'choice':
         return (
           <ChoiceGame
-            key={currentQuestion.id}
+            key={`${currentQuestion.id}:${run}`}
             question={currentQuestion}
+            onAttempt={ensureAttempt}
             onAnswer={handleAnswer}
           />
         );
       case 'fill-blank':
         return (
           <FillBlankGame
-            key={currentQuestion.id}
+            key={`${currentQuestion.id}:${run}`}
             question={currentQuestion}
+            onAttempt={ensureAttempt}
             onAnswer={handleAnswer}
           />
         );
       case 'true-false':
         return (
           <TrueFalseGame
-            key={currentQuestion.id}
+            key={`${currentQuestion.id}:${run}`}
             question={currentQuestion}
             onAnswer={handleAnswer}
           />
@@ -227,7 +266,7 @@ export default function GameRunner({
       case 'drag-match':
         return (
           <DragMatchGame
-            key={currentQuestion.id}
+            key={`${currentQuestion.id}:${run}`}
             question={currentQuestion}
             onAnswer={handleAnswer}
           />
@@ -235,7 +274,7 @@ export default function GameRunner({
       case 'drag-assemble':
         return (
           <DragAssembleGame
-            key={currentQuestion.id}
+            key={`${currentQuestion.id}:${run}`}
             question={currentQuestion}
             onAnswer={handleAnswer}
           />
@@ -243,7 +282,7 @@ export default function GameRunner({
       case 'timeline':
         return (
           <TimelineGame
-            key={currentQuestion.id}
+            key={`${currentQuestion.id}:${run}`}
             question={currentQuestion}
             onAnswer={handleAnswer}
           />
@@ -251,7 +290,7 @@ export default function GameRunner({
       case 'timed-challenge':
         return (
           <TimedChallengeGame
-            key={currentQuestion.id}
+            key={`${currentQuestion.id}:${run}`}
             question={currentQuestion}
             onAnswer={handleAnswer}
           />
@@ -265,6 +304,7 @@ export default function GameRunner({
 
   // Determine result copy based on mode and outcome
   const resultTitle = (passed: boolean): string => {
+    if (gameStatus === 'practice') return '原题练习完成';
     if (isReview) {
       if (passed && frozenReviewMode === 'd7') return '已稳固';
       if (passed && frozenReviewMode === 'd1') return '第一次复习通过';
@@ -289,10 +329,28 @@ export default function GameRunner({
   };
 
   // ===== 结果界面 =====
-  if (gameStatus === 'passed' || gameStatus === 'failed') {
+  if (reviewOutdated) return <section role="status" className="rounded-xl border border-amber-200 bg-amber-50 p-6">
+    <h2 className="text-xl font-bold">{strictEvidence ? '本次记录未更新' : '复习状态已更新'}</h2>
+    <p className="mt-2">本次练习没有重复计入复习进度。请返回课程，查看当前需要完成的复习。</p>
+    {strictEvidence && <p>存储失败、题组已经结算或复习阶段改变时，都不会重复发放掌握记录。</p>}
+    <a href={`/math/kp/${knowledgePointId}`} className="mt-4 inline-flex min-h-11 items-center rounded-lg border px-4">返回课程</a>
+  </section>;
+
+  const alternateAction = strictEvidence && alternateQuestions?.length ? form === 'a'
+    ? <button type="button" className="min-h-12 rounded-lg border border-indigo-300 px-4 py-2" onClick={() => setShowRepair(true)}>{bSpent ? '练习B组原题' : '补学后换B组新题'}</button>
+    : <button type="button" className="min-h-12 rounded-lg border border-indigo-300 px-4 py-2" onClick={() => handleRestart('a')}>练习A组原题</button> : null;
+
+  if (showRepair) return <section className="space-y-4 rounded-xl border bg-white p-6">
+    <h2 className="text-xl font-bold">先对照解析补学</h2>
+    <p>找出原来哪一步不清楚，试着用自己的话解释。下一组会换数字和情境，不照搬答案。</p>
+    {primaryQuestions.map(question => <p key={question.id} className="text-sm leading-7">{question.explanation}</p>)}
+    <button type="button" className="min-h-12 rounded-lg bg-indigo-600 px-4 text-white" onClick={() => handleRestart('b')}>{bSpent ? '开始B组原题练习' : '开始B组新题验证'}</button>
+  </section>;
+
+  if (gameStatus !== 'playing') {
     const correctRate = maxScore > 0 ? score / maxScore : 0;
     const passed = gameStatus === 'passed';
-    const transferPassed = isReview ? hasTransferEvidence(game, answers, activeQuestions) : hasTransferEvidence(game, answers);
+    const transferPassed = hasTransferEvidence(game, answers, activeQuestions);
     const stars = passed && !isReview ? calculateStars(correctRate, requiredRate) : 0;
 
     return (
@@ -326,7 +384,7 @@ export default function GameRunner({
             <>
               <div className="result-icon"><UiIcon name="progress" size={32}/></div>
               <h2 className="text-2xl font-bold text-slate-700 mb-2">{resultTitle(false)}</h2>
-              <p className="text-sm text-slate-500">{isReview ? resultSubtitle(false) : (correctRate < requiredRate && !transferPassed
+              <p className="text-sm text-slate-500">{gameStatus === 'practice' ? '这套题已接触过，或首次记录未能保存。本轮得分保留为练习结果，不新增迁移、复习或掌握证据。' : isReview ? resultSubtitle(false) : (correctRate < requiredRate && !transferPassed
                 ? `再答对一些（需要达到 ${Math.round(requiredRate * 100)}%），同时把填空题也独立完成。`
                 : correctRate < requiredRate
                   ? `再答对一些，达到 ${Math.round(requiredRate * 100)}% 就能过关。`
@@ -416,12 +474,14 @@ export default function GameRunner({
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 justify-center">
           {!passed && (
             <button
-              onClick={handleRestart}
+              onClick={() => handleRestart()}
               className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[48px] flex items-center"
             >
-              再试一次
+              {strictEvidence ? '再练当前题组' : '再试一次'}
             </button>
           )}
+          {!passed && alternateAction}
+          {!passed && strictEvidence && bSpent && <p className="w-full text-sm text-slate-600">当前两组新题机会已使用；可以继续原题练习，后续需新的题组再验证。不会清除已有成绩。</p>}
           {passed && onNextCourse && !isReview ? (
             <button
               onClick={onNextCourse}
@@ -445,6 +505,10 @@ export default function GameRunner({
   // ===== 游戏进行中界面 =====
   return (
     <div className={`space-y-4${className ? ' ' + className : ''}`}>
+      {strictEvidence && <section role="note" className="space-y-3 rounded-xl border border-indigo-200 p-4 text-sm">
+        <p>{form.toUpperCase()}组 · {attemptClaim.current === null ? '本轮只作练习：首次记录、账号同步或复习阶段不满足验证条件。' : spent && !attemptClaim.current ? '已接触原题：本轮只作练习。' : '首次提交后记录题组接触；刷新或回看后重做不算首次证据。'}</p>
+        {spent && attemptClaim.current === undefined && alternateAction}
+      </section>}
       {/* 进度条 + 信息 */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">

@@ -406,7 +406,7 @@ describe('T7: D7 状态转移', () => {
     p = markInitialPass(p, 'g5-fraction-meaning', 2, NOW, true);
 
     // D1 通过
-    const afterD1 = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY);
+    const afterD1 = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY, 'd1');
     expect(afterD1.mastery?.['g5-fraction-meaning']?.delayedReviewCount).toBe(1);
     expect(getMasteryStatus(afterD1, 'g5-fraction-meaning', NOW + DAY)).toBe('provisional');
 
@@ -415,7 +415,7 @@ describe('T7: D7 状态转移', () => {
     expect(getMasteryStatus(afterD1, 'g5-fraction-meaning', d7Time)).toBe('review_due');
 
     // D7 通过
-    const afterD7 = markDelayedReviewPass(afterD1, 'g5-fraction-meaning', d7Time);
+    const afterD7 = markDelayedReviewPass(afterD1, 'g5-fraction-meaning', d7Time, 'd7');
     expect(afterD7.mastery?.['g5-fraction-meaning']?.status).toBe('stable');
     expect(getMasteryStatus(afterD7, 'g5-fraction-meaning', d7Time)).toBe('stable');
   });

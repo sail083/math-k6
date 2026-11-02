@@ -1,15 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Question } from '@/lib/types';
 import { CheckIcon, XIcon, InfoIcon } from './shared';
 
 interface ChoiceGameProps {
   question: Question;
+  onAttempt?: () => void;
   onAnswer: (selectedAnswer: string, isCorrect: boolean, firstTry?: boolean) => void;
 }
 
 const optionLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
-export default function ChoiceGame({ question, onAnswer }: ChoiceGameProps) {
+export default function ChoiceGame({ question, onAnswer, onAttempt }: ChoiceGameProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const [attemptCount, setAttemptCount] = useState(0);
   const [wrongOptions, setWrongOptions] = useState<string[]>([]);
   const [resolved, setResolved] = useState(false);
@@ -27,6 +29,7 @@ export default function ChoiceGame({ question, onAnswer }: ChoiceGameProps) {
 
   const handleSelect = (option: string) => {
     if (resolved || wrongOptions.includes(option)) return;
+    if (attemptCount === 0) onAttempt?.();
     const isCorrect = checkCorrect(option);
 
     if (isCorrect) {
@@ -52,7 +55,10 @@ export default function ChoiceGame({ question, onAnswer }: ChoiceGameProps) {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (resolved) return;
+      if (resolved || e.defaultPrevented || e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.target instanceof Element && e.target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])')) return;
+      const target = e.target instanceof Element ? e.target : document.activeElement;
+      if (target && target !== document.body && target !== document.documentElement && !rootRef.current?.contains(target)) return;
       const keyMap: Record<string, number> = { '1': 0, '2': 1, '3': 2, '4': 3, 'a': 0, 'b': 1, 'c': 2, 'd': 3 };
       const idx = keyMap[e.key.toLowerCase()];
       if (idx !== undefined && idx < options.length) {
@@ -75,7 +81,7 @@ export default function ChoiceGame({ question, onAnswer }: ChoiceGameProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div ref={rootRef} className="space-y-4">
       {/* 题目 */}
       <p className="text-lg font-medium text-slate-800 leading-relaxed">
         {question.prompt}
@@ -135,15 +141,16 @@ export default function ChoiceGame({ question, onAnswer }: ChoiceGameProps) {
         })}
       </div>
 
-      {/* 第一次答错提示（不揭示正确答案） */}
+      {/* 第一次答错提示 */}
       {attemptCount === 1 && !resolved && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3">
+        <div role="status" className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3">
           <span className="text-amber-500 shrink-0 mt-0.5">
             <InfoIcon />
           </span>
           <div>
             <p className="text-sm font-medium text-amber-900 mb-0.5">再想想</p>
             <p className="text-sm text-amber-800">仔细看看题目里的关键条件，换个选项再试一次。</p>
+            <p className="mt-2 text-sm leading-relaxed text-amber-900">解析：{question.explanation}</p>
           </div>
         </div>
       )}

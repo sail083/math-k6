@@ -1,9 +1,10 @@
-import { chineseLessons } from '@/content/chinese';
+import { chineseLessons, chineseUnits } from '@/content/chinese';
 import { englishLessons, englishUnits } from '@/content/english';
 import {
   getAllKnowledgePoints,
   getCourseTrack,
   getKnowledgePointById,
+  getTrackCourses,
 } from '@/lib/content';
 import { getSkillById } from '@/lib/knowledgeGraph';
 import {
@@ -12,7 +13,7 @@ import {
   getNextLanguageLessonId,
   type HomeTask,
 } from '@/lib/progress';
-import type { LanguageLesson, LanguageSubject, ProgressData } from '@/lib/types';
+import type { CourseTrack, LanguageLesson, LanguageSubject, ProgressData } from '@/lib/types';
 
 export interface PrimaryTask {
   id: string;
@@ -23,6 +24,8 @@ export interface PrimaryTask {
   duration: string;
   cta: '开始复习' | '继续学习' | '开始学习';
   link: string;
+  courseId?: string;
+  track?: Exclude<CourseTrack, 'base'>;
 }
 
 interface RankedTask extends PrimaryTask {
@@ -97,6 +100,10 @@ function normalizeMathTask(
     duration: task.duration ?? '约5分钟',
     cta: review ? '开始复习' : '继续学习',
     link: canonicalMathLink(task.link),
+    courseId: course?.meta.id,
+    track: course && getCourseTrack(course.meta) !== 'base'
+      ? getCourseTrack(course.meta) as Exclude<CourseTrack, 'base'>
+      : undefined,
     order: orderByType[task.type],
     time,
   };
@@ -107,10 +114,11 @@ function normalizeLanguageTask(
   lessons: LanguageLesson[],
   progress: ProgressData,
 ): RankedTask | null {
-  const lessonIds = lessons.map((lesson) => lesson.id);
+  const units = subject === 'english' ? englishUnits : chineseUnits;
+  const lessonIds = units.flatMap((unit) => unit.lessonIds);
   const currentLessonId = progress.languageLessons?.[subject]?.currentLessonId;
-  const currentUnit = subject === 'english' && currentLessonId
-    ? englishUnits.find((unit) => unit.lessonIds.includes(currentLessonId))
+  const currentUnit = currentLessonId
+    ? units.find((unit) => unit.lessonIds.includes(currentLessonId))
     : undefined;
   const resumableLessonId = currentUnit
     && getNextLanguageLessonId(progress, subject, currentUnit.lessonIds) === currentLessonId
@@ -119,7 +127,7 @@ function normalizeLanguageTask(
   const targetLessonId = resumableLessonId ?? getNextLanguageLessonId(progress, subject, lessonIds);
   if (!targetLessonId) return null;
   const lessonIndex = lessonIds.indexOf(targetLessonId);
-  const lesson = lessons[lessonIndex];
+  const lesson = lessons.find((item) => item.id === targetLessonId);
   if (!lesson) return null;
 
   const isResume = currentLessonId === targetLessonId;
@@ -140,28 +148,40 @@ function normalizeLanguageTask(
 
 function normalizeNextMathCourse(progress: ProgressData): RankedTask | null {
   const passed = new Set(progress.passedKnowledgePoints);
+  const advanced = (['extension', 'challenge'] as const)
+    .flatMap((track) => getTrackCourses(track))
+    .find((course) =>
+      !passed.has(course.meta.id)
+      && course.meta.prerequisites.every((id) => passed.has(id)));
   const unpassed = getAllKnowledgePoints().filter(
     (course) => getCourseTrack(course.meta) === 'base' && !passed.has(course.meta.id),
   ).sort((a, b) =>
     a.meta.grade - b.meta.grade
       || a.meta.unit - b.meta.unit
       || a.meta.id.localeCompare(b.meta.id));
-  const course = unpassed.find(
+  const course = advanced ?? unpassed.find(
     (candidate) => candidate.meta.prerequisites.every((id) => passed.has(id)),
   ) ?? unpassed[0];
   if (!course) return null;
+  const track = getCourseTrack(course.meta);
 
   return {
     id: `math:next:${course.meta.id}`,
     subject: 'math',
     phase: 'next',
     title: course.meta.title,
-    reason: course.meta.prerequisites.every((id) => passed.has(id))
-      ? '前置知识已完成，可以开始'
-      : '可以自由学习，建议先复习前置知识',
+    reason: track === 'extension'
+      ? '前置知识已完成，可以开始能力拓展'
+      : track === 'challenge'
+        ? '前置知识已完成，可以开始浅奥挑战'
+        : course.meta.prerequisites.every((id) => passed.has(id))
+          ? '前置知识已完成，可以开始'
+          : '可以自由学习，建议先复习前置知识',
     duration: '约5分钟',
     cta: '开始学习',
     link: `/math/kp/${course.meta.id}`,
+    courseId: course.meta.id,
+    track: track === 'base' ? undefined : track,
     order: 0,
     time: 0,
   };
@@ -201,5 +221,7 @@ export function getPrimaryLearningTask(progress: ProgressData, now: number): Pri
     duration: selected.duration,
     cta: selected.cta,
     link: selected.link,
+    courseId: selected.courseId,
+    track: selected.track,
   };
 }

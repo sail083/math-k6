@@ -4,10 +4,11 @@ import { CheckIcon, XIcon, InfoIcon } from './shared';
 
 interface FillBlankGameProps {
   question: Question;
+  onAttempt?: () => void;
   onAnswer: (selectedAnswer: string, isCorrect: boolean, firstTry?: boolean) => void;
 }
 
-export default function FillBlankGame({ question, onAnswer }: FillBlankGameProps) {
+export default function FillBlankGame({ question, onAnswer, onAttempt }: FillBlankGameProps) {
   const [inputValue, setInputValue] = useState('');
   const [attemptCount, setAttemptCount] = useState(0);
   const [resolved, setResolved] = useState(false);
@@ -29,6 +30,7 @@ export default function FillBlankGame({ question, onAnswer }: FillBlankGameProps
     if (resolved) return;
     const trimmed = inputValue.trim();
     if (trimmed === '') return;
+    if (attemptCount === 0) onAttempt?.();
     const correct = checkCorrect(trimmed);
 
     if (correct) {
@@ -97,15 +99,16 @@ export default function FillBlankGame({ question, onAnswer }: FillBlankGameProps
         </button>
       </div>
 
-      {/* 第一次答错提示（不揭示正确答案） */}
+      {/* 第一次答错提示 */}
       {attemptCount === 1 && !resolved && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3">
+        <div role="status" className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3">
           <span className="text-amber-500 shrink-0 mt-0.5">
             <InfoIcon />
           </span>
           <div>
             <p className="text-sm font-medium text-amber-900 mb-0.5">再想想</p>
             <p className="text-sm text-amber-800">仔细看看题目里的关键条件，换个答案再试一次。</p>
+            <p className="mt-2 text-sm leading-relaxed text-amber-900">解析：{question.explanation}</p>
           </div>
         </div>
       )}

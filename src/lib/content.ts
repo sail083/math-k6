@@ -243,6 +243,25 @@ export function getGrades(): Grade[] {
   return [3, 4, 5, 6];
 }
 
+/** 仅坏缓存恢复时加载题库，保守封存所有当前题组，避免未知历史变成首次证据。 */
+export async function loadPublishedCourseAttemptKeys(): Promise<string[]> {
+  const courses = getAllKnowledgePoints();
+  if (!courses.length) throw new Error('Missing recovery course catalog');
+  const keys = await Promise.all(courses.map(async ({ meta }) => {
+    const game = await gameLoader[`/src/content/knowledge-points/${meta.id}/game.json`]?.();
+    if (!game || game.knowledgePointId !== meta.id) throw new Error('Incomplete recovery course catalog');
+    if (game.evidenceVersion === undefined) return [];
+    if (!/^[a-z0-9-]{1,100}$/.test(meta.id)
+      || typeof game.evidenceVersion !== 'string'
+      || !/^[a-z0-9-]{1,80}$/.test(game.evidenceVersion)) {
+      throw new Error('Invalid recovery course version');
+    }
+    return ['initial', 'd1', 'd7'].flatMap((mode) =>
+      ['a', 'b'].map((form) => `${meta.id}|${mode}|${form}|${game.evidenceVersion}`));
+  }));
+  return keys.flat();
+}
+
 /** 异步加载知识点完整详情（元数据 + 讲解 + 推导 + 游戏） */
 export async function loadKnowledgePointDetail(id: string): Promise<KnowledgePoint | undefined> {
   const meta = knowledgePoints[id]?.meta;

@@ -14,7 +14,7 @@ function buildSlides(title: string, markdown: string): Slide[] {
     return { title: heading, content: lines.slice(1).join('\n').trim() };
   }).filter(slide => slide.content.length > 0);
   const unique = content.filter((slide, index, all) => index === 0 || slide.title !== all[index - 1].title || slide.content !== all[index - 1].content);
-  return unique.slice(0, 8).length > 0 ? unique.slice(0, 8) : [{ title, content: markdown }];
+  return unique.length > 0 ? unique : [{ title, content: markdown }];
 }
 
 export default function KnowledgeDeck({ title, markdown, textbookRefs }: Props) {
@@ -75,8 +75,8 @@ export default function KnowledgeDeck({ title, markdown, textbookRefs }: Props) 
         <div className="deck-page-number">卡片 {index + 1} / {slides.length}</div>
         <div className={`flip-card ${flipped ? 'is-flipped' : ''}`} role="button" tabIndex={0} aria-label={`${flipped ? '查看问题' : '查看答案'}：${slides[index].title}`} onClick={() => { if (flipped) setFlipped(false); else showBack(); }} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); if (flipped) setFlipped(false); else showBack(); } }}>
           <div className="flip-card__inner">
-            <article className="flip-card__face flip-card__front"><span>{index === 0 ? '今天学会了什么？' : '先在心里想一想'}</span><h3>{slides[index].title}</h3><p className="flip-hint">点击翻面查看讲解</p></article>
-            <article className="flip-card__face flip-card__back"><span><UiIcon name="check" size={16}/> 这一张已复习</span><h3>{slides[index].title}</h3><div className="prose"><ReactMarkdown>{slides[index].content}</ReactMarkdown></div><p className="flip-hint">点击返回问题</p></article>
+            <article aria-hidden={flipped} inert={flipped} className="flip-card__face flip-card__front"><span>{index === 0 ? '今天学会了什么？' : '先在心里想一想'}</span><h3>{slides[index].title}</h3><p className="flip-hint">点击翻面查看讲解</p></article>
+            <article aria-hidden={!flipped} inert={!flipped} className="flip-card__face flip-card__back"><span><UiIcon name="check" size={16}/> 这一张的讲解</span><h3>{slides[index].title}</h3><div className="prose"><ReactMarkdown>{slides[index].content}</ReactMarkdown></div><p className="flip-hint">点击返回问题</p></article>
           </div>
         </div>
       </div>

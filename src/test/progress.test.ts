@@ -281,7 +281,7 @@ describe('progress management', () => {
       // After 1 day, status becomes review_due
       expect(getMasteryStatus(p, 'g5-fraction-meaning', NOW + DAY)).toBe('review_due');
       // Pass D1 review
-      const afterD1 = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY);
+      const afterD1 = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY, 'd1');
       expect(afterD1.mastery?.['g5-fraction-meaning']?.delayedReviewCount).toBe(1);
       expect(afterD1.mastery?.['g5-fraction-meaning']?.status).toBe('provisional');
       expect(afterD1.mastery?.['g5-fraction-meaning']?.nextReviewAt).toBe(NOW + DAY + 6 * DAY);
@@ -290,11 +290,11 @@ describe('progress management', () => {
     it('D7 pass moves to stable with delayedReviewCount=2', () => {
       let p: ProgressData = { passedKnowledgePoints: [], stars: {} };
       p = markInitialPass(p, 'g5-fraction-meaning', 2, NOW, true);
-      const afterD1 = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY);
+      const afterD1 = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY, 'd1');
       // D7 is due 6 days after D1 pass
       const d7Time = NOW + DAY + 6 * DAY;
       expect(getMasteryStatus(afterD1, 'g5-fraction-meaning', d7Time)).toBe('review_due');
-      const afterD7 = markDelayedReviewPass(afterD1, 'g5-fraction-meaning', d7Time);
+      const afterD7 = markDelayedReviewPass(afterD1, 'g5-fraction-meaning', d7Time, 'd7');
       expect(afterD7.mastery?.['g5-fraction-meaning']?.status).toBe('stable');
       expect(afterD7.mastery?.['g5-fraction-meaning']?.delayedReviewCount).toBe(2);
       expect(getMasteryStatus(afterD7, 'g5-fraction-meaning', d7Time)).toBe('stable');
@@ -303,7 +303,7 @@ describe('progress management', () => {
     it('failed review stays review_due without incrementing count', () => {
       let p: ProgressData = { passedKnowledgePoints: [], stars: {} };
       p = markInitialPass(p, 'g5-fraction-meaning', 2, NOW, true);
-      const afterFail = markDelayedReviewFail(p, 'g5-fraction-meaning', NOW + DAY);
+      const afterFail = markDelayedReviewFail(p, 'g5-fraction-meaning', NOW + DAY, 'd1');
       expect(afterFail.mastery?.['g5-fraction-meaning']?.delayedReviewCount).toBe(0);
       expect(getMasteryStatus(afterFail, 'g5-fraction-meaning', NOW + DAY)).toBe('review_due');
       // Still due after more time passes
@@ -321,7 +321,7 @@ describe('progress management', () => {
       // After 1 day, both are due
       expect(getDueReviewIds(p, NOW + DAY).sort()).toEqual(['g5-fraction-meaning', 'g6-fraction-mult']);
       // Pass D1 for first course — only second remains due
-      p = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY);
+      p = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY, 'd1');
       expect(getDueReviewIds(p, NOW + DAY)).toEqual(['g6-fraction-mult']);
     });
 
@@ -347,7 +347,7 @@ describe('progress management', () => {
     it('returns d7 for second review (delayedReviewCount=1)', () => {
       let p: ProgressData = { passedKnowledgePoints: [], stars: {} };
       p = markInitialPass(p, 'g5-fraction-meaning', 2, NOW, true);
-      p = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY);
+      p = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY, 'd1');
       const d7Time = NOW + DAY + 6 * DAY;
       expect(getReviewMode(p, 'g5-fraction-meaning', d7Time)).toBe('d7');
     });
@@ -355,8 +355,8 @@ describe('progress management', () => {
     it('returns null after stable', () => {
       let p: ProgressData = { passedKnowledgePoints: [], stars: {} };
       p = markInitialPass(p, 'g5-fraction-meaning', 2, NOW, true);
-      p = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY);
-      p = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY + 6 * DAY);
+      p = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY, 'd1');
+      p = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY + 6 * DAY, 'd7');
       expect(getReviewMode(p, 'g5-fraction-meaning', NOW + 100 * DAY)).toBeNull();
     });
 
@@ -385,7 +385,7 @@ describe('progress management', () => {
       // Initial pass creates provisional with count=0
       p = markInitialPass(p, 'g5-fraction-meaning', 2, NOW, true);
       // Pass D1 -> count=1, nextReviewAt 6 days out
-      p = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY);
+      p = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY, 'd1');
       const beforeReplay = p.mastery?.['g5-fraction-meaning'];
       expect(beforeReplay?.delayedReviewCount).toBe(1);
       expect(beforeReplay?.status).toBe('provisional');
@@ -403,8 +403,8 @@ describe('progress management', () => {
     it('does not downgrade a stable record on replay', () => {
       let p: ProgressData = { passedKnowledgePoints: [], stars: {} };
       p = markInitialPass(p, 'g5-fraction-meaning', 2, NOW, true);
-      p = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY);
-      p = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY + 6 * DAY);
+      p = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY, 'd1');
+      p = markDelayedReviewPass(p, 'g5-fraction-meaning', NOW + DAY + 6 * DAY, 'd7');
       expect(p.mastery?.['g5-fraction-meaning']?.status).toBe('stable');
       expect(p.mastery?.['g5-fraction-meaning']?.delayedReviewCount).toBe(2);
 

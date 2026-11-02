@@ -1,0 +1,1 @@
+{"id":"g5-interval-counting","grade":5,"unit":12,"title":"间隔与周期计数","objectives":["区分点数与间隔数","处理端点和封闭周期","用列表检验计数"],"prerequisites":["g3-time","g3-division-remainder"],"track":"base","textbookRefs":[{"version":"人教版","grade":5,"chapter":"五上第7单元"}],"vizType":"number-line","hasFormula":false}

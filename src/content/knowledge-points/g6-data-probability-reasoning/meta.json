@@ -1,0 +1,1 @@
+{"id":"g6-data-probability-reasoning","grade":6,"unit":10,"title":"数据与可能性推理","objectives":["综合读取条形图和扇形图","用百分数比较可能性","用枚举验证判断"],"prerequisites":["g6-sector-chart","g6-percentage","g6-ratio"],"track":"base","textbookRefs":[{"version":"人教版","grade":6,"chapter":"六上第7单元"}],"vizType":"bar-chart","hasFormula":false}
