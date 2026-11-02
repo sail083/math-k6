@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateStars, hasTransferEvidence, masteryThreshold, type AnswerRecord } from '@/components/GameRunner';
+import { calculateStars, hasTransferEvidence, isTransferQuestion, masteryThreshold, type AnswerRecord } from '@/components/GameRunner';
 import type { GameConfig, Question } from '@/lib/types';
 
 describe('calculateStars', () => {
@@ -60,6 +60,28 @@ describe('hasTransferEvidence', () => {
 
   it('rejects a transfer answer that was correct only on retry (not first-try)', () => {
     expect(hasTransferEvidence(game, { choice: rec(true), transfer: rec(true, false) })).toBe(false);
+  });
+
+  it('does not make a timed single-choice question a transfer gate', () => {
+    const withTimedChoice: GameConfig = {
+      ...game,
+      questions: [
+        ...game.questions,
+        { id: 'timed', type: 'timed-challenge', prompt: '限时选择', options: ['A', 'B'], correctAnswer: 'A', explanation: '', points: 10, timeLimit: 15 },
+      ],
+    };
+    expect(hasTransferEvidence(withTimedChoice, {
+      choice: rec(true),
+      transfer: rec(true),
+      timed: rec(false, true),
+    })).toBe(true);
+  });
+});
+
+describe('isTransferQuestion', () => {
+  it('does not label timed single-choice questions as transfer evidence', () => {
+    expect(isTransferQuestion({ id: 'timed', type: 'timed-challenge', prompt: '', options: [], correctAnswer: '', explanation: '', points: 10, timeLimit: 15 })).toBe(false);
+    expect(isTransferQuestion({ id: 'fill', type: 'fill-blank', prompt: '', correctAnswer: '', explanation: '', points: 10 })).toBe(true);
   });
 });
 

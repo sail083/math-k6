@@ -10,7 +10,7 @@ describe('language unit catalog', () => {
       for (const grade of [3, 4, 5, 6]) {
         const gradeUnits = units.filter((unit) => unit.grade === grade);
         expect(gradeUnits.length, `grade ${grade} should have units`).toBeGreaterThan(0);
-        expect(gradeUnits.every((unit) => unit.lessonIds.length >= 3)).toBe(true);
+        expect(gradeUnits.every((unit) => unit.id === 'zh-g3-pep1-characters' ? unit.lessonIds.length === 1 : unit.lessonIds.length >= 3)).toBe(true);
       }
     }
   });

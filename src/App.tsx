@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'rea
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { ProgressProvider } from '@/context/ProgressContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import AppErrorBoundary from '@/components/AppErrorBoundary';
+import PwaUpdateNotice from '@/components/PwaUpdateNotice';
 
 const Layout = lazy(() => import('@/components/Layout'));
 const LearningCenterPage = lazy(() => import('@/pages/LearningCenterPage'));
@@ -16,6 +18,7 @@ const SkillRepairPage = lazy(() => import('@/pages/SkillRepairPage'));
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const RegisterPage = lazy(() => import('@/pages/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage'));
+const UpdatePasswordPage = lazy(() => import('@/pages/UpdatePasswordPage'));
 
 const SuspenseFallback = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -54,7 +57,7 @@ export function LegacyMathRedirect() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
+      <AppErrorBoundary><AuthProvider>
         <ProgressScope>
           <Suspense fallback={<SuspenseFallback />}>
             <Routes>
@@ -83,12 +86,14 @@ export default function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/update-password" element={<UpdatePasswordPage />} />
               </Route>
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
+          <PwaUpdateNotice />
         </ProgressScope>
-      </AuthProvider>
+      </AuthProvider></AppErrorBoundary>
     </BrowserRouter>
   );
 }

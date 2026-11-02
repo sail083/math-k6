@@ -471,6 +471,10 @@ body {
   background: #f1f5f9;
   color: #64748b;
 }
+.question-type-tag.is-retry {
+  background: #fef3c7;
+  color: #92400e;
+}
 
 /* ===== KnowledgeDeck 自动播放计时器 (#16) ===== */
 @keyframes deck-timer-progress {

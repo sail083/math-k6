@@ -10,6 +10,7 @@ import { chineseG6SpeechLessons } from './chinese-g6-speech';
 import { chineseG5ReportLessons } from './chinese-g5-report';
 import { chineseG4DialogueLessons } from './chinese-g4-dialogue';
 import { chineseG6CharacterLessons } from './chinese-g6-character';
+import { chinesePepG3Lesson } from './chinese-pep-g3';
 
 export const chineseLessons: LanguageLesson[] = [
   {
@@ -161,6 +162,7 @@ export const chineseLessons: LanguageLesson[] = [
   ...chineseG5ReportLessons,
   ...chineseG4DialogueLessons,
   ...chineseG6CharacterLessons,
+  chinesePepG3Lesson,
 ];
 
 export { chineseUnits, chineseLessonIds } from './languageCatalog';

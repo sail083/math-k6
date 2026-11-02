@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Question } from '@/lib/types';
 import { CheckIcon, XIcon, InfoIcon, shuffleArray } from './shared';
 
 interface DragMatchGameProps {
   question: Question;
-  onAnswer: (selectedAnswer: string, isCorrect: boolean) => void;
+  onAnswer: (selectedAnswer: string, isCorrect: boolean, firstTry?: boolean) => void;
 }
 
 export default function DragMatchGame({ question, onAnswer }: DragMatchGameProps) {
@@ -31,9 +31,16 @@ export default function DragMatchGame({ question, onAnswer }: DragMatchGameProps
   const [wrongFlash, setWrongFlash] = useState<string | null>(null);
   const [hasAnswered, setHasAnswered] = useState(false);
   const [hadMistake, setHadMistake] = useState(false);
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const placedItemIds = new Set(Object.values(placements));
   const remainingItems = shuffledItems.filter((item) => !placedItemIds.has(item.id));
+
+  useEffect(() => {
+    if (wrongFlash && !hasAnswered) {
+      itemRefs.current.find((button) => button && !button.disabled)?.focus();
+    }
+  }, [hasAnswered, wrongFlash]);
 
   const handleItemClick = (itemId: string) => {
     if (hasAnswered) return;
@@ -70,7 +77,7 @@ export default function DragMatchGame({ question, onAnswer }: DragMatchGameProps
             ? question.correctAnswer.join('、')
             : question.correctAnswer
           : matchDescription;
-        onAnswer(answerValue, !hadMistake);
+        onAnswer(answerValue, true, !hadMistake);
       }
     } else {
       // Wrong match — flash red and return item
@@ -105,11 +112,13 @@ export default function DragMatchGame({ question, onAnswer }: DragMatchGameProps
               全部已匹配
             </div>
           )}
-          {remainingItems.map((item) => {
+          {remainingItems.map((item, index) => {
             const isSelected = selectedItemId === item.id;
             return (
               <button
                 key={item.id}
+                ref={(button) => { itemRefs.current[index] = button; }}
+                autoFocus={index === 0}
                 onClick={() => handleItemClick(item.id)}
                 disabled={hasAnswered}
                 className={`w-full flex items-center gap-2 p-3 rounded-xl border-2 transition-all duration-200 text-left min-h-[48px] ${
@@ -185,28 +194,29 @@ export default function DragMatchGame({ question, onAnswer }: DragMatchGameProps
         <>
           {/* 反馈条 */}
           <div
+            role="status"
             className={`flex items-center gap-3 p-4 rounded-xl border-2 ${
               !hadMistake
                 ? 'bg-green-50 border-green-500'
-                : 'bg-red-50 border-red-500'
+                : 'bg-amber-50 border-amber-400'
             }`}
           >
             <span
               className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 ${
                 !hadMistake
                   ? 'bg-green-500 text-white'
-                  : 'bg-red-500 text-white'
+                  : 'bg-amber-500 text-white'
               }`}
             >
-              {!hadMistake ? <CheckIcon /> : <XIcon />}
+              <CheckIcon />
             </span>
             <div className="flex-1">
               <p
                 className={`text-sm font-bold ${
-                  !hadMistake ? 'text-green-700' : 'text-red-700'
+                  !hadMistake ? 'text-green-700' : 'text-amber-700'
                 }`}
               >
-                {!hadMistake ? '全部匹配正确！' : '匹配完成（有错误尝试）'}
+                {!hadMistake ? '全部匹配正确！' : '匹配完成（过程有错误尝试）'}
               </p>
             </div>
           </div>

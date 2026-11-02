@@ -10,7 +10,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon.svg'],
       manifest: {
         name: '语文数学英语综合学习平台',
@@ -34,7 +34,9 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,md}'],
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,md,txt}'],
       },
     }),
   ],

@@ -4,6 +4,7 @@ export const chineseUnits: LanguageUnit[] = [
   { id: 'zh-g3-context', grade: 3, title: '读不懂时，回到句子里', curriculumLabel: '原创阅读方法 · 非教材同步', summary: '借相邻句子的线索理解词语和代词，写一张有依据的阅读自助卡。', lessonIds: ['zh-g3-context-words', 'zh-g3-context-references', 'zh-g3-context-reading-card'] },
   { id: 'zh-g3-oral', grade: 3, title: '听清楚，再回应', curriculumLabel: '原创口语交际 · 非教材同步', summary: '从文字模拟对话中抓要点、复述并提出清楚的问题。', lessonIds: ['zh-g3-oral-listen', 'zh-g3-oral-retell', 'zh-g3-oral-respond'] },
   { id: 'zh-campus', grade: 3, title: '校园里的小发现', curriculumLabel: '原创观察表达 · 非教材同步', summary: '观察、阅读和表达，记下一件具体的小事。', lessonIds: ['zh-campus-words', 'zh-campus-reading', 'zh-campus-speaking'] },
+  { id: 'zh-g3-pep1-characters', grade: 3, semester: '上册', unit: 1, title: '大青树下的小学：生字笔顺', curriculumLabel: '三年级上册 · 精选汉字，教材版次待核', summary: '观看精选汉字的笔顺，结合组词练习；不含课文全文。', lessonIds: ['zh-g3-pep1-characters'] },
   { id: 'zh-g4-library', grade: 4, title: '把一件事写清楚', curriculumLabel: '原创记事表达 · 非教材同步', summary: '选准动作词，读懂事情经过，写一次合作。', lessonIds: ['zh-g4-library-words', 'zh-g4-library-reading', 'zh-g4-library-writing'] },
   { id: 'zh-g4-explain', grade: 4, title: '把一个事物介绍清楚', curriculumLabel: '原创说明表达 · 非教材同步', summary: '找主题、排要点，写一张具体的事物介绍卡。', lessonIds: ['zh-g4-explain-main', 'zh-g4-explain-order', 'zh-g4-explain-card'] },
   { id: 'zh-g4-dialogue', grade: 4, title: '听懂同伴，再回应', curriculumLabel: '原创对话理解 · 非教材同步', summary: '抓住建议、理由和条件，写一张确认回应卡。', lessonIds: ['zh-g4-dialogue-key', 'zh-g4-dialogue-confirm', 'zh-g4-dialogue-card'] },

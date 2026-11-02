@@ -155,7 +155,7 @@ describe('KnowledgePointPage goal continuity', () => {
   it('sets a different published URL target with course source', async () => {
     renderPage('?target=frac.unit_fraction', homeGoal);
     await screen.findByTestId('knowledge-point');
-    expect(mockSetGoal).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(mockSetGoal).toHaveBeenCalledTimes(1));
     expect(mockSetGoal).toHaveBeenCalledWith('frac.unit_fraction', 'course');
   });
 

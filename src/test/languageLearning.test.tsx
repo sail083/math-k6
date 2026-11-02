@@ -555,11 +555,11 @@ describe("Chinese subject routes", () => {
       expect(
         screen.getByRole("link", { name: new RegExp(first.title) }),
       ).toHaveAttribute("href", `/chinese/${first.id}`);
-      expect(
-        screen.getByRole("article", {
+      if (second) {
+        expect(screen.getByRole("article", {
           name: `${second.title}，完成前一课后开放`,
-        }),
-      ).toBeVisible();
+        })).toBeVisible();
+      }
     }
     expect(
       screen.getByText(`已完成 0 / ${chineseLessons.length} 课`),

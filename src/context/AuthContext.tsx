@@ -23,6 +23,8 @@ interface AuthContextValue {
   register: (phone: string, password: string, email: string) => Promise<{ error: string | null }>;
   /** Send password reset email. */
   resetPassword: (email: string) => Promise<{ error: string | null }>;
+  /** Set a new password after opening a recovery link. */
+  updatePassword: (password: string) => Promise<{ error: string | null }>;
   /** Sign out. */
   logout: () => Promise<void>;
 }
@@ -115,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /* ---- reset password ---- */
   const resetPassword = useCallback(async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/login`,
+      redirectTo: `${window.location.origin}/update-password`,
     });
 
     if (error) {
@@ -125,14 +127,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null };
   }, []);
 
+  const updatePassword = useCallback(async (password: string) => {
+    const { error } = await supabase.auth.updateUser({ password });
+    return { error: error ? `重置密码失败：${error.message}` : null };
+  }, []);
+
   /* ---- logout ---- */
   const logout = useCallback(async () => {
     await supabase.auth.signOut();
   }, []);
 
   const value = useMemo(
-    () => ({ user, session, loading, login, register, resetPassword, logout }),
-    [user, session, loading, login, register, resetPassword, logout],
+    () => ({ user, session, loading, login, register, resetPassword, updatePassword, logout }),
+    [user, session, loading, login, register, resetPassword, updatePassword, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

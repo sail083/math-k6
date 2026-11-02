@@ -1,0 +1,53 @@
+import type { LanguageLesson } from '@/lib/types';
+
+export const chinesePepG3Lesson: LanguageLesson = {
+    id: 'zh-g3-pep1-characters',
+    title: '大青树下的小学：生字笔顺',
+    summary: '围绕《大青树下的小学》精选汉字，先看笔顺，再用组词理解字义；完整写字表待按教材版次核对。',
+    body: '本课只学习生字的字形、笔顺和组词，不展示或替代教材课文全文。先点选生字观看笔顺，再读一读拼音和组词；最后做小练习，检查自己是否分清了字形和词义。',
+    characters: [
+      { character: '晨', pinyin: 'chén', meaning: '早晨', words: ['清晨', '晨光'] },
+      { character: '绒', pinyin: 'róng', meaning: '细软的毛', words: ['绒毛', '毛绒'] },
+      { character: '球', pinyin: 'qiú', meaning: '圆形物体', words: ['皮球', '地球'] },
+      { character: '汉', pinyin: 'hàn', meaning: '汉族；汉字', words: ['汉字', '汉族'] },
+      { character: '艳', pinyin: 'yàn', meaning: '鲜明美丽', words: ['鲜艳', '艳丽'] },
+      { character: '服', pinyin: 'fú', meaning: '衣服；服从', words: ['服装', '校服'] },
+      { character: '装', pinyin: 'zhuāng', meaning: '穿着；装饰', words: ['服装', '装扮'] },
+      { character: '扮', pinyin: 'bàn', meaning: '装扮', words: ['打扮', '装扮'] },
+      { character: '读', pinyin: 'dú', meaning: '看文字并理解', words: ['读书', '朗读'] },
+      { character: '静', pinyin: 'jìng', meaning: '安静', words: ['安静', '平静'] },
+      { character: '停', pinyin: 'tíng', meaning: '止住；停留', words: ['停止', '停下'] },
+      { character: '孔', pinyin: 'kǒng', meaning: '洞；小眼儿', words: ['孔雀', '小孔'] },
+      { character: '雀', pinyin: 'què', meaning: '一种小鸟', words: ['孔雀', '麻雀'] },
+      { character: '粗', pinyin: 'cū', meaning: '粗大；不精细', words: ['粗细', '粗壮'] },
+      { character: '影', pinyin: 'yǐng', meaning: '光被遮挡形成的形象', words: ['影子', '身影'] },
+    ],
+    questions: [
+      {
+        id: 'zh-g3-pep1-characters-q1',
+        type: 'choice',
+        prompt: '“鲜艳”的“艳”读什么？',
+        options: ['yàn', 'jìng', 'yǐng', 'róng'],
+        correctAnswer: 'yàn',
+        explanation: '“艳”读 yàn，“鲜艳”表示颜色鲜明而美丽。再试时先看拼音卡，再把读音和词语连起来。',
+        points: 10,
+      },
+      {
+        id: 'zh-g3-pep1-characters-q2',
+        type: 'fill-blank',
+        prompt: '请补全词语：安______。（只填一个汉字）',
+        correctAnswer: '静',
+        explanation: '“安静”表示没有声音、不吵闹。再试时回到生字卡，找到读 jìng 的字。',
+        points: 10,
+      },
+      {
+        id: 'zh-g3-pep1-characters-q3',
+        type: 'choice',
+        prompt: '下面哪一组词都含有“影”？',
+        options: ['影子、身影', '皮球、地球', '清晨、晨光', '服装、装扮'],
+        correctAnswer: '影子、身影',
+        explanation: '“影子”和“身影”都含有“影”。再试时逐个看词语中出现的汉字，不只凭读音判断。',
+        points: 10,
+      },
+    ],
+};

@@ -4,6 +4,7 @@ import ListeningExercise from '@/components/ListeningExercise';
 export { ReadAloudButton } from '@/components/ReadAloudButton';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import ChoiceGame from '@/components/games/ChoiceGame';
+import CharacterStrokeStudy from '@/components/CharacterStrokeStudy';
 import FillBlankGame from '@/components/games/FillBlankGame';
 import LessonProject from '@/components/LessonProject';
 import { LocalSpeakingPractice } from '@/components/LocalSpeakingPractice';
@@ -290,6 +291,7 @@ export default function LanguageSubjectPage({ subject }: { subject: LanguageSubj
           {lesson.body.split('\n\n').map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
         </div>
       </article>
+      {lesson.characters ? <CharacterStrokeStudy characters={lesson.characters} /> : null}
       <LessonPractice
         key={lesson.id}
         lesson={lesson}

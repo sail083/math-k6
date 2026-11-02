@@ -17,6 +17,7 @@ export default function ChoiceGame({ question, onAnswer, onAttempt }: ChoiceGame
   const [resolved, setResolved] = useState(false);
   const [resolvedCorrect, setResolvedCorrect] = useState(false);
   const [finalSelection, setFinalSelection] = useState<string | null>(null);
+  const optionRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const options = question.options ?? [];
 
@@ -69,6 +70,12 @@ export default function ChoiceGame({ question, onAnswer, onAttempt }: ChoiceGame
     return () => window.removeEventListener('keydown', handler);
   }, [resolved, wrongOptions, attemptCount, options, handleSelect]);
 
+  useEffect(() => {
+    if (wrongOptions.length === 1 && !resolved) {
+      optionRefs.current.find((button) => button && !button.disabled)?.focus();
+    }
+  }, [wrongOptions, resolved]);
+
   const getOptionState = (option: string): 'correct' | 'wrong' | 'dimmed' | 'default' => {
     if (!resolved) {
       // Before resolution, only show tried-wrong options as wrong
@@ -97,8 +104,10 @@ export default function ChoiceGame({ question, onAnswer, onAttempt }: ChoiceGame
           return (
             <button
               key={index}
+              ref={(button) => { optionRefs.current[index] = button; }}
               onClick={() => handleSelect(option)}
               disabled={isDisabled}
+              autoFocus={index === 0}
               className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 text-left min-h-[48px] ${
                 state === 'correct'
                   ? 'bg-green-50 border-green-500'
@@ -157,7 +166,7 @@ export default function ChoiceGame({ question, onAnswer, onAttempt }: ChoiceGame
 
       {/* 解析（答对或第二次答错后显示） */}
       {resolved && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
+        <div role="status" className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
           <span className="text-blue-500 shrink-0">
             <InfoIcon />
           </span>

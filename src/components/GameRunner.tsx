@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { GameConfig, Question } from '@/lib/types';
 import { useProgress } from '@/context/ProgressContext';
 import ChoiceGame from '@/components/games/ChoiceGame';
@@ -41,9 +41,13 @@ export function masteryThreshold(configuredThreshold: number): number {
   return Math.max(0.8, configuredThreshold);
 }
 
+export function isTransferQuestion(question: Question): boolean {
+  return question.type !== 'choice' && question.type !== 'true-false' && question.type !== 'timed-challenge';
+}
+
 export function hasTransferEvidence(game: GameConfig, answers: Record<string, AnswerRecord>, questionSet?: Question[]): boolean {
   const questions = questionSet ?? game.questions;
-  const transferQuestions = questions.filter((question) => question.type !== 'choice' && question.type !== 'true-false');
+  const transferQuestions = questions.filter(isTransferQuestion);
   return transferQuestions.length > 0 && transferQuestions.every((question) => {
     const a = answers[question.id];
     return a?.correct === true && a?.firstTry === true;
@@ -111,6 +115,7 @@ function GameRunnerSession({
   const attemptClaim = useRef<string | null | undefined>(undefined);
   const answerGuard = useRef(new Set<string>());
   const resultGuard = useRef(false);
+  const resultHeadingRef = useRef<HTMLHeadingElement>(null);
 
   // Freeze review mode for the lifetime of this course attempt.
   // Captured once when the component mounts; the React key on GameRunner
@@ -134,6 +139,10 @@ function GameRunnerSession({
 
   const maxScore = activeQuestions.reduce((sum, q) => sum + q.points, 0);
   const requiredRate = masteryThreshold(game.passThreshold);
+
+  useEffect(() => {
+    if (gameStatus !== 'playing') resultHeadingRef.current?.focus();
+  }, [gameStatus]);
 
   const score = activeQuestions.reduce((sum, q) => {
         const answer = answers[q.id];
@@ -233,6 +242,7 @@ function GameRunnerSession({
     setCurrentQuestionIndex(0);
     setAnswers({});
     setGameStatus('playing');
+    setRun((value) => value + 1);
   };
 
   const renderQuestion = () => {
@@ -377,19 +387,19 @@ function GameRunnerSession({
           {passed ? (
             <>
               <div className="result-icon is-success"><UiIcon name="spark" size={32}/></div>
-              <h2 className="text-2xl font-bold text-indigo-600 mb-2">{resultTitle(true)}</h2>
+              <h2 ref={resultHeadingRef} tabIndex={-1} className="text-2xl font-bold text-indigo-600 mb-2">{resultTitle(true)}</h2>
               <p className="text-sm text-slate-500">{resultSubtitle(true)}</p>
             </>
           ) : (
             <>
               <div className="result-icon"><UiIcon name="progress" size={32}/></div>
-              <h2 className="text-2xl font-bold text-slate-700 mb-2">{resultTitle(false)}</h2>
+              <h2 ref={resultHeadingRef} tabIndex={-1} className="text-2xl font-bold text-slate-700 mb-2">{resultTitle(false)}</h2>
               <p className="text-sm text-slate-500">{gameStatus === 'practice' ? '这套题已接触过，或首次记录未能保存。本轮得分保留为练习结果，不新增迁移、复习或掌握证据。' : isReview ? resultSubtitle(false) : (correctRate < requiredRate && !transferPassed
                 ? `再答对一些（需要达到 ${Math.round(requiredRate * 100)}%），同时把填空题也独立完成。`
                 : correctRate < requiredRate
                   ? `再答对一些，达到 ${Math.round(requiredRate * 100)}% 就能过关。`
                   : !transferPassed
-                    ? '选择题做得不错，再把填空、拖动或排序题自己完成一次。'
+                    ? '迁移验证题需要首次独立答对；回看讲解后再试一次。'
                     : resultSubtitle(false))}</p>
             </>
           )}
@@ -443,11 +453,14 @@ function GameRunnerSession({
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-slate-700">
                         第 {index + 1} 题
-                        {(q.type === 'choice' || q.type === 'true-false') ? (
-                          <span className="question-type-tag is-choice">选择题</span>
-                        ) : (
+                        {isTransferQuestion(q) ? (
                           <span className="question-type-tag is-transfer">迁移验证</span>
+                        ) : (
+                          <span className="question-type-tag is-choice">选择题</span>
                         )}
+                        {isTransferQuestion(q) && correct && !answer?.firstTry ? (
+                          <span className="question-type-tag is-retry">重试后答对 · 本次不计迁移验证</span>
+                        ) : null}
                       </p>
                       <p className="text-sm text-slate-600 mt-0.5">{q.prompt}</p>
                     </div>
@@ -536,6 +549,7 @@ function GameRunnerSession({
       {isAnswered && (
         <div className="flex justify-end">
           <button
+            autoFocus
             onClick={handleNext}
             className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[48px] flex items-center gap-2"
           >

@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Question } from '@/lib/types';
 import { CheckIcon, XIcon, InfoIcon, ArrowUpIcon, ArrowDownIcon, shuffleArray } from './shared';
 
 interface DragAssembleGameProps {
   question: Question;
-  onAnswer: (selectedAnswer: string, isCorrect: boolean) => void;
+  onAnswer: (selectedAnswer: string, isCorrect: boolean, firstTry?: boolean) => void;
 }
 
 export default function DragAssembleGame({ question, onAnswer }: DragAssembleGameProps) {
@@ -19,6 +19,15 @@ export default function DragAssembleGame({ question, onAnswer }: DragAssembleGam
   const [order, setOrder] = useState<string[]>(initialOrder);
   const [hasAnswered, setHasAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [attemptCount, setAttemptCount] = useState(0);
+  const [showRetryFeedback, setShowRetryFeedback] = useState(false);
+  const sortControlRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  useEffect(() => {
+    if (showRetryFeedback && !hasAnswered) {
+      sortControlRefs.current.find((button) => button && !button.disabled)?.focus();
+    }
+  }, [hasAnswered, showRetryFeedback]);
 
   const correctOrder = useMemo<string[]>(() => {
     if (Array.isArray(question.correctAnswer)) {
@@ -44,9 +53,15 @@ export default function DragAssembleGame({ question, onAnswer }: DragAssembleGam
   const handleSubmit = () => {
     if (hasAnswered) return;
     const correct = order.every((id, i) => id === correctOrder[i]);
+    if (!correct && attemptCount === 0) {
+      setAttemptCount(1);
+      setShowRetryFeedback(true);
+      return;
+    }
     setIsCorrect(correct);
     setHasAnswered(true);
-    onAnswer(order.join(' → '), correct);
+    setShowRetryFeedback(false);
+    onAnswer(order.join(' → '), correct, attemptCount === 0);
   };
 
   const getItemLabel = (itemId: string): string => {
@@ -56,6 +71,8 @@ export default function DragAssembleGame({ question, onAnswer }: DragAssembleGam
   const isPositionCorrect = (index: number): boolean => {
     return order[index] === correctOrder[index];
   };
+
+  const canReorder = order.length > 1;
 
   return (
     <div className="space-y-4">
@@ -125,8 +142,10 @@ export default function DragAssembleGame({ question, onAnswer }: DragAssembleGam
                     <ArrowUpIcon />
                   </button>
                   <button
+                    ref={(button) => { sortControlRefs.current[index] = button; }}
                     onClick={() => moveDown(index)}
                     disabled={index === order.length - 1}
+                    autoFocus={index === 0 && canReorder}
                     className="flex items-center justify-center w-11 h-11 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     aria-label="下移"
                   >
@@ -144,6 +163,7 @@ export default function DragAssembleGame({ question, onAnswer }: DragAssembleGam
         <div className="flex justify-end">
           <button
             onClick={handleSubmit}
+            autoFocus={!canReorder}
             className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors min-h-[48px] flex items-center"
           >
             确认
@@ -152,19 +172,22 @@ export default function DragAssembleGame({ question, onAnswer }: DragAssembleGam
       )}
 
       {/* 反馈 + 解析 */}
-      {hasAnswered && (
+      {(hasAnswered || showRetryFeedback) && (
         <>
           {/* 正确 / 错误反馈条 */}
           <div
+            role="status"
             className={`flex items-center gap-3 p-4 rounded-xl border-2 ${
               isCorrect
                 ? 'bg-green-50 border-green-500'
+                : showRetryFeedback
+                  ? 'bg-amber-50 border-amber-400'
                 : 'bg-red-50 border-red-500'
             }`}
           >
             <span
               className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 ${
-                isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                isCorrect ? 'bg-green-500 text-white' : showRetryFeedback ? 'bg-amber-500 text-white' : 'bg-red-500 text-white'
               }`}
             >
               {isCorrect ? <CheckIcon /> : <XIcon />}
@@ -172,12 +195,12 @@ export default function DragAssembleGame({ question, onAnswer }: DragAssembleGam
             <div className="flex-1">
               <p
                 className={`text-sm font-bold ${
-                  isCorrect ? 'text-green-700' : 'text-red-700'
+                  isCorrect ? 'text-green-700' : showRetryFeedback ? 'text-amber-700' : 'text-red-700'
                 }`}
               >
-                {isCorrect ? '排列正确！' : '排列错误'}
+                {isCorrect ? '排列正确！' : showRetryFeedback ? '还差一点，再调整后确认一次。' : '排列错误'}
               </p>
-              {!isCorrect && (
+              {hasAnswered && !isCorrect && (
                 <p className="text-sm text-green-600 mt-0.5">
                   正确顺序：{correctOrder.map((id) => getItemLabel(id)).join(' → ')}
                 </p>
