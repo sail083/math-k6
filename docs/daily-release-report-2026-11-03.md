@@ -71,6 +71,7 @@ v2026.11.03 · practice progress accessibility · unreleased candidate
 - 全量：`npm run test`，63 个文件、813 项通过。
 - 工程门禁：`npm run lint`（退出 0，保留仓库既有 31 条 Fast Refresh/hooks 警告）、`npm run typecheck`、`npm run build`、`git diff --check` 均通过。
 - 浏览器：本地生产预览 `http://127.0.0.1:4174/math/kp/g3-mult-1digit` 实测正确重定向到 `/login`，页面完整、console 0 error。由于本地没有受控 Supabase 公共配置或测试账号，未执行受保护课程的真实浏览器作答，也不将该项写为已验收。
+- 生产真实账号验收（2026-11-03）：在 <https://math.logsail.lat> 已登录账号完成 `确定单位“1”` 的第 7 天 A 卷，两题均首次答对，页面显示“已记录第7天保持证据”。学习看板由 `3 待复习` 更新为 `2 待复习`。退出并使用浏览器保存凭据重新登录后，仍回读 `2 待复习`，真实登录、作答与同机重登进度保留通过。未清除本地站点数据、未读取或记录账号密码；同机重登不能单独证明跨设备云端一致性。
 
 ## Bugs Fixed
 
@@ -91,7 +92,7 @@ v2026.11.03 · practice progress accessibility · unreleased candidate
 
 ## Known Issues
 
-- 真实登录、云端同步、密码恢复邮件回跳和跨设备重登仍需要受控账号验收。
+- 已完成生产真实登录、课程作答和同机重登进度回读；跨浏览器/跨设备云端一致性、密码恢复邮件回跳仍需要受控验收。
 - 前一轮整合中的数据库白名单、PWA 版本切换/iOS 真机和精选字笔顺教学准确性仍未完成生产前验收。
 
 ## Backlog
