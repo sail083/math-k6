@@ -2,7 +2,7 @@
 
 ## Version
 
-v2026.11.03 · practice progress accessibility · unreleased candidate
+v2026.11.03 · practice progress accessibility · production / user acceptance pending
 
 ## Today's Release Goal
 
@@ -82,9 +82,14 @@ v2026.11.03 · practice progress accessibility · unreleased candidate
 `PARTIAL`。
 
 - 已提交并推送隔离候选分支：`daily-20261103-practice-progress-a11y`；代码提交为 `fd509fb`，本报告及 CHANGELOG 随后也在同一分支留档。
-- 未创建 PR、未部署生产。
-- 部署暂停原因：当前 `origin/main` 还包含前一轮未发布的大型课程/PWA 整合；其 Supabase 白名单核对因认证错误未完成，且 PWA 双版本/iOS 与真实账号验收仍缺失。将本提交直接生产部署会把这些未验证内容一起发布，属于高风险操作。
-- 回滚：丢弃该隔离分支，或在未来安全部署后将生产别名恢复到部署前的已验证 READY 版本（恢复前须复核实际内容）。
+- 用户随后明确要求“我去生产测试给你反馈，你先发布”，本轮按此授权完成生产部署；未创建 PR、未合并主工作区、未执行数据库迁移。
+- 发布源码：`b28d181770623f5112b47be29068441fc2c0d7f6`。使用新的干净 detached 工作树 `/Users/saillaw/.codex/worktrees/math-k6-production-20261103`，只上传该提交中的文件，无浏览器临时产物或主工作区 WIP。
+- 发布前重新运行 lint、typecheck、全量 63 文件/813 测试、build 与 diff 检查，全部通过（lint 保留既有警告）。
+- 目标：Vercel `logsail/math-k6`，项目 `prj_52X35DDW2EFnoxy5dOnFRNtOxi1b`，production 环境。连接器缺少团队权限，改用本机已登录的官方 CLI。
+- 实际命令：`node /Users/saillaw/.npm/_npx/67eb4586ca667318/node_modules/vercel/dist/index.js deploy . --prod -y --scope logsail --project math-k6`（CLI 65.10.0）。
+- 正式部署：`dpl_EavX4VVDkUfLyYFPfHGDc9jg7b95`，`READY`；部署地址 <https://math-k6-oofgrtm63-logsail.vercel.app>，已别名至 <https://math.logsail.lat>。
+- 发布前实时回读的回滚目标：`dpl_GBeYPhnjC3xJSw3UVGLDYUAb4h4r`，`READY`，<https://math-k6-queodomn1-logsail.vercel.app>。需要回滚时可用官方 CLI `rollback https://math-k6-queodomn1-logsail.vercel.app --scope logsail`；本轮未执行回滚。
+- 生产真实用户验收由用户接续；Ready 和域名切换回执不等同课程、云同步、笔顺和 iOS 全流程验收。
 
 ## Product Impact
 
@@ -99,7 +104,7 @@ v2026.11.03 · practice progress accessibility · unreleased candidate
 
 1. 完成：练习进度条的读屏题号语义与回归保护。
 2. 保留：在受控账号与已确认 URL allow-list 下验收密码恢复、登录、课程作答、同步与重登。
-3. 保留：在隔离候选中完成 PWA 双版本/iOS、Supabase 白名单和课程教学内容验收后，再安排包含该整合的生产发布。
+3. 已按授权发布前端；继续完成 PWA 双版本/iOS、Supabase 白名单及课程教学内容验收，接收生产测试反馈。
 
 ## Next Candidates
 
@@ -109,4 +114,4 @@ v2026.11.03 · practice progress accessibility · unreleased candidate
 
 ## Final Status
 
-`PARTIAL`：产品代码、测试和本地预览检查完成，生产部署因会携带未验收的大型远端整合而安全暂停。
+`PARTIAL`：产品代码、工程门禁和正式部署均完成；用户接续生产测试，新课程数据库、PWA/iOS 等未验证项继续保留。

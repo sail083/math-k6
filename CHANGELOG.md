@@ -1,6 +1,6 @@
 # Changelog
 
-## v2026.11.03 — Practice progress accessibility (unreleased)
+## v2026.11.03 — Practice progress accessibility (production)
 
 ### Added
 
@@ -16,7 +16,7 @@
 
 ### Known Issues
 
-- 当前远端基线包含尚未完成数据库、PWA 更新及真实账号验收的大型整合；本小版本未部署，避免将其一并发布。
+- 已按用户明确授权发布生产，等待用户实测反馈；数据库白名单、PWA 双版本/iOS 与新课程教学准确性验收仍待完成，本轮未执行数据库迁移。
 
 ## v2026.10.24 — Match retry focus
 
