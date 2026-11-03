@@ -80,8 +80,8 @@ v2026.11.03 · practice progress accessibility · unreleased candidate
 
 `PARTIAL`。
 
-- 已提交隔离候选分支：`daily-20261103-practice-progress-a11y`，代码提交 `fd509fb`。
-- 未推送、未创建 PR、未部署生产。
+- 已提交并推送隔离候选分支：`daily-20261103-practice-progress-a11y`；代码提交为 `fd509fb`，本报告及 CHANGELOG 随后也在同一分支留档。
+- 未创建 PR、未部署生产。
 - 部署暂停原因：当前 `origin/main` 还包含前一轮未发布的大型课程/PWA 整合；其 Supabase 白名单核对因认证错误未完成，且 PWA 双版本/iOS 与真实账号验收仍缺失。将本提交直接生产部署会把这些未验证内容一起发布，属于高风险操作。
 - 回滚：丢弃该隔离分支，或在未来安全部署后将生产别名恢复到部署前的已验证 READY 版本（恢复前须复核实际内容）。
 
