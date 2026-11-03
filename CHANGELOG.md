@@ -1,5 +1,23 @@
 # Changelog
 
+## v2026.11.03 — Practice progress accessibility (unreleased)
+
+### Added
+
+- 练习进度条现在提供当前题号的读屏名称，例如“练习进度：第 2 / 2 题”。
+
+### Changed
+
+- 无。
+
+### Fixed
+
+- 修复练习核心路径的进度条只有百分比、没有可访问名称的问题。
+
+### Known Issues
+
+- 当前远端基线包含尚未完成数据库、PWA 更新及真实账号验收的大型整合；本小版本未部署，避免将其一并发布。
+
 ## v2026.10.24 — Match retry focus
 
 ### Added
