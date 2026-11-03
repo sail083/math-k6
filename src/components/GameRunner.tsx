@@ -532,7 +532,7 @@ function GameRunnerSession({
             得分: {score} / {maxScore}
           </span>
         </div>
-        <div className="h-2 bg-slate-200 rounded-full overflow-hidden" role="progressbar" aria-valuenow={Math.round(progressPercent)} aria-valuemin={0} aria-valuemax={100}>
+        <div className="h-2 bg-slate-200 rounded-full overflow-hidden" role="progressbar" aria-label={`练习进度：第 ${currentQuestionIndex + 1} / ${activeQuestions.length} 题`} aria-valuenow={Math.round(progressPercent)} aria-valuemin={0} aria-valuemax={100}>
           <div
             className="h-full bg-indigo-600 rounded-full transition-all duration-300"
             style={{ width: `${progressPercent}%` }}

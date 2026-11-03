@@ -207,6 +207,22 @@ describe('GameRunner rendered regression', () => {
     expect(screen.getByRole('button', { name: '下一题' })).toHaveFocus();
   });
 
+  it('names practice progress with the current question for screen readers', () => {
+    render(
+      <GameRunner
+        game={gameWithReview}
+        knowledgePointId="kp-review"
+      />,
+    );
+
+    expect(screen.getByRole('progressbar', { name: '练习进度：第 1 / 2 题' })).toHaveAttribute('aria-valuenow', '50');
+
+    fireEvent.click(screen.getByText('X'));
+    fireEvent.click(screen.getByText('下一题'));
+
+    expect(screen.getByRole('progressbar', { name: '练习进度：第 2 / 2 题' })).toHaveAttribute('aria-valuenow', '100');
+  });
+
   it('moves focus to the course result after the final answer', () => {
     render(
       <GameRunner
