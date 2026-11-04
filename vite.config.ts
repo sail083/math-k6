@@ -37,6 +37,8 @@ export default defineConfig({
         clientsClaim: true,
         cleanupOutdatedCaches: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,md,txt}'],
+        globIgnores: ['review/learning-journey/**'],
+        navigateFallbackDenylist: [/^\/review\/learning-journey(?:\/|$)/],
       },
     }),
   ],
