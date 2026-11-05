@@ -239,6 +239,37 @@ describe('GameRunner rendered regression', () => {
     expect(screen.getByRole('heading', { name: '当堂会' })).toHaveFocus();
   });
 
+  it('announces the final score with its total for both pass and retry results', () => {
+    const { unmount } = render(
+      <GameRunner
+        game={gameWithReview}
+        knowledgePointId="kp-review"
+      />,
+    );
+
+    fireEvent.click(screen.getByText('X'));
+    fireEvent.click(screen.getByText('下一题'));
+    fireEvent.click(screen.getByTestId('fill-submit'));
+    fireEvent.click(screen.getByText('查看结果'));
+
+    expect(screen.getByRole('status', { name: '本次得分：20 分，满分 20 分' })).toBeInTheDocument();
+    unmount();
+
+    render(
+      <GameRunner
+        game={gameWithReview}
+        knowledgePointId="kp-review"
+      />,
+    );
+
+    fireEvent.click(screen.getByText('Y'));
+    fireEvent.click(screen.getByText('下一题'));
+    fireEvent.click(screen.getByTestId('fill-submit'));
+    fireEvent.click(screen.getByText('查看结果'));
+
+    expect(screen.getByRole('status', { name: '本次得分：10 分，满分 20 分' })).toBeInTheDocument();
+  });
+
   /**
    * Harness: manages GameRunner props in state so the test can simulate
    * parent re-renders (e.g. reviewMode going null after mastery change,

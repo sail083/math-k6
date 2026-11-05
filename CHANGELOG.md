@@ -1,5 +1,23 @@
 # Changelog
 
+## v2026.11.05 — Result score accessibility (unreleased)
+
+### Added
+
+- 练习结束页的得分摘要现在会向辅助技术明确播报“本次得分 X 分，满分 Y 分”。
+
+### Changed
+
+- 无。
+
+### Fixed
+
+- 修复结果标题获得焦点后，读屏用户仍无法从得分徽章获知实际分数和满分的问题。
+
+### Known Issues
+
+- 当前远端基线仍包含尚未完成数据库、PWA 更新及真实账号验收的大型整合；本小版本不部署，避免将它们一并发布。
+
 ## v2026.11.03 — Practice progress accessibility (unreleased)
 
 ### Added

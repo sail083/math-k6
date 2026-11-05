@@ -412,7 +412,11 @@ function GameRunnerSession({
           )}
 
           {/* 得分摘要 */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100">
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100"
+            role="status"
+            aria-label={`本次得分：${score} 分，满分 ${maxScore} 分`}
+          >
             <span className="text-sm text-slate-500">得分</span>
             <span className="text-lg font-bold text-slate-800 tabular-nums">{score}</span>
             <span className="text-sm text-slate-400">/ {maxScore}</span>
