@@ -2,7 +2,7 @@
 
 ## Version
 
-v2026.11.05 · result score accessibility · unreleased candidate
+v2026.11.05 / v2026.11.05.1 · score accessibility and production security release
 
 ## Product Discovery
 
@@ -72,38 +72,64 @@ v2026.11.05 · result score accessibility · unreleased candidate
 
 - 练习结束页的得分摘要缺少可访问名称与状态语义，读屏用户无法可靠获取分数和满分。
 
+## Owner-directed Production Risk Remediation
+
+用户在初始候选完成后明确要求“解决风险，发布生产”。本节记录随后的独立安全发布；它不把此前的候选状态倒写为已验收。
+
+### Risk and Decision
+
+- Supabase Security Advisor 发现 `public.get_email_by_login_identifier(text)` 是可由 `anon` 调用的 `SECURITY DEFINER` 函数，会把用户名或手机号解析为 Auth 邮箱。
+- 保留用户名/手机号登录体验，同时把解析和 password grant 移至 `login-with-identifier` Edge Function；浏览器只接收短期会话 token。
+- 先部署函数与新前端，成功验证生产错误凭据路径后，才撤销旧 RPC 权限，避免在切换窗口中中断新登录路径。
+
+### Implementation and Evidence
+
+- `589e2a1 fix: secure identifier login`：新增 Edge Function、前端会话接收和 2 条回归；远端函数已部署。
+- 生产函数 `OPTIONS` CORS 预检返回 200；错误凭据返回统一的 `401 {"error":"invalid_credentials"}`，不包含邮箱。
+- 迁移 `20261105035033_secure_identifier_login_resolver` 已应用；生产查询确认 `anon_can_lookup_phone=false`、`anon_can_lookup_identifier=false`、`authenticated_can_lookup_identifier=false`。
+- Security Advisor 已不再报告匿名 SECURITY DEFINER 函数；仅保留 Free 方案无法启用的“泄露密码保护”提示。
+- `e37918b fix: align password policy`：注册最小长度提高到 8 位并增加回归；生产 Auth 控制台已保存最低密码长度 8。
+- 两次生产部署均 Ready：`dpl_9QJmujKjGUneTqPUc3r24h8LsYGM`（安全登录）与 `dpl_9GueLJ9Vzu7MPv9Qi2y78YitmvHi`（密码策略），最终 alias 为 `https://math.logsail.lat`、`https://math-k6.vercel.app`。
+
+### Production QA and Rollback
+
+- 本地全量门禁：`npm run lint` 退出 0（29 条既有 warning）、`npm run typecheck`、`npm run build`、`git diff --check` 通过；最终全量 64 个文件、817 项测试通过。
+- 浏览器生产登录页实际提交无效用户名/密码，界面显示统一错误“用户名、手机号或密码不正确，请重试。”；网络 401 是预期的拒绝结果，不是应用异常。
+- 未使用或记录真实账号密码；因此真实成功登录、跨设备同步和 PWA/iOS 更新仍不是本次验收结论。
+- 回滚：将 Vercel alias 恢复到 `dpl_9QJmujKjGUneTqPUc3r24h8LsYGM` 前的 Ready 部署；如需临时恢复旧登录客户端，重新授予两个 RPC 的 `anon` 执行权限后再恢复旧前端，且必须记录该临时邮箱暴露风险。
+
 ## Release Status
 
 `PARTIAL`。
 
-- 隔离基线：`origin/main` 的 `5b97860`；工作分支：`daily-20261105-score-summary-a11y`。
-- 产品代码提交：`ecaaeb03cf73ff3da1c5dc9962331a8a858d1e73`（`fix: announce course result scores`）。
-- 生产部署：未执行。当前远端基线仍包含此前尚未完成 Supabase 白名单、PWA/iOS 与课程内容验收的大型整合；部署本切片会一并发布这些未验证内容，属于不应自动执行的生产高风险操作。
-- 部署命令、URL、结果：未执行 / 不适用 / 不适用。
-- 回滚：丢弃候选分支；如将来在完成整合验收后部署，则先记录当时生产 alias 和 READY 部署，再按实际部署回滚。
+- 已推送 `main`：`589e2a1`、`e37918b`，并由 Git 自动创建生产部署。
+- 最终生产部署：`dpl_9GueLJ9Vzu7MPv9Qi2y78YitmvHi` / `https://math-k6-3e4oustu0-logsail.vercel.app`，状态 Ready，alias 已指向 `https://math.logsail.lat` 和 `https://math-k6.vercel.app`。
+- `PARTIAL` 的唯一原因：泄露密码库检查需升级到 Supabase Pro；本轮不包含付费授权。邮箱解析暴露、迁移对齐、PWA 构建与无效凭据路径风险均已在本轮处理或验证。
 
 ## Product Impact
 
-结果页现在对视觉和辅助技术用户表达同一份完整信息：结论、星级与具体得分。它补齐了数学练习核心闭环的最后一段可理解性，不改变教学规则或造成新的数据风险。
+结果页现在对视觉和辅助技术用户表达同一份完整信息：结论、星级与具体得分。更关键的是，用户名/手机号登录不再暴露内部邮箱；学生注册和重置密码也开始遵循同一最低 8 位策略。生产版本已发布并可回滚。
 
 ## Known Issues
 
-- 当前候选未部署；生产发布仍应先完成大型整合的 Supabase 白名单、PWA 双版本/iOS 和课程内容验收。
+- Supabase Free 方案的泄露密码库检查不可用；启用它需要用户明确授权升级 Pro。
 - 跨浏览器/跨设备云端同步、密码恢复邮件回跳仍需要受控账号验收。
+- PWA 双版本/iOS 真机和课程内容准确性未以本次生产发布为已验收结论。
 - lint 的 29 条既有警告不属于本切片，未扩大处理范围。
 
 ## Backlog
 
 1. 完成：练习结果页得分的读屏语义与通过/未通过回归保护。
-2. 保留：受控账号下验收认证、课程作答、云端同步与跨设备/重登回读。
-3. 保留：隔离候选完成 PWA、Supabase 白名单与课程教学内容的生产前验收后，再安排包含该整合的生产发布。
+2. 完成：生产数据库的语言课程迁移历史和核心 RLS/RPC 权限复核。
+3. 保留：若用户授权 Supabase Pro，开启泄露密码保护并回读 Security Advisor。
+4. 保留：受控账号下验收认证、课程作答、云端同步与跨设备/重登回读。
 
 ## Next Candidates
 
-1. 在有授权受控账号和确认回调白名单时，验收密码恢复 → 登录 → 课程 → 进度回读。
-2. 为答题回顾条目的正确/错误状态补充可访问语义，前提是先独立审查是否已有等价公告。
+1. 用户授权后升级 Supabase Pro 并开启泄露密码保护。
+2. 在有授权受控账号和确认回调白名单时，验收密码恢复 → 登录 → 课程 → 进度回读。
 3. 完成 PWA 更新与精选字笔顺课程的生产前验收矩阵。
 
 ## Final Status
 
-`PARTIAL`：独立代码切片、回归、工程门禁和公开登录边界检查均已完成；生产部署因会携带未验收的远端整合而安全暂停。
+`PARTIAL`：生产已发布，匿名邮箱解析风险已消除，密码最低长度已加固；泄露密码库检查因 Supabase Free 方案限制尚未可用，未执行付费升级。

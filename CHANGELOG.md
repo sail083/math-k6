@@ -1,6 +1,24 @@
 # Changelog
 
-## v2026.11.05 — Result score accessibility (unreleased)
+## v2026.11.05.1 — Production security release
+
+### Added
+
+- 新增 `login-with-identifier` Supabase Edge Function，在服务端完成用户名/手机号到 Auth 账号的安全解析与密码授予。
+
+### Changed
+
+- 注册、重置密码与 Supabase Auth 均统一要求至少 8 位密码。
+
+### Fixed
+
+- 撤销匿名和已登录用户对邮箱解析 RPC 的执行权限，浏览器不再能从用户名或手机号读取内部 Auth 邮箱。
+
+### Known Issues
+
+- Supabase Free 方案不支持泄露密码库检查；未升级付费方案。最低 8 位策略已启用作为无成本加固。
+
+## v2026.11.05 — Result score accessibility
 
 ### Added
 
@@ -16,7 +34,7 @@
 
 ### Known Issues
 
-- 当前远端基线仍包含尚未完成数据库、PWA 更新及真实账号验收的大型整合；本小版本不部署，避免将它们一并发布。
+- 随 v2026.11.05.1 一并生产发布。
 
 ## v2026.11.03 — Practice progress accessibility (unreleased)
 
