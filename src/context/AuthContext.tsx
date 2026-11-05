@@ -17,7 +17,7 @@ interface AuthContextValue {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  /** Username/phone + password login. Resolves the internal Auth email via RPC. */
+  /** Username/phone + password login without exposing the internal Auth email to the browser. */
   login: (identifier: string, password: string) => Promise<{ error: string | null }>;
   /** Register with phone + password + email. Creates Supabase account with email. */
   register: (phone: string, password: string, email: string) => Promise<{ error: string | null }>;
@@ -61,24 +61,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /* ---- login ---- */
   const login = useCallback(async (identifier: string, password: string) => {
     const normalizedIdentifier = normalizeLoginIdentifier(identifier);
-    const { data: email, error: rpcError } = await supabase.rpc(
-      'get_email_by_login_identifier',
-      { identifier_input: normalizedIdentifier },
-    );
+    const { data, error: functionError } = await supabase.functions.invoke<{
+      access_token?: string;
+      refresh_token?: string;
+    }>('login-with-identifier', {
+      body: { identifier: normalizedIdentifier, password },
+    });
 
-    if (rpcError || !email) {
-      return { error: '未找到该用户名或手机号对应的账户，请检查后重试。' };
+    if (functionError || !data?.access_token || !data.refresh_token) {
+      return { error: '用户名、手机号或密码不正确，请重试。' };
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email as string,
-      password,
+    const { error } = await supabase.auth.setSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
     });
 
     if (error) {
-      if (error.message.includes('Email not confirmed')) {
-        return { error: '请先确认邮箱后再登录（检查收件箱中的确认邮件）。' };
-      }
       return { error: '用户名、手机号或密码不正确，请重试。' };
     }
 
