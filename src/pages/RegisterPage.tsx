@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 
 const PHONE_RE = /^1[3-9]\d{9}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 8;
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -38,8 +39,8 @@ export default function RegisterPage() {
       setError('请输入有效的邮箱地址');
       return;
     }
-    if (password.length < 6) {
-      setError('密码至少需要6个字符');
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setError(`密码至少需要${MIN_PASSWORD_LENGTH}个字符`);
       return;
     }
     if (password !== confirmPassword) {
@@ -140,14 +141,14 @@ export default function RegisterPage() {
             <input
               id="reg-password"
               type="password"
-              placeholder="至少6个字符"
+              placeholder={`至少${MIN_PASSWORD_LENGTH}个字符`}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full h-12 px-4 rounded-xl border text-sm transition-colors focus:outline-none focus:ring-2"
               style={{ borderColor: 'var(--color-border)' }}
               autoComplete="new-password"
               required
-              minLength={6}
+              minLength={MIN_PASSWORD_LENGTH}
             />
           </div>
 
@@ -165,7 +166,7 @@ export default function RegisterPage() {
               style={{ borderColor: 'var(--color-border)' }}
               autoComplete="new-password"
               required
-              minLength={6}
+              minLength={MIN_PASSWORD_LENGTH}
             />
           </div>
 

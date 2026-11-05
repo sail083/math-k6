@@ -59,6 +59,23 @@ describe('registration return path', () => {
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/math/kp/g3-fraction-intro?target=frac.notation#practice'));
   });
 
+  it('rejects a password that cannot satisfy the production password policy', () => {
+    render(
+      <MemoryRouter initialEntries={['/register']}>
+        <Routes><Route path="/register" element={<RegisterPage />} /></Routes>
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText('手机号'), { target: { value: '13800138000' } });
+    fireEvent.change(screen.getByLabelText('邮箱'), { target: { value: 'student@example.com' } });
+    fireEvent.change(screen.getByLabelText('密码'), { target: { value: 'short7!' } });
+    fireEvent.change(screen.getByLabelText('确认密码'), { target: { value: 'short7!' } });
+    fireEvent.click(screen.getByRole('button', { name: '注册' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('密码至少需要8个字符');
+    expect(auth.register).not.toHaveBeenCalled();
+  });
+
   it('returns an email-confirmation signup to login with its original target', async () => {
     vi.useFakeTimers();
     auth.register.mockResolvedValue({ error: '注册成功！请检查邮箱中的确认邮件，确认后即可登录。' });
