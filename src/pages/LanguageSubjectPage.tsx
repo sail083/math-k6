@@ -213,7 +213,7 @@ function LessonPracticeSession({
           {questionIndex + 1} / {lesson.questions.length}
         </span>
       </div>
-      <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-200" role="progressbar" aria-label="练习进度" aria-valuenow={questionIndex + 1} aria-valuemin={1} aria-valuemax={lesson.questions.length}>
+      <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-200" role="progressbar" aria-label={`练习进度：第 ${questionIndex + 1} / ${lesson.questions.length} 题`} aria-valuenow={questionIndex + 1} aria-valuemin={1} aria-valuemax={lesson.questions.length}>
         <div className={`h-full rounded-full ${theme.progress}`} style={{ width: `${((questionIndex + 1) / lesson.questions.length) * 100}%` }} />
       </div>
       <div className="mt-6" key={`${question.id}:${attempt}`}>

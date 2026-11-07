@@ -1,5 +1,23 @@
 # Changelog
 
+## v2026.11.07 — Language practice progress accessibility
+
+### Added
+
+- 语言课程练习进度条现在向辅助技术播报当前题号，例如“练习进度：第 2 / 3 题”。
+
+### Changed
+
+- 无。
+
+### Fixed
+
+- 修复语言练习进度条只有通用名称、读屏用户无法判断当前题目的问题。
+
+### Known Issues
+
+- 真实账号跨设备同步与移动端语音仍需受控验收。
+
 ## v2026.11.05.1 — Production security release
 
 ### Added

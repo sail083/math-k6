@@ -445,6 +445,30 @@ describe("English read-aloud helper", () => {
 });
 
 describe("language lesson practice", () => {
+  it("names the current question in the practice progress bar", () => {
+    render(
+      <MemoryRouter>
+        <LessonPractice
+          lesson={practiceLesson}
+          onPassed={vi.fn()}
+          nextLessonId={null}
+          subject="chinese"
+        />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole("progressbar", { name: "练习进度：第 1 / 3 题" }),
+    ).toHaveAttribute("aria-valuenow", "1");
+
+    clickOption("甲对");
+    nextQuestion();
+
+    expect(
+      screen.getByRole("progressbar", { name: "练习进度：第 2 / 3 题" }),
+    ).toHaveAttribute("aria-valuenow", "2");
+  });
+
   it("passes with two correct answers out of three and calls completion once", () => {
     const onPassed = vi.fn();
     render(
