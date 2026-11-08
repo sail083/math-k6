@@ -1,5 +1,23 @@
 # Changelog
 
+## v2026.11.08 — Language practice result accessibility
+
+### Added
+
+- 语文和英语练习结果现在以命名状态呈现，辅助技术可稳定识别“本课完成”“再练一次”或作品自检待完成状态。
+
+### Changed
+
+- 保留原有结果文案、评分与操作，仅补充 `role="status"` 和结果标题关联。
+
+### Fixed
+
+- 修复语言课程练习结束后结果区域只有 `aria-live`、缺少可定位状态语义的问题。
+
+### Known Issues
+
+- 真实账号跨设备同步与移动端语音仍需受控验收。
+
 ## v2026.11.07 — Language practice progress accessibility
 
 ### Added

@@ -142,8 +142,13 @@ function LessonPracticeSession({
     const passed = status === 'passed';
     return (<>
       {projectEditor}
-      <section aria-live="polite" className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className={`text-2xl font-bold ${passed ? 'text-emerald-700' : 'text-slate-800'}`}>
+      <section
+        role="status"
+        aria-live="polite"
+        aria-labelledby="practice-result-title"
+        className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+      >
+        <h2 id="practice-result-title" className={`text-2xl font-bold ${passed ? 'text-emerald-700' : 'text-slate-800'}`}>
           {passed ? '本课完成' : status === 'project_pending' ? '练习达标，请完成作品自检' : '再练一次'}
         </h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">

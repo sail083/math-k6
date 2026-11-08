@@ -493,6 +493,9 @@ describe("language lesson practice", () => {
     expect(
       screen.getByRole("heading", { name: "本课完成" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("status", { name: "本课完成" }),
+    ).toHaveTextContent("答对 2 题，本次练习已完成。");
     expect(screen.getByText("答对 2 题，本次练习已完成。")).toBeInTheDocument();
     expect(onPassed).toHaveBeenCalledTimes(1);
   });
@@ -522,6 +525,9 @@ describe("language lesson practice", () => {
     expect(
       screen.getByRole("heading", { name: "再练一次" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("status", { name: "再练一次" }),
+    ).toHaveTextContent("答对 1 题，需要至少答对 2 题。");
     expect(onPassed).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "重新练习" }));
     expect(screen.getByText("第一题")).toBeInTheDocument();
