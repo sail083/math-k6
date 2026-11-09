@@ -29,7 +29,7 @@ function Shell({ title, relation, children, controls }: { title: string; relatio
 }
 
 function Segments({ value, setValue, labels, onInteract }: { value: number; setValue: (value: number) => void; labels: string[]; onInteract?: () => void }) {
-  return <div className="segmented-control">{labels.map((label, index) => <button key={label} type="button" className={value === index ? 'is-active' : ''} onClick={() => { setValue(index); onInteract?.(); }}>{label}</button>)}</div>;
+  return <div className="segmented-control">{labels.map((label, index) => <button key={label} type="button" aria-pressed={value === index} className={value === index ? 'is-active' : ''} onClick={() => { setValue(index); onInteract?.(); }}>{label}</button>)}</div>;
 }
 
 function RectArea({ onInteract }: Pick<CourseGeometryModelProps, 'onInteract'>) {
@@ -57,7 +57,7 @@ function TriangleLab({ onInteract }: Pick<CourseGeometryModelProps, 'onInteract'
   const radians = angles.map(angle => angle * Math.PI / 180);
   const side = 210 * Math.sin(radians[1]) / Math.sin(radians[2]);
   const vertices = [[95, 205], [305, 205], [95 + side * Math.cos(radians[0]), 205 - side * Math.sin(radians[0])]];
-  return <Shell title="按最大角分类，三个内角始终拼成平角" relation={`${angles.join('° + ')}° = 180°`} controls={<div className="segmented-control">{(Object.keys(triangles) as TriangleKind[]).map(k => <button key={k} type="button" className={kind === k ? 'is-active' : ''} onClick={() => { setKind(k); onInteract?.(); }}>{k}三角形</button>)}</div>}>
+  return <Shell title="按最大角分类，三个内角始终拼成平角" relation={`${angles.join('° + ')}° = 180°`} controls={<div className="segmented-control">{(Object.keys(triangles) as TriangleKind[]).map(k => <button key={k} type="button" aria-pressed={kind === k} className={kind === k ? 'is-active' : ''} onClick={() => { setKind(k); onInteract?.(); }}>{k}三角形</button>)}</div>}>
     <svg className="geo-svg" viewBox="0 0 400 250" role="img" aria-label={`${kind}三角形，内角${angles.join('度、')}度`}><polygon points={vertices.map(point => point.join(',')).join(' ')} className="geo-shape" /><text x="200" y="32">{kind}三角形</text>{vertices.map(([x, y], index) => <text key={index} x={x} y={y + (index === 2 ? -12 : 24)}>{angles[index]}°</text>)}</svg>
     <div className="geo-angle-sum">{[0, angles[0], angles[0] + angles[1], 180].map((rotation) => <i key={rotation} style={{ transform: `rotate(${-rotation}deg)` }} />)}<strong>180°</strong></div>
   </Shell>;

@@ -1,5 +1,23 @@
 # Changelog
 
+## v2026.11.09 — Geometry model selection accessibility
+
+### Added
+
+- 几何“动手试”模型的步骤与三角形分类按钮现在向辅助技术提供 `aria-pressed` 选中状态。
+
+### Changed
+
+- 保留原有视觉选中样式、几何计算和交互回调，仅同步暴露当前选项语义。
+
+### Fixed
+
+- 修复读屏用户无法判断几何模型当前选中步骤或三角形分类的问题。
+
+### Known Issues
+
+- 真实账号跨设备同步与移动端语音仍需受控验收。
+
 ## v2026.11.08 — Language practice result accessibility
 
 ### Added
