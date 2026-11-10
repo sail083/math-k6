@@ -1,5 +1,23 @@
 # Changelog
 
+## v2026.11.10 — Math model selection accessibility
+
+### Added
+
+- 试商、小数加减和小数除法模型的分段选择按钮现在向辅助技术提供 `aria-pressed` 选中状态。
+
+### Changed
+
+- 保留原有视觉选中样式、数学计算和交互回调，仅同步暴露当前选项语义。
+
+### Fixed
+
+- 修复键盘或读屏用户无法确认数学模型当前示例、运算模式或缩放步骤的问题。
+
+### Known Issues
+
+- 真实账号跨设备同步与移动端语音仍需受控验收。
+
 ## v2026.11.09 — Geometry model selection accessibility
 
 ### Added
