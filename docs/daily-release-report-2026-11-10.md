@@ -74,7 +74,11 @@ v2026.11.10 · math model selection accessibility
 `PARTIAL`。
 
 - 发布分支：`daily-20261110-math-model-selection-a11y`。
-- 实际提交、部署命令、部署 URL 和部署结果：待本轮提交/部署后回填。
+- 实际代码提交：`acec769 fix: expose math model selection state`。
+- 发布命令：`CI=1 npx vercel --prod --yes --scope logsail`（先用 `vercel link --project math-k6 --yes --scope logsail` 绑定现有项目）。
+- 生产部署：`dpl_4xQrgL8imowbampgH6Ei3U5s215x`，状态 `READY`，绑定 `https://math.logsail.lat`；部署 URL 为 `https://math-k6-msxubr15k-logsail.vercel.app`。
+- 生产回读：`npx vercel curl https://math.logsail.lat --scope logsail` 返回应用 HTML；`vercel inspect` 回读目标 `production`、状态 `Ready`。
+- 过程中首次未链接 worktree 的命令创建了临时项目 `math-k6-daily-20261110`（`dpl_FxnEatYRvECvbf8bintxPpkgRJnG`，READY），未绑定生产域名、未作为验收依据；随后已改用既有 `math-k6` 项目完成正式部署。
 - 回滚目标：部署前最近一份已验证 READY 的 Vercel 生产部署；恢复前需以 `vercel inspect` 回读实际部署，不执行数据库回滚。
 - `PARTIAL` 的唯一原因：没有受控账号，未完成登录后课程真实交互与云端/跨设备同步验收；工程门禁不受影响。
 
