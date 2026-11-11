@@ -1,5 +1,23 @@
 # Changelog
 
+## v2026.11.11 — Concept model selection accessibility
+
+### Added
+
+- 单位换算、分数比较、平行/垂直、四边形和概率试验模型的分段选择按钮现在向辅助技术提供 `aria-pressed` 选中状态。
+
+### Changed
+
+- 保留原有视觉选中样式、数学计算和交互回调，仅同步暴露当前概念模型选项语义。
+
+### Fixed
+
+- 修复读屏用户无法确认当前正在比较的概念、图形关系或试验次数的问题。
+
+### Known Issues
+
+- 真实账号跨设备同步与移动端语音仍需受控验收。
+
 ## v2026.11.10 — Math model selection accessibility
 
 ### Added
