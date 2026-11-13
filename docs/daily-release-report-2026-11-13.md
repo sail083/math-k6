@@ -72,7 +72,11 @@ v2026.11.13 · advanced model selection accessibility
 `PARTIAL`。
 
 - 发布分支：`daily-20261113-advanced-model-selection-a11y`。
-- 代码与日报提交、远端推送和生产部署将在门禁完成后记录实际结果。
+- 实际代码与日报提交：`0992417 fix: expose advanced model selection state`，已推送至 `origin`。
+- 部署命令：`CI=1 npx vercel deploy . --prod -y --scope logsail --project math-k6`。
+- 生产部署：`dpl_8QpPESkbX6YTuU4QK1JhjaQjGGDY`，target `production`、状态 `READY`；部署 URL 为 `https://math-k6-qjft9pv37-logsail.vercel.app`，生产别名为 `https://math.logsail.lat`。
+- Vercel inspect：确认项目 `math-k6`、target 为 production、状态 Ready，别名已绑定。
+- 回滚目标：`dpl_mbgxFYsbFLi9Ct2vaRKz5vupJP6Z`（上一份已验证 Ready 的生产部署）。回滚前须再次用 `vercel inspect` 复核，不涉及数据库操作。
 - `PARTIAL` 的唯一产品验收原因：没有受控账号，未完成登录后课程交互、进度写入、重登和跨设备同步回读。
 
 ## Product Impact
