@@ -55,8 +55,8 @@ export default function ColumnArithmeticLab({ onInteract }: ColumnArithmeticLabP
   return (
     <div className="column-lab">
       <div className="column-lab__toolbar" aria-label="选择计算类型">
-        <button type="button" className={mode === 'addition' ? 'is-active' : ''} onClick={() => selectMode('addition')}>进位加法</button>
-        <button type="button" className={mode === 'subtraction' ? 'is-active' : ''} onClick={() => selectMode('subtraction')}>退位减法</button>
+        <button type="button" aria-pressed={mode === 'addition'} className={mode === 'addition' ? 'is-active' : ''} onClick={() => selectMode('addition')}>进位加法</button>
+        <button type="button" aria-pressed={mode === 'subtraction'} className={mode === 'subtraction' ? 'is-active' : ''} onClick={() => selectMode('subtraction')}>退位减法</button>
       </div>
 
       <div className="column-lab__workspace">
@@ -86,7 +86,7 @@ export default function ColumnArithmeticLab({ onInteract }: ColumnArithmeticLabP
       </div>
 
       <div className="column-lab__footer">
-        <div>{lesson.rows.map((_, index) => <button key={index} type="button" aria-label={`查看第 ${index + 1} 步`} onClick={() => { setStep(index); onInteract?.(); }} className={index === step ? 'is-active' : ''}>{index + 1}</button>)}</div>
+        <div>{lesson.rows.map((_, index) => <button key={index} type="button" aria-label={`查看第 ${index + 1} 步`} aria-pressed={index === step} onClick={() => { setStep(index); onInteract?.(); }} className={index === step ? 'is-active' : ''}>{index + 1}</button>)}</div>
         <button type="button" onClick={advance} disabled={step === 2}>{step === 2 ? `${lesson.expression} = ${lesson.result.join('')}` : '计算下一位 →'}</button>
       </div>
     </div>
