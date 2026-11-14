@@ -1,5 +1,23 @@
 # Changelog
 
+## v2026.11.14 — Column arithmetic selection accessibility
+
+### Added
+
+- 竖式计算实验室的“进位加法 / 退位减法”和计算步骤按钮现在向辅助技术提供 `aria-pressed` 选中状态。
+
+### Changed
+
+- 保留原有视觉高亮、竖式计算、步骤切换和模式切换逻辑，仅同步暴露当前学习状态。
+
+### Fixed
+
+- 修复键盘或读屏用户无法确认竖式实验当前计算类型和步骤的问题。
+
+### Known Issues
+
+- 真实账号课程交互、云端进度回读、重登和跨设备同步仍需受控验收。
+
 ## v2026.11.13 — Advanced model selection accessibility
 
 ### Added
