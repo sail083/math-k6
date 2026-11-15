@@ -1,5 +1,23 @@
 # Changelog
 
+## v2026.11.15 — Cuboid surface selection accessibility
+
+### Added
+
+- 长方体表面积模型的“有盖 / 无盖”按钮现在向辅助技术提供 `aria-pressed` 选中状态。
+
+### Changed
+
+- 保留原有视觉高亮、表面积计算、展开图和交互回调，仅同步暴露当前长方体模型状态。
+
+### Fixed
+
+- 修复键盘或读屏用户无法确认长方体表面积模型当前是否包含顶盖的问题。
+
+### Known Issues
+
+- 真实账号课程交互、云端进度回读、重登和跨设备同步仍需受控验收。
+
 ## v2026.11.14 — Column arithmetic selection accessibility
 
 ### Added
