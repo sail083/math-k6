@@ -1,5 +1,23 @@
 # Changelog
 
+## v2026.11.16 — Circle area selection accessibility
+
+### Added
+
+- 圆面积模型的“8 / 16 / 32 / 64 等分”按钮现在向辅助技术提供 `aria-pressed` 选中状态。
+
+### Changed
+
+- 保留原有等分计算、扇形重排图、视觉高亮和交互回调，仅同步暴露当前等分选项。
+
+### Fixed
+
+- 修复键盘或读屏用户无法确认圆面积模型当前等分份数的问题。
+
+### Known Issues
+
+- 真实账号课程交互、云端进度回读、重登和跨设备同步仍需受控验收。
+
 ## v2026.11.15 — Cuboid surface selection accessibility
 
 ### Added

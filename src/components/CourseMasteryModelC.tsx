@@ -141,7 +141,7 @@ function CircleArea({ onInteract }: Pick<CourseMasteryModelCProps, 'onInteract'>
   const bottom = Array.from({ length: sectors / 2 + 1 }, (_, i) => `${210 + (sectors / 2 - i) * tooth},${i % 2 === 0 ? 138 : 147}`).join(' ');
   return (
     <Shell title="把圆等分后交错排列；份数越多，弧边越接近直线" result={`S ≈ πr × r = πr²（${sectors} 等分）`} invariant="重排只移动扇形，不增不减面积；近似长方形的长趋近 πr、宽趋近 r"
-      controls={<div className="segmented-control">{options.map((count, i) => <button key={count} type="button" className={index === i ? 'is-active' : ''} onClick={() => { setIndex(i); onInteract?.(); }}>{count} 等分</button>)}</div>}>
+      controls={<div className="segmented-control">{options.map((count, i) => <button key={count} type="button" aria-pressed={index === i} className={index === i ? 'is-active' : ''} onClick={() => { setIndex(i); onInteract?.(); }}>{count} 等分</button>)}</div>}>
       <svg viewBox="0 0 450 220" role="img" aria-label={`圆被分成${sectors}个扇形并重排为近似长方形`} style={{ width: '100%', maxHeight: 280 }}>
         {sectorPaths.map((path, i) => <path key={path} d={path} fill={i % 2 ? '#93c5fd' : '#a7f3d0'} stroke="#fff" strokeWidth="0.8"/>)}
         <polygon points={`${top} ${bottom}`} fill="#bfdbfe" stroke="#4f46e5" strokeWidth="1.5"/>
