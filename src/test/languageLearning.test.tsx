@@ -445,6 +445,30 @@ describe("English read-aloud helper", () => {
 });
 
 describe("language lesson practice", () => {
+  it("names the current question in the practice progress bar", () => {
+    render(
+      <MemoryRouter>
+        <LessonPractice
+          lesson={practiceLesson}
+          onPassed={vi.fn()}
+          nextLessonId={null}
+          subject="chinese"
+        />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole("progressbar", { name: "练习进度：第 1 / 3 题" }),
+    ).toHaveAttribute("aria-valuenow", "1");
+
+    clickOption("甲对");
+    nextQuestion();
+
+    expect(
+      screen.getByRole("progressbar", { name: "练习进度：第 2 / 3 题" }),
+    ).toHaveAttribute("aria-valuenow", "2");
+  });
+
   it("passes with two correct answers out of three and calls completion once", () => {
     const onPassed = vi.fn();
     render(
@@ -469,6 +493,9 @@ describe("language lesson practice", () => {
     expect(
       screen.getByRole("heading", { name: "本课完成" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("status", { name: "本课完成" }),
+    ).toHaveTextContent("答对 2 题，本次练习已完成。");
     expect(screen.getByText("答对 2 题，本次练习已完成。")).toBeInTheDocument();
     expect(onPassed).toHaveBeenCalledTimes(1);
   });
@@ -498,6 +525,9 @@ describe("language lesson practice", () => {
     expect(
       screen.getByRole("heading", { name: "再练一次" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("status", { name: "再练一次" }),
+    ).toHaveTextContent("答对 1 题，需要至少答对 2 题。");
     expect(onPassed).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "重新练习" }));
     expect(screen.getByText("第一题")).toBeInTheDocument();

@@ -1,5 +1,167 @@
 # Changelog
 
+## v2026.11.16 — Circle area selection accessibility
+
+### Added
+
+- 圆面积模型的“8 / 16 / 32 / 64 等分”按钮现在向辅助技术提供 `aria-pressed` 选中状态。
+
+### Changed
+
+- 保留原有等分计算、扇形重排图、视觉高亮和交互回调，仅同步暴露当前等分选项。
+
+### Fixed
+
+- 修复键盘或读屏用户无法确认圆面积模型当前等分份数的问题。
+
+### Known Issues
+
+- 真实账号课程交互、云端进度回读、重登和跨设备同步仍需受控验收。
+
+## v2026.11.15 — Cuboid surface selection accessibility
+
+### Added
+
+- 长方体表面积模型的“有盖 / 无盖”按钮现在向辅助技术提供 `aria-pressed` 选中状态。
+
+### Changed
+
+- 保留原有视觉高亮、表面积计算、展开图和交互回调，仅同步暴露当前长方体模型状态。
+
+### Fixed
+
+- 修复键盘或读屏用户无法确认长方体表面积模型当前是否包含顶盖的问题。
+
+### Known Issues
+
+- 真实账号课程交互、云端进度回读、重登和跨设备同步仍需受控验收。
+
+## v2026.11.14 — Column arithmetic selection accessibility
+
+### Added
+
+- 竖式计算实验室的“进位加法 / 退位减法”和计算步骤按钮现在向辅助技术提供 `aria-pressed` 选中状态。
+
+### Changed
+
+- 保留原有视觉高亮、竖式计算、步骤切换和模式切换逻辑，仅同步暴露当前学习状态。
+
+### Fixed
+
+- 修复键盘或读屏用户无法确认竖式实验当前计算类型和步骤的问题。
+
+### Known Issues
+
+- 真实账号课程交互、云端进度回读、重登和跨设备同步仍需受控验收。
+
+## v2026.11.13 — Advanced model selection accessibility
+
+### Added
+
+- 运算定律模型的“交换 / 结合 / 分配”分段按钮现在向辅助技术提供 `aria-pressed` 选中状态。
+
+### Changed
+
+- 保留原有视觉选中样式、数学表达式、结果计算和交互回调，仅同步暴露当前运算定律语义。
+
+### Fixed
+
+- 修复键盘或读屏用户无法确认运算定律模型当前选项的问题。
+
+### Known Issues
+
+- 真实账号课程交互、云端进度回读、重登和跨设备同步仍需受控验收。
+
+## v2026.11.11 — Concept model selection accessibility
+
+### Added
+
+- 单位换算、分数比较、平行/垂直、四边形和概率试验模型的分段选择按钮现在向辅助技术提供 `aria-pressed` 选中状态。
+
+### Changed
+
+- 保留原有视觉选中样式、数学计算和交互回调，仅同步暴露当前概念模型选项语义。
+
+### Fixed
+
+- 修复读屏用户无法确认当前正在比较的概念、图形关系或试验次数的问题。
+
+### Known Issues
+
+- 真实账号跨设备同步与移动端语音仍需受控验收。
+
+## v2026.11.10 — Math model selection accessibility
+
+### Added
+
+- 试商、小数加减和小数除法模型的分段选择按钮现在向辅助技术提供 `aria-pressed` 选中状态。
+
+### Changed
+
+- 保留原有视觉选中样式、数学计算和交互回调，仅同步暴露当前选项语义。
+
+### Fixed
+
+- 修复键盘或读屏用户无法确认数学模型当前示例、运算模式或缩放步骤的问题。
+
+### Known Issues
+
+- 真实账号跨设备同步与移动端语音仍需受控验收。
+
+## v2026.11.09 — Geometry model selection accessibility
+
+### Added
+
+- 几何“动手试”模型的步骤与三角形分类按钮现在向辅助技术提供 `aria-pressed` 选中状态。
+
+### Changed
+
+- 保留原有视觉选中样式、几何计算和交互回调，仅同步暴露当前选项语义。
+
+### Fixed
+
+- 修复读屏用户无法判断几何模型当前选中步骤或三角形分类的问题。
+
+### Known Issues
+
+- 真实账号跨设备同步与移动端语音仍需受控验收。
+
+## v2026.11.08 — Language practice result accessibility
+
+### Added
+
+- 语文和英语练习结果现在以命名状态呈现，辅助技术可稳定识别“本课完成”“再练一次”或作品自检待完成状态。
+
+### Changed
+
+- 保留原有结果文案、评分与操作，仅补充 `role="status"` 和结果标题关联。
+
+### Fixed
+
+- 修复语言课程练习结束后结果区域只有 `aria-live`、缺少可定位状态语义的问题。
+
+### Known Issues
+
+- 真实账号跨设备同步与移动端语音仍需受控验收。
+
+## v2026.11.07 — Language practice progress accessibility
+
+### Added
+
+- 语言课程练习进度条现在向辅助技术播报当前题号，例如“练习进度：第 2 / 3 题”。
+
+### Changed
+
+- 无。
+
+### Fixed
+
+- 修复语言练习进度条只有通用名称、读屏用户无法判断当前题目的问题。
+
+### Known Issues
+
+- 真实账号跨设备同步与移动端语音仍需受控验收。
+
 ## v2026.11.05.1 — Production security release
 
 ### Added

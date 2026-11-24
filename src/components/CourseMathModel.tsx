@@ -101,7 +101,7 @@ function TrialDivision({ onInteract }: Pick<CourseMathModelProps, 'onInteract'>)
         </div>
       </div>
       <div className="model-controls split">
-        <div className="segmented-control">{examples.map((item, index) => <button key={item.dividend} type="button" className={index === exampleIndex ? 'is-active' : ''} onClick={() => { setExampleIndex(index); setTrial(index === 0 ? 4 : 3); onInteract?.(); }}>{item.dividend} ÷ {item.divisor}</button>)}</div>
+        <div className="segmented-control">{examples.map((item, index) => <button key={item.dividend} type="button" aria-pressed={index === exampleIndex} className={index === exampleIndex ? 'is-active' : ''} onClick={() => { setExampleIndex(index); setTrial(index === 0 ? 4 : 3); onInteract?.(); }}>{item.dividend} ÷ {item.divisor}</button>)}</div>
         <div className="stepper"><button type="button" aria-label="试商减一" onClick={() => adjust(Math.max(1, trial - 1))}>−</button><output>试商 {trial}</output><button type="button" aria-label="试商加一" onClick={() => adjust(Math.min(9, trial + 1))}>＋</button></div>
       </div>
     </ModelShell>
@@ -120,7 +120,7 @@ function DecimalPlaceValue({ onInteract }: Pick<CourseMathModelProps, 'onInterac
         {[data.a, data.b, data.result].map((row, rowIndex) => <div key={rowIndex} className={`decimal-row ${rowIndex === 2 ? 'result' : ''}`}>{row.map((digit, index) => <strong key={index} className={digit === '.' ? 'point' : ''}>{digit}</strong>)}</div>)}
         <p>2.3 可以写成 2.30，数的大小不变，但相同数位更容易对齐。</p>
       </div>
-      <div className="model-controls"><div className="segmented-control"><button type="button" className={mode === 'add' ? 'is-active' : ''} onClick={() => { setMode('add'); onInteract?.(); }}>小数加法</button><button type="button" className={mode === 'subtract' ? 'is-active' : ''} onClick={() => { setMode('subtract'); onInteract?.(); }}>小数减法</button></div></div>
+      <div className="model-controls"><div className="segmented-control"><button type="button" aria-pressed={mode === 'add'} className={mode === 'add' ? 'is-active' : ''} onClick={() => { setMode('add'); onInteract?.(); }}>小数加法</button><button type="button" aria-pressed={mode === 'subtract'} className={mode === 'subtract' ? 'is-active' : ''} onClick={() => { setMode('subtract'); onInteract?.(); }}>小数减法</button></div></div>
     </ModelShell>
   );
 }
@@ -149,7 +149,7 @@ function DecimalQuotient({ onInteract }: Pick<CourseMathModelProps, 'onInteract'
         <div><span>被除数</span><strong>{dividend}</strong></div><b>÷</b><div><span>除数</span><strong>{divisor}</strong></div><b>=</b><div className="quotient"><span>商</span><strong>4</strong></div>
       </div>
       <div className="scale-arrows"><span>同时 × {factor}</span><strong>商不变</strong></div>
-      <div className="model-controls"><div className="segmented-control"><button type="button" className={scale === 0 ? 'is-active' : ''} onClick={() => { setScale(0); onInteract?.(); }}>1.2 ÷ 0.3</button><button type="button" className={scale === 1 ? 'is-active' : ''} onClick={() => { setScale(1); onInteract?.(); }}>同时扩大 10 倍</button></div></div>
+      <div className="model-controls"><div className="segmented-control"><button type="button" aria-pressed={scale === 0} className={scale === 0 ? 'is-active' : ''} onClick={() => { setScale(0); onInteract?.(); }}>1.2 ÷ 0.3</button><button type="button" aria-pressed={scale === 1} className={scale === 1 ? 'is-active' : ''} onClick={() => { setScale(1); onInteract?.(); }}>同时扩大 10 倍</button></div></div>
     </ModelShell>
   );
 }

@@ -21,8 +21,12 @@ describe('reviewed mathematics discovery', () => {
   });
   it('renders all triangle vertices with measured angles matching their labels and classification', () => {
     render(<CourseGeometryModel type="g4-triangle" />);
+    expect(screen.getByRole('button', { name: '锐角三角形' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '直角三角形' })).toHaveAttribute('aria-pressed', 'false');
     for (const kind of ['锐角', '直角', '钝角']) {
-      fireEvent.click(screen.getByRole('button', { name: `${kind}三角形` }));
+      const button = screen.getByRole('button', { name: `${kind}三角形` });
+      fireEvent.click(button);
+      expect(button).toHaveAttribute('aria-pressed', 'true');
       const svg = screen.getByRole('img', { name: new RegExp(`^${kind}三角形`) });
       const points = svg.querySelector('polygon')!.getAttribute('points')!.split(' ').map(point => point.split(',').map(Number));
       const labels = Array.from(svg.querySelectorAll('text')).slice(1);
@@ -41,6 +45,16 @@ describe('reviewed mathematics discovery', () => {
       else if (kind === '直角') expect(largest).toBeCloseTo(90, 8);
       else expect(largest).toBeGreaterThan(90);
     }
+  });
+  it('exposes the active area transformation step to assistive technology', () => {
+    render(<CourseGeometryModel type="g5-parallelogram-area" />);
+    const original = screen.getByRole('button', { name: '原图' });
+    const cut = screen.getByRole('button', { name: '切开' });
+    expect(original).toHaveAttribute('aria-pressed', 'true');
+    expect(cut).toHaveAttribute('aria-pressed', 'false');
+    fireEvent.click(cut);
+    expect(original).toHaveAttribute('aria-pressed', 'false');
+    expect(cut).toHaveAttribute('aria-pressed', 'true');
   });
   it.each(['g6-proportion', 'g4-triangle', 'g5-fraction-meaning', 'g3-fraction-compare', 'g3-fraction-add-sub', 'g3-fraction-intro'])('%s checks understanding without a visible answer sketch', (id) => {
     const meta = getKnowledgePointById(id)!.meta;

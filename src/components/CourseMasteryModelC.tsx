@@ -62,7 +62,7 @@ function CuboidSurface({ onInteract }: Pick<CourseMasteryModelCProps, 'onInterac
   );
   return (
     <Shell title="把六个面摊平，对面面积相等；无盖时只去掉一个长×宽" result={`S = ${surface} 平方单位`} invariant={`${hasLid ? '2' : '1'}×${length}×${width} + 2×${length}×${height} + 2×${width}×${height} = ${surface}`}
-      controls={<><div className="segmented-control"><button type="button" className={hasLid ? 'is-active' : ''} onClick={() => { setHasLid(true); onInteract?.(); }}>有盖</button><button type="button" className={!hasLid ? 'is-active' : ''} onClick={() => { setHasLid(false); onInteract?.(); }}>无盖</button></div><label>长 <output>{length}</output><input type="range" min="2" max="6" value={length} onChange={(e) => { setLength(Number(e.target.value)); onInteract?.(); }} /></label><label>宽 <output>{width}</output><input type="range" min="2" max="5" value={width} onChange={(e) => { setWidth(Number(e.target.value)); onInteract?.(); }} /></label><label>高 <output>{height}</output><input type="range" min="1" max="4" value={height} onChange={(e) => { setHeight(Number(e.target.value)); onInteract?.(); }} /></label></>}>
+      controls={<><div className="segmented-control"><button type="button" aria-pressed={hasLid} className={hasLid ? 'is-active' : ''} onClick={() => { setHasLid(true); onInteract?.(); }}>有盖</button><button type="button" aria-pressed={!hasLid} className={!hasLid ? 'is-active' : ''} onClick={() => { setHasLid(false); onInteract?.(); }}>无盖</button></div><label>长 <output>{length}</output><input type="range" min="2" max="6" value={length} onChange={(e) => { setLength(Number(e.target.value)); onInteract?.(); }} /></label><label>宽 <output>{width}</output><input type="range" min="2" max="5" value={width} onChange={(e) => { setWidth(Number(e.target.value)); onInteract?.(); }} /></label><label>高 <output>{height}</output><input type="range" min="1" max="4" value={height} onChange={(e) => { setHeight(Number(e.target.value)); onInteract?.(); }} /></label></>}>
       <svg viewBox="0 0 380 250" role="img" aria-label={`${hasLid ? '有盖' : '无盖'}长方体六面展开图，表面积${surface}`} style={{ width: '100%', maxHeight: 290 }}>
         {face('bottom', x, y, length * s, width * s, '#bfdbfe', `底 ${bottom}`)}
         {face('top', x, y - width * s - height * s, length * s, width * s, '#bfdbfe', `盖 ${bottom}`, hasLid ? 1 : 0.18)}
@@ -141,7 +141,7 @@ function CircleArea({ onInteract }: Pick<CourseMasteryModelCProps, 'onInteract'>
   const bottom = Array.from({ length: sectors / 2 + 1 }, (_, i) => `${210 + (sectors / 2 - i) * tooth},${i % 2 === 0 ? 138 : 147}`).join(' ');
   return (
     <Shell title="把圆等分后交错排列；份数越多，弧边越接近直线" result={`S ≈ πr × r = πr²（${sectors} 等分）`} invariant="重排只移动扇形，不增不减面积；近似长方形的长趋近 πr、宽趋近 r"
-      controls={<div className="segmented-control">{options.map((count, i) => <button key={count} type="button" className={index === i ? 'is-active' : ''} onClick={() => { setIndex(i); onInteract?.(); }}>{count} 等分</button>)}</div>}>
+      controls={<div className="segmented-control">{options.map((count, i) => <button key={count} type="button" aria-pressed={index === i} className={index === i ? 'is-active' : ''} onClick={() => { setIndex(i); onInteract?.(); }}>{count} 等分</button>)}</div>}>
       <svg viewBox="0 0 450 220" role="img" aria-label={`圆被分成${sectors}个扇形并重排为近似长方形`} style={{ width: '100%', maxHeight: 280 }}>
         {sectorPaths.map((path, i) => <path key={path} d={path} fill={i % 2 ? '#93c5fd' : '#a7f3d0'} stroke="#fff" strokeWidth="0.8"/>)}
         <polygon points={`${top} ${bottom}`} fill="#bfdbfe" stroke="#4f46e5" strokeWidth="1.5"/>
